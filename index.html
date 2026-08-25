@@ -192,7 +192,6 @@ label {
     display: none;
 }
 
-/* EXERCÍCIO RETRÁTIL */
 .exercise {
     background: var(--card);
     border: 1px solid var(--border);
@@ -372,9 +371,6 @@ label {
     color: #c5bcff;
 }
 
-.improved { color: var(--green); }
-.worse { color: var(--red); }
-
 .empty {
     text-align: center;
     color: var(--muted);
@@ -500,7 +496,6 @@ label {
 
 <!-- INÍCIO -->
 <section id="home" class="page active">
-
     <div class="card">
         <h2>Resumo de Hoje</h2>
         <div class="stats">
@@ -519,7 +514,6 @@ label {
         </div>
     </div>
 
-    <!-- META E CHECKLIST DE CREATINA NA TELA INICIAL -->
     <div class="card">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
             <div>
@@ -552,36 +546,29 @@ label {
 
     <div class="card">
         <h2>💧 Água</h2>
-
         <div class="water-number">
             <span id="waterCurrent">0</span> ml
         </div>
-
         <div class="water-target">
             Meta: <span id="waterTargetText">3000</span> ml
         </div>
-
         <div class="progress">
             <div id="waterProgress" style="width:0%"></div>
         </div>
-
         <div id="waterActionArea">
             <div class="water-buttons">
                 <button id="btnW250" onclick="addWater(250)">+250</button>
                 <button id="btnW500" onclick="addWater(500)">+500</button>
                 <button id="btnW1000" onclick="addWater(1000)">+1000</button>
             </div>
-
             <div class="water-custom">
                 <input id="customWaterInput" type="number" placeholder="Qtd personalizada (ml)">
                 <button id="btnWCustom" onclick="addCustomWater()">Adicionar</button>
             </div>
         </div>
-
         <div id="waterMetaReachedMessage" class="water-message" style="display:none;">
             🎉 Parabéns! Você atingiu sua meta de água hoje. Registro bloqueado até amanhã!
         </div>
-
         <br>
         <button class="secondary full" onclick="resetWater()">Zerar água</button>
     </div>
@@ -594,13 +581,10 @@ label {
         </div>
         <button class="full" onclick="startWorkout()">+ Começar treino</button>
     </div>
-
 </section>
-
 
 <!-- TREINO -->
 <section id="workout" class="page">
-
     <div class="card">
         <div class="field">
             <label>Treino atual</label>
@@ -627,13 +611,10 @@ label {
     <button class="full" onclick="openExerciseModal()">+ Adicionar exercício</button>
     <br><br>
     <button class="secondary full" onclick="cancelWorkout()">Cancelar treino</button>
-
 </section>
-
 
 <!-- HISTÓRICO -->
 <section id="history" class="page">
-
     <div class="card">
         <h2>📈 Histórico & Evolução</h2>
         <p style="color:var(--muted)">Acompanhe suas cargas e evolução histórica.</p>
@@ -652,33 +633,26 @@ label {
     </div>
 
     <div id="historyList"></div>
-
 </section>
-
 
 <!-- PERFIL -->
 <section id="profile" class="page">
-
     <div class="card">
         <h2>⚙️ Configurações & Suplementação</h2>
-
         <div class="field">
             <label>Seu peso atual (kg)</label>
             <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" onchange="calculateSuggestedMetrics()">
         </div>
-
         <div class="field">
             <label>Meta diária de água (ml)</label>
             <input id="waterTarget" type="number" placeholder="3000">
             <small style="color:var(--muted); font-size:11px;" id="waterSuggestionText"></small>
         </div>
-
         <div class="field">
             <label>🧪 Dose diária de Creatina recomendada</label>
             <input id="creatineTarget" type="text" readonly style="background: var(--card); border-color: var(--border); font-weight: bold; color: var(--accent);">
             <small style="color:var(--muted); font-size:11px;">Calculado automaticamente (0,07g por kg corporal)</small>
         </div>
-
         <button class="full" onclick="saveSettings()">Salvar configurações</button>
     </div>
 
@@ -696,13 +670,11 @@ label {
         <p style="color:var(--muted);font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
         <p style="color:var(--muted);font-size:13px">Versão 3.5 (Com otimização de imagem e cards retráteis)</p>
     </div>
-
 </section>
 
 </main>
 
-
-<!-- MENU -->
+<!-- MENU DE NAVEGAÇÃO -->
 <nav class="bottom-nav">
     <button class="nav-btn active" onclick="showPage('home', this)">
         <span>🏠</span> Início
@@ -718,202 +690,224 @@ label {
     </button>
 </nav>
 
+<!-- MODAL EXERCÍCIO CORRIGIDO -->
+<div id="exerciseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">
+            <h3>Adicionar Exercício</h3>
+            <button class="close" onclick="closeExerciseModal()">✕</button>
+        </div>
 
-<!-- MODAL EXERCÍCIO -->
-<select id="exerciseLibrarySelect" onchange="selectFromLibrary(this.value)">
-    <option value="">Selecione ou digite abaixo...</option>
+        <div class="field">
+            <label>Biblioteca de Exercícios</label>
+            <select id="exerciseLibrarySelect" onchange="selectFromLibrary(this.value)">
+                <option value="">Selecione ou digite abaixo...</option>
 
-    <optgroup label="💥 Peito">
-        <!-- Pesos Livres -->
-        <option value="Supino Reto com Barra|Livre">Supino Reto com Barra</option>
-        <option value="Supino Reto com Halteres|Livre">Supino Reto com Halteres</option>
-        <option value="Supino Inclinado com Barra|Livre">Supino Inclinado com Barra</option>
-        <option value="Supino Inclinado com Halteres|Livre">Supino Inclinado com Halteres</option>
-        <option value="Supino Declinado com Barra|Livre">Supino Declinado com Barra</option>
-        <option value="Supino Declinado com Halteres|Livre">Supino Declinado com Halteres</option>
-        <option value="Crucifixo Reto com Halteres|Livre">Crucifixo Reto com Halteres</option>
-        <option value="Crucifixo Inclinado com Halteres|Livre">Crucifixo Inclinado com Halteres</option>
-        <option value="Crucifixo Declinado com Halteres|Livre">Crucifixo Declinado com Halteres</option>
-        <option value="Pullover com Halter|Livre">Pullover com Halter</option>
-        <!-- Polia / Cabos -->
-        <option value="Crossover na Polia Alta|Polia">Crossover na Polia Alta</option>
-        <option value="Crossover na Polia Média|Polia">Crossover na Polia Média</option>
-        <option value="Crossover na Polia Baixa|Polia">Crossover na Polia Baixa</option>
-        <option value="Crucifixo Inclinado na Polia|Polia">Crucifixo Inclinado na Polia</option>
-        <option value="Supino Reto no Cabo|Polia">Supino Reto no Cabo</option>
-        <!-- Máquinas / Articulados -->
-        <option value="Peck Deck / Voador|Máquina">Peck Deck / Voador</option>
-        <option value="Supino Reto Articulado|Máquina">Supino Reto Articulado</option>
-        <option value="Supino Inclinado Articulado|Máquina">Supino Inclinado Articulado</option>
-        <option value="Supino Vertical em Máquina|Máquina">Supino Vertical em Máquina (Chest Press)</option>
-        <option value="Supino Declinado Articulado|Máquina">Supino Declinado Articulado</option>
-        <!-- Peso Corporal -->
-        <option value="Flexão de Braços Tradicional|Livre">Flexão de Braços Tradicional</option>
-        <option value="Flexão Inclinada (Mãos Apoiadas)|Livre">Flexão Inclinada (Mãos Apoiadas)</option>
-        <option value="Flexão Declinada (Pés Apoiados)|Livre">Flexão Declinada (Pés Apoiados)</option>
-        <option value="Paralelas (Foco em Peito)|Livre">Paralelas (Foco em Peito)</option>
-    </optgroup>
+                <optgroup label="💥 Peito">
+                    <option value="Supino Reto com Barra|Livre">Supino Reto com Barra</option>
+                    <option value="Supino Reto com Halteres|Livre">Supino Reto com Halteres</option>
+                    <option value="Supino Inclinado com Barra|Livre">Supino Inclinado com Barra</option>
+                    <option value="Supino Inclinado com Halteres|Livre">Supino Inclinado com Halteres</option>
+                    <option value="Supino Declinado com Barra|Livre">Supino Declinado com Barra</option>
+                    <option value="Supino Declinado com Halteres|Livre">Supino Declinado com Halteres</option>
+                    <option value="Crucifixo Reto com Halteres|Livre">Crucifixo Reto com Halteres</option>
+                    <option value="Crucifixo Inclinado com Halteres|Livre">Crucifixo Inclinado com Halteres</option>
+                    <option value="Crucifixo Declinado com Halteres|Livre">Crucifixo Declinado com Halteres</option>
+                    <option value="Pullover com Halter|Livre">Pullover com Halter</option>
+                    <option value="Crossover na Polia Alta|Polia">Crossover na Polia Alta</option>
+                    <option value="Crossover na Polia Média|Polia">Crossover na Polia Média</option>
+                    <option value="Crossover na Polia Baixa|Polia">Crossover na Polia Baixa</option>
+                    <option value="Crucifixo Inclinado na Polia|Polia">Crucifixo Inclinado na Polia</option>
+                    <option value="Supino Reto no Cabo|Polia">Supino Reto no Cabo</option>
+                    <option value="Peck Deck / Voador|Máquina">Peck Deck / Voador</option>
+                    <option value="Supino Reto Articulado|Máquina">Supino Reto Articulado</option>
+                    <option value="Supino Inclinado Articulado|Máquina">Supino Inclinado Articulado</option>
+                    <option value="Supino Vertical em Máquina|Máquina">Supino Vertical em Máquina (Chest Press)</option>
+                    <option value="Supino Declinado Articulado|Máquina">Supino Declinado Articulado</option>
+                    <option value="Flexão de Braços Tradicional|Livre">Flexão de Braços Tradicional</option>
+                    <option value="Flexão Inclinada (Mãos Apoiadas)|Livre">Flexão Inclinada (Mãos Apoiadas)</option>
+                    <option value="Flexão Declinada (Pés Apoiados)|Livre">Flexão Declinada (Pés Apoiados)</option>
+                    <option value="Paralelas (Foco em Peito)|Livre">Paralelas (Foco em Peito)</option>
+                </optgroup>
 
-    <optgroup label="📐 Costas / Dorsal">
-        <!-- Pesos Livres -->
-        <option value="Remada Curvada com Barra (Pronada)|Livre">Remada Curvada com Barra (Pronada)</option>
-        <option value="Remada Curvada com Barra (Supinada)|Livre">Remada Curvada com Barra (Supinada)</option>
-        <option value="Remada Unilateral com Halter (Serrote)|Livre">Remada Unilateral com Halter (Serrote)</option>
-        <option value="Remada Curvada com Halteres|Livre">Remada Curvada com Halteres</option>
-        <option value="Levantamento Terra|Livre">Levantamento Terra</option>
-        <option value="Remada Cavalgando com Barra T|Livre">Remada Cavalgando (Barra T)</option>
-        <option value="Pullover com Barra|Livre">Pullover com Barra</option>
-        <!-- Polia / Cabos -->
-        <option value="Puxada Frontal Pegada Aberta|Polia">Puxada Frontal Pegada Aberta</option>
-        <option value="Puxada Frontal Pegada Supinada|Polia">Puxada Frontal Pegada Supinada</option>
-        <option value="Puxada Frontal com Triângulo|Polia">Puxada Frontal com Triângulo</option>
-        <option value="Puxada Pegada Neutra|Polia">Puxada Pegada Neutra</option>
-        <option value="Remada Baixa na Polia com Triângulo|Polia">Remada Baixa com Triângulo</option>
-        <option value="Remada Baixa na Polia com Barra Reta|Polia">Remada Baixa com Barra Reta</option>
-        <option value="Remada Baixa Unilateral na Polia|Polia">Remada Baixa Unilateral na Polia</option>
-        <option value="Pulldown no Cabo (Barra Reta)|Polia">Pulldown no Cabo (Barra Reta)</option>
-        <option value="Pulldown no Cabo (Corda)|Polia">Pulldown no Cabo (Corda)</option>
-        <!-- Máquinas / Articulados -->
-        <option value="Puxada Alta Articulada|Máquina">Puxada Alta Articulada</option>
-        <option value="Remada Articulada Pegada Neutra|Máquina">Remada Articulada Pegada Neutra</option>
-        <option value="Remada Articulada Pegada Pronada|Máquina">Remada Articulada Pegada Pronada</option>
-        <option value="Remada Cavalgando em Máquina|Máquina">Remada Cavalgando em Máquina</option>
-        <!-- Peso Corporal -->
-        <option value="Barra Fixa Pronada|Livre">Barra Fixa Pronada (Pull-up)</option>
-        <option value="Barra Fixa Supinada|Livre">Barra Fixa Supinada (Chin-up)</option>
-        <option value="Barra Fixa Pegada Neutra|Livre">Barra Fixa Pegada Neutra</option>
-        <option value="Extensão de Lombar no Banco Romano|Livre">Extensão de Lombar (Banco Romano)</option>
-    </optgroup>
+                <optgroup label="📐 Costas / Dorsal">
+                    <option value="Remada Curvada com Barra (Pronada)|Livre">Remada Curvada com Barra (Pronada)</option>
+                    <option value="Remada Curvada com Barra (Supinada)|Livre">Remada Curvada com Barra (Supinada)</option>
+                    <option value="Remada Unilateral com Halter (Serrote)|Livre">Remada Unilateral com Halter (Serrote)</option>
+                    <option value="Remada Curvada com Halteres|Livre">Remada Curvada com Halteres</option>
+                    <option value="Levantamento Terra|Livre">Levantamento Terra</option>
+                    <option value="Remada Cavalgando com Barra T|Livre">Remada Cavalgando (Barra T)</option>
+                    <option value="Pullover com Barra|Livre">Pullover com Barra</option>
+                    <option value="Puxada Frontal Pegada Aberta|Polia">Puxada Frontal Pegada Aberta</option>
+                    <option value="Puxada Frontal Pegada Supinada|Polia">Puxada Frontal Pegada Supinada</option>
+                    <option value="Puxada Frontal com Triângulo|Polia">Puxada Frontal com Triângulo</option>
+                    <option value="Puxada Pegada Neutra|Polia">Puxada Pegada Neutra</option>
+                    <option value="Remada Baixa na Polia com Triângulo|Polia">Remada Baixa com Triângulo</option>
+                    <option value="Remada Baixa na Polia com Barra Reta|Polia">Remada Baixa com Barra Reta</option>
+                    <option value="Remada Baixa Unilateral na Polia|Polia">Remada Baixa Unilateral na Polia</option>
+                    <option value="Pulldown no Cabo (Barra Reta)|Polia">Pulldown no Cabo (Barra Reta)</option>
+                    <option value="Pulldown no Cabo (Corda)|Polia">Pulldown no Cabo (Corda)</option>
+                    <option value="Puxada Alta Articulada|Máquina">Puxada Alta Articulada</option>
+                    <option value="Remada Articulada Pegada Neutra|Máquina">Remada Articulada Pegada Neutra</option>
+                    <option value="Remada Articulada Pegada Pronada|Máquina">Remada Articulada Pegada Pronada</option>
+                    <option value="Remada Cavalgando em Máquina|Máquina">Remada Cavalgando em Máquina</option>
+                    <option value="Barra Fixa Pronada|Livre">Barra Fixa Pronada (Pull-up)</option>
+                    <option value="Barra Fixa Supinada|Livre">Barra Fixa Supinada (Chin-up)</option>
+                    <option value="Barra Fixa Pegada Neutra|Livre">Barra Fixa Pegada Neutra</option>
+                    <option value="Extensão de Lombar no Banco Romano|Livre">Extensão de Lombar (Banco Romano)</option>
+                </optgroup>
 
-    <optgroup label="🛡️ Ombros & Trapézio">
-        <!-- Deltoides -->
-        <option value="Desenvolvimento Militar com Barra|Livre">Desenvolvimento Militar com Barra</option>
-        <option value="Desenvolvimento com Halteres Sentado|Livre">Desenvolvimento com Halteres Sentado</option>
-        <option value="Desenvolvimento Arnold com Halteres|Livre">Desenvolvimento Arnold com Halteres</option>
-        <option value="Desenvolvimento em Máquina Articulada|Máquina">Desenvolvimento em Máquina Articulada</option>
-        <option value="Elevação Lateral com Halteres|Livre">Elevação Lateral com Halteres</option>
-        <option value="Elevação Lateral na Polia Unilateral|Polia">Elevação Lateral na Polia Unilateral</option>
-        <option value="Elevação Lateral em Máquina|Máquina">Elevação Lateral em Máquina</option>
-        <option value="Elevação Frontal com Halteres|Livre">Elevação Frontal com Halteres</option>
-        <option value="Elevação Frontal com Anilha|Livre">Elevação Frontal com Anilha</option>
-        <option value="Elevação Frontal na Polia com Corda|Polia">Elevação Frontal na Polia com Corda</option>
-        <option value="Crucifixo Invertido com Halteres|Livre">Crucifixo Invertido com Halteres</option>
-        <option value="Crucifixo Invertido no Peck Deck|Máquina">Crucifixo Invertido no Peck Deck</option>
-        <option value="Crucifixo Invertido na Polia (Face Pull)|Polia">Face Pull na Polia (Com Corda)</option>
-        <!-- Trapézio -->
-        <option value="Encolhimento com Barra|Livre">Encolhimento com Barra</option>
-        <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres</option>
-        <option value="Encolhimento na Polia Baixa|Polia">Encolhimento na Polia Baixa</option>
-        <option value="Remada Alta com Barra|Livre">Remada Alta com Barra</option>
-        <option value="Remada Alta na Polia|Polia">Remada Alta na Polia</option>
-    </optgroup>
+                <optgroup label="🛡️ Ombros & Trapézio">
+                    <option value="Desenvolvimento Militar com Barra|Livre">Desenvolvimento Militar com Barra</option>
+                    <option value="Desenvolvimento com Halteres Sentado|Livre">Desenvolvimento com Halteres Sentado</option>
+                    <option value="Desenvolvimento Arnold com Halteres|Livre">Desenvolvimento Arnold com Halteres</option>
+                    <option value="Desenvolvimento em Máquina Articulada|Máquina">Desenvolvimento em Máquina Articulada</option>
+                    <option value="Elevação Lateral com Halteres|Livre">Elevação Lateral com Halteres</option>
+                    <option value="Elevação Lateral na Polia Unilateral|Polia">Elevação Lateral na Polia Unilateral</option>
+                    <option value="Elevação Lateral em Máquina|Máquina">Elevação Lateral em Máquina</option>
+                    <option value="Elevação Frontal com Halteres|Livre">Elevação Frontal com Halteres</option>
+                    <option value="Elevação Frontal com Anilha|Livre">Elevação Frontal com Anilha</option>
+                    <option value="Elevação Frontal na Polia com Corda|Polia">Elevação Frontal na Polia com Corda</option>
+                    <option value="Crucifixo Invertido com Halteres|Livre">Crucifixo Invertido com Halteres</option>
+                    <option value="Crucifixo Invertido no Peck Deck|Máquina">Crucifixo Invertido no Peck Deck</option>
+                    <option value="Crucifixo Invertido na Polia (Face Pull)|Polia">Face Pull na Polia (Com Corda)</option>
+                    <option value="Encolhimento com Barra|Livre">Encolhimento com Barra</option>
+                    <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres</option>
+                    <option value="Encolhimento na Polia Baixa|Polia">Encolhimento na Polia Baixa</option>
+                    <option value="Remada Alta com Barra|Livre">Remada Alta com Barra</option>
+                    <option value="Remada Alta na Polia|Polia">Remada Alta na Polia</option>
+                </optgroup>
 
-    <optgroup label="💪 Bíceps & Antebraço">
-        <!-- Bíceps -->
-        <option value="Rosca Direta com Barra Reta|Livre">Rosca Direta com Barra Reta</option>
-        <option value="Rosca Direta com Barra W|Livre">Rosca Direta com Barra W</option>
-        <option value="Rosca Direta com Halteres|Livre">Rosca Direta com Halteres</option>
-        <option value="Rosca Alternada com Halteres|Livre">Rosca Alternada com Halteres</option>
-        <option value="Rosca Martelo com Halteres|Livre">Rosca Martelo com Halteres</option>
-        <option value="Rosca Martelo na Polia com Corda|Polia">Rosca Martelo na Polia (Corda)</option>
-        <option value="Rosca Scott com Barra W|Livre">Rosca Scott com Barra W</option>
-        <option value="Rosca Scott em Máquina|Máquina">Rosca Scott em Máquina</option>
-        <option value="Rosca Concentrada com Halter|Livre">Rosca Concentrada com Halter</option>
-        <option value="Rosca no Banco Inclinado 45°|Livre">Rosca 45° no Banco Inclinado com Halteres</option>
-        <option value="Rosca na Polia Baixa com Barra Reta|Polia">Rosca na Polia Baixa (Barra Reta)</option>
-        <option value="Rosca Duplo Bíceps na Polia Alta|Polia">Rosca Duplo Bíceps na Polia Alta</option>
-        <!-- Antebraço -->
-        <option value="Rosca Inversa com Barra|Livre">Rosca Inversa com Barra</option>
-        <option value="Rosca Punho com Barra|Livre">Rosca Punho com Barra</option>
-        <option value="Rosca Punho Inversa com Barra|Livre">Rosca Punho Inversa com Barra</option>
-    </optgroup>
+                <optgroup label="💪 Bíceps & Antebraço">
+                    <option value="Rosca Direta com Barra Reta|Livre">Rosca Direta com Barra Reta</option>
+                    <option value="Rosca Direta com Barra W|Livre">Rosca Direta com Barra W</option>
+                    <option value="Rosca Direta com Halteres|Livre">Rosca Direta com Halteres</option>
+                    <option value="Rosca Alternada com Halteres|Livre">Rosca Alternada com Halteres</option>
+                    <option value="Rosca Martelo com Halteres|Livre">Rosca Martelo com Halteres</option>
+                    <option value="Rosca Martelo na Polia com Corda|Polia">Rosca Martelo na Polia (Corda)</option>
+                    <option value="Rosca Scott com Barra W|Livre">Rosca Scott com Barra W</option>
+                    <option value="Rosca Scott em Máquina|Máquina">Rosca Scott em Máquina</option>
+                    <option value="Rosca Concentrada com Halter|Livre">Rosca Concentrada com Halter</option>
+                    <option value="Rosca no Banco Inclinado 45°|Livre">Rosca 45° no Banco Inclinado com Halteres</option>
+                    <option value="Rosca na Polia Baixa com Barra Reta|Polia">Rosca na Polia Baixa (Barra Reta)</option>
+                    <option value="Rosca Duplo Bíceps na Polia Alta|Polia">Rosca Duplo Bíceps na Polia Alta</option>
+                    <option value="Rosca Inversa com Barra|Livre">Rosca Inversa com Barra</option>
+                    <option value="Rosca Punho com Barra|Livre">Rosca Punho com Barra</option>
+                    <option value="Rosca Punho Inversa com Barra|Livre">Rosca Punho Inversa com Barra</option>
+                </optgroup>
 
-    <optgroup label="⚡ Tríceps">
-        <option value="Tríceps Corda na Polia|Polia">Tríceps Corda na Polia</option>
-        <option value="Tríceps Barra Reta na Polia|Polia">Tríceps Barra Reta na Polia</option>
-        <option value="Tríceps Barra V na Polia|Polia">Tríceps Barra V na Polia</option>
-        <option value="Tríceps Testa com Barra W|Livre">Tríceps Testa com Barra W</option>
-        <option value="Tríceps Testa com Halteres|Livre">Tríceps Testa com Halteres</option>
-        <option value="Tríceps Testa na Polia com Corda|Polia">Tríceps Testa na Polia com Corda</option>
-        <option value="Tríceps Francês com Halter (Duas Mãos)|Livre">Tríceps Francês com Halter (Duas Mãos)</option>
-        <option value="Tríceps Francês Unilateral com Halter|Livre">Tríceps Francês Unilateral com Halter</option>
-        <option value="Tríceps Francês na Polia Alta|Polia">Tríceps Francês na Polia Alta (Corda)</option>
-        <option value="Tríceps Coice com Halter|Livre">Tríceps Coice com Halter</option>
-        <option value="Tríceps Coice na Polia|Polia">Tríceps Coice na Polia</option>
-        <option value="Tríceps Mergulho no Banco|Livre">Tríceps Mergulho no Banco</option>
-        <option value="Paralelas (Foco em Tríceps)|Livre">Paralelas (Foco em Tríceps)</option>
-        <option value="Supino Fechado com Barra|Livre">Supino Fechado com Barra</option>
-        <option value="Tríceps em Máquina Sentado|Máquina">Tríceps em Máquina Sentado</option>
-    </optgroup>
+                <optgroup label="⚡ Tríceps">
+                    <option value="Tríceps Corda na Polia|Polia">Tríceps Corda na Polia</option>
+                    <option value="Tríceps Barra Reta na Polia|Polia">Tríceps Barra Reta na Polia</option>
+                    <option value="Tríceps Barra V na Polia|Polia">Tríceps Barra V na Polia</option>
+                    <option value="Tríceps Testa com Barra W|Livre">Tríceps Testa com Barra W</option>
+                    <option value="Tríceps Testa com Halteres|Livre">Tríceps Testa com Halteres</option>
+                    <option value="Tríceps Testa na Polia com Corda|Polia">Tríceps Testa na Polia com Corda</option>
+                    <option value="Tríceps Francês com Halter (Duas Mãos)|Livre">Tríceps Francês com Halter (Duas Mãos)</option>
+                    <option value="Tríceps Francês Unilateral com Halter|Livre">Tríceps Francês Unilateral com Halter</option>
+                    <option value="Tríceps Francês na Polia Alta|Polia">Tríceps Francês na Polia Alta (Corda)</option>
+                    <option value="Tríceps Coice com Halter|Livre">Tríceps Coice com Halter</option>
+                    <option value="Tríceps Coice na Polia|Polia">Tríceps Coice na Polia</option>
+                    <option value="Tríceps Mergulho no Banco|Livre">Tríceps Mergulho no Banco</option>
+                    <option value="Paralelas (Foco em Tríceps)|Livre">Paralelas (Foco em Tríceps)</option>
+                    <option value="Supino Fechado com Barra|Livre">Supino Fechado com Barra</option>
+                    <option value="Tríceps em Máquina Sentado|Máquina">Tríceps em Máquina Sentado</option>
+                </optgroup>
 
-    <optgroup label="🦵 Quadríceps & Posterior">
-        <!-- Compostos / Livre -->
-        <option value="Agachamento Livre com Barra (Costas)|Livre">Agachamento Livre com Barra</option>
-        <option value="Agachamento Frontal com Barra|Livre">Agachamento Frontal com Barra</option>
-        <option value="Agachamento no Barra Guiada (Smith)|Máquina">Agachamento no Smith</option>
-        <option value="Agachamento Sumô com Halter/Anilha|Livre">Agachamento Sumô com Halter</option>
-        <option value="Agachamento Búlgaro com Halteres|Livre">Agachamento Búlgaro com Halteres</option>
-        <option value="Afundo com Halteres|Livre">Afundo com Halteres</option>
-        <option value="Passada / Avanço em Movimento|Livre">Passada / Avanço com Halteres</option>
-        <!-- Máquinas de Agachamento -->
-        <option value="Leg Press 45°|Máquina">Leg Press 45°</option>
-        <option value="Leg Press Horizontal|Máquina">Leg Press Horizontal</option>
-        <option value="Hack Squat / Agachamento Hack|Máquina">Hack Squat (Máquina)</option>
-        <option value="Agachamento V-Squat Articulado|Máquina">V-Squat Articulado</option>
-        <option value="Sissy Squat (Agachamento Sissy)|Máquina">Sissy Squat</option>
-        <!-- Extensão & Flexão isolada -->
-        <option value="Cadeira Extensora|Máquina">Cadeira Extensora</option>
-        <option value="Mesa Flexora|Máquina">Mesa Flexora</option>
-        <option value="Cadeira Flexora|Máquina">Cadeira Flexora</option>
-        <option value="Flexor Vertical / Flexora em Pé|Máquina">Flexora Unilateral em Pé</option>
-        <option value="Stiff com Barra|Livre">Stiff com Barra</option>
-        <option value="Stiff com Halteres|Livre">Stiff com Halteres</option>
-        <option value="RDL (Romanian Deadlift) com Barra|Livre">RDL (Romanian Deadlift) com Barra</option>
+                <optgroup label="🦵 Quadríceps & Posterior">
+                    <option value="Agachamento Livre com Barra (Costas)|Livre">Agachamento Livre com Barra</option>
+                    <option value="Agachamento Frontal com Barra|Livre">Agachamento Frontal com Barra</option>
+                    <option value="Agachamento no Barra Guiada (Smith)|Máquina">Agachamento no Smith</option>
+                    <option value="Agachamento Sumô com Halter/Anilha|Livre">Agachamento Sumô com Halter</option>
+                    <option value="Agachamento Búlgaro com Halteres|Livre">Agachamento Búlgaro com Halteres</option>
+                    <option value="Afundo com Halteres|Livre">Afundo com Halteres</option>
+                    <option value="Passada / Avanço em Movimento|Livre">Passada / Avanço com Halteres</option>
+                    <option value="Leg Press 45°|Máquina">Leg Press 45°</option>
+                    <option value="Leg Press Horizontal|Máquina">Leg Press Horizontal</option>
+                    <option value="Hack Squat / Agachamento Hack|Máquina">Hack Squat (Máquina)</option>
+                    <option value="Agachamento V-Squat Articulado|Máquina">V-Squat Articulado</option>
+                    <option value="Sissy Squat (Agachamento Sissy)|Máquina">Sissy Squat</option>
+                    <option value="Cadeira Extensora|Máquina">Cadeira Extensora</option>
+                    <option value="Mesa Flexora|Máquina">Mesa Flexora</option>
+                    <option value="Cadeira Flexora|Máquina">Cadeira Flexora</option>
+                    <option value="Flexor Vertical / Flexora em Pé|Máquina">Flexora Unilateral em Pé</option>
+                    <option value="Stiff com Barra|Livre">Stiff com Barra</option>
+                    <option value="Stiff com Halteres|Livre">Stiff com Halteres</option>
+                    <option value="RDL (Romanian Deadlift) com Barra|Livre">RDL (Romanian Deadlift) com Barra</option>
+                </optgroup>
 
-    <optgroup label="🍑 Glúteos & Adutores/Abdutores">
-        <option value="Elevação Pélvica com Barra|Livre">Elevação Pélvica com Barra</option>
-        <option value="Elevação Pélvica em Máquina|Máquina">Elevação Pélvica em Máquina</option>
-        <option value="Cadeira Abdutora|Máquina">Cadeira Abdutora</option>
-        <option value="Cadeira Adutora|Máquina">Cadeira Adutora</option>
-        <option value="Glúteo Caneleira no Solo|Livre">Glúteo Caneleira no Solo</option>
-        <option value="Glúteo na Polia (Extensão de Quadril)|Polia">Glúteo na Polia (Cabo)</option>
-        <option value="Coice de Glúteo em Máquina|Máquina">Glúteo Máquina (Coice)</option>
-    </optgroup>
+                <optgroup label="🍑 Glúteos & Adutores/Abdutores">
+                    <option value="Elevação Pélvica com Barra|Livre">Elevação Pélvica com Barra</option>
+                    <option value="Elevação Pélvica em Máquina|Máquina">Elevação Pélvica em Máquina</option>
+                    <option value="Cadeira Abdutora|Máquina">Cadeira Abdutora</option>
+                    <option value="Cadeira Adutora|Máquina">Cadeira Adutora</option>
+                    <option value="Glúteo Caneleira no Solo|Livre">Glúteo Caneleira no Solo</option>
+                    <option value="Glúteo na Polia (Extensão de Quadril)|Polia">Glúteo na Polia (Cabo)</option>
+                    <option value="Coice de Glúteo em Máquina|Máquina">Glúteo Máquina (Coice)</option>
+                </optgroup>
 
-    <optgroup label="🦶 Panturrilhas">
-        <option value="Panturrilha Sentado (Gêmeos)|Máquina">Panturrilha Sentado (Gêmeos)</option>
-        <option value="Panturrilha em Pé na Máquina|Máquina">Panturrilha em Pé na Máquina</option>
-        <option value="Panturrilha no Leg Press 45°|Máquina">Panturrilha no Leg Press 45°</option>
-        <option value="Panturrilha em Pé no Smith|Máquina">Panturrilha em Pé no Smith</option>
-        <option value="Panturrilha Unilateral em Pé com Halter|Livre">Panturrilha Unilateral com Halter</option>
-    </optgroup>
+                <optgroup label="🦶 Panturrilhas">
+                    <option value="Panturrilha Sentado (Gêmeos)|Máquina">Panturrilha Sentado (Gêmeos)</option>
+                    <option value="Panturrilha em Pé na Máquina|Máquina">Panturrilha em Pé na Máquina</option>
+                    <option value="Panturrilha no Leg Press 45°|Máquina">Panturrilha no Leg Press 45°</option>
+                    <option value="Panturrilha em Pé no Smith|Máquina">Panturrilha em Pé no Smith</option>
+                    <option value="Panturrilha Unilateral em Pé com Halter|Livre">Panturrilha Unilateral com Halter</option>
+                </optgroup>
 
-    <optgroup label="🍫 Core / Abdominais">
-        <option value="Abdominal Supra Solo|Livre">Abdominal Supra Solo</option>
-        <option value="Abdominal Infra no Solo|Livre">Abdominal Infra (Elevação de Pernas)</option>
-        <option value="Abdominal Infra nas Paralelas/Banco|Livre">Abdominal Infra nas Paralelas</option>
-        <option value="Abdominal no Banco Declinado|Livre">Abdominal no Banco Declinado</option>
-        <option value="Abdominal na Polia com Corda (Crunch Cabo)|Polia">Abdominal na Polia Alta (Crunch)</option>
-        <option value="Abdominal com Roda (Ab Wheel)|Livre">Abdominal com Roda (Ab Wheel)</option>
-        <option value="Abdominal Bicicleta|Livre">Abdominal Bicicleta</option>
-        <option value="Prancha Frontal Estática|Livre">Prancha Frontal Estática</option>
-        <option value="Prancha Lateral|Livre">Prancha Lateral</option>
-        <option value="Rotação de Tronco no Cabo (Woodchopper)|Polia">Rotação de Tronco no Cabo (Woodchopper)</option>
-    </optgroup>
+                <optgroup label="🍫 Core / Abdominais">
+                    <option value="Abdominal Supra Solo|Livre">Abdominal Supra Solo</option>
+                    <option value="Abdominal Infra no Solo|Livre">Abdominal Infra (Elevação de Pernas)</option>
+                    <option value="Abdominal Infra nas Paralelas/Banco|Livre">Abdominal Infra nas Paralelas</option>
+                    <option value="Abdominal no Banco Declinado|Livre">Abdominal no Banco Declinado</option>
+                    <option value="Abdominal na Polia com Corda (Crunch Cabo)|Polia">Abdominal na Polia Alta (Crunch)</option>
+                    <option value="Abdominal com Roda (Ab Wheel)|Livre">Abdominal com Roda (Ab Wheel)</option>
+                    <option value="Abdominal Bicicleta|Livre">Abdominal Bicicleta</option>
+                    <option value="Prancha Frontal Estática|Livre">Prancha Frontal Estática</option>
+                    <option value="Prancha Lateral|Livre">Prancha Lateral</option>
+                    <option value="Rotação de Tronco no Cabo (Woodchopper)|Polia">Rotação de Tronco no Cabo (Woodchopper)</option>
+                </optgroup>
 
-    <optgroup label="🏃 Cardio & Esteira">
-        <option value="Esteira (Caminhada / Corrida)|Cardio">Esteira (Caminhada / Corrida)</option>
-        <option value="Bicicleta Ergométrica Sentada|Cardio">Bicicleta Ergométrica Sentada</option>
-        <option value="Bicicleta Ergométrica Horizontal|Cardio">Bicicleta Ergométrica Horizontal</option>
-        <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
-        <option value="Simulador de Escada / Escalador|Cardio">Simulador de Escada</option>
-        <option value="Remo Ergométrico|Cardio">Remo Ergométrico</option>
-        <option value="Corda de Pular|Cardio">Corda de Pular</option>
-        <option value="Air Bike|Cardio">Air Bike</option>
-    </optgroup>
-</select>
+                <optgroup label="🏃 Cardio & Esteira">
+                    <option value="Esteira (Caminhada / Corrida)|Cardio">Esteira (Caminhada / Corrida)</option>
+                    <option value="Bicicleta Ergométrica Sentada|Cardio">Bicicleta Ergométrica Sentada</option>
+                    <option value="Bicicleta Ergométrica Horizontal|Cardio">Bicicleta Ergométrica Horizontal</option>
+                    <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
+                    <option value="Simulador de Escada / Escalador|Cardio">Simulador de Escada</option>
+                    <option value="Remo Ergométrico|Cardio">Remo Ergométrico</option>
+                    <option value="Corda de Pular|Cardio">Corda de Pular</option>
+                    <option value="Air Bike|Cardio">Air Bike</option>
+                </optgroup>
+            </select>
+        </div>
 
-    
+        <div class="field">
+            <label>Nome do Exercício</label>
+            <input id="exerciseName" placeholder="Ex: Supino Reto">
+        </div>
+
+        <div class="field">
+            <label>Tipo de Equipamento</label>
+            <select id="exerciseType" onchange="toggleSetCountVisibility(this.value)">
+                <option value="Livre">Livre (Anilhas/Halteres)</option>
+                <option value="Polia">Polia / Cabos</option>
+                <option value="Máquina">Máquina</option>
+                <option value="Cardio">Cardio</option>
+            </select>
+        </div>
+
+        <div class="field" id="setCountField">
+            <label>Quantidade de Séries Iniciais</label>
+            <input id="setCount" type="number" value="3" min="1" max="10">
+        </div>
+
+        <button class="full" onclick="addExercise()">Adicionar ao Treino</button>
+    </div>
+</div>
+
+<!-- TOAST DE NOTIFICAÇÕES -->
+<div id="toast" class="toast"></div>
+
+<script>
 /* =========================
    BANCO DE DADOS & ESTADO
 ========================= */
@@ -983,10 +977,9 @@ function handleProfilePicUpload(event) {
     reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-            // Redimensionamento e compressão via Canvas
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
-            const maxSize = 200; // Resolução ideal para o avatar
+            const maxSize = 200;
 
             let width = img.width;
             let height = img.height;
@@ -1007,7 +1000,6 @@ function handleProfilePicUpload(event) {
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Compressão em JPEG com qualidade 0.75
             const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
 
             data.settings.profilePic = compressedBase64;
@@ -1300,7 +1292,6 @@ function addExercise() {
     if (!name) return showToast("Digite ou selecione um exercício");
     if (!currentWorkout) return showToast("Comece um treino primeiro");
 
-    // Recolhe todos os exercícios anteriores ao adicionar um novo
     currentWorkout.exercises.forEach(ex => ex.collapsed = true);
 
     const isCardio = type === "Cardio";
@@ -1308,7 +1299,7 @@ function addExercise() {
         id: Date.now(),
         name: name,
         type: type,
-        collapsed: false, // O novo exercício entra expandido
+        collapsed: false,
         sets: isCardio 
             ? [{ time: "", distance: "", speed: "", incline: "" }] 
             : Array.from({ length: count }, () => ({ weight: "", reps: "" }))
@@ -1394,7 +1385,7 @@ function renderWorkout() {
             <div class="exercise-header">
                 <div>
                     <div class="exercise-name">${escapeHTML(exercise.name)}</div>
-                    <span class="exercise-type">${exercise.type} • ${exercise.sets.length} ${isCardio ? 'sessão' : 'série(s)'}</span>
+                    <span class="exercise-type">${escapeHTML(exercise.type)} • ${exercise.sets.length} ${isCardio ? 'sessão' : 'série(s)'}</span>
                 </div>
                 <div class="exercise-header-actions">
                     <button class="toggle-btn" onclick="toggleExerciseCollapse(${exerciseIndex})">
@@ -1570,7 +1561,7 @@ function renderHistory() {
 
                 return `
                     <div style="padding:8px 0; border-top:1px solid var(--border);">
-                        <strong>${escapeHTML(exercise.name)} <small>(${exercise.type})</small></strong>
+                        <strong>${escapeHTML(exercise.name)} <small>(${escapeHTML(exercise.type)})</small></strong>
                         <small style="display:block;">${setSummary}</small>
                     </div>
                 `;
