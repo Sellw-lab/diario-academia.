@@ -159,6 +159,18 @@ label {
     gap: 10px;
 }
 
+.row-4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+@media (min-width: 480px) {
+    .row-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 .exercise {
     background: var(--card);
     border: 1px solid var(--border);
@@ -628,7 +640,7 @@ label {
     <div class="card">
         <h3>Diário de Treino</h3>
         <p style="color:var(--muted);font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
-        <p style="color:var(--muted);font-size:13px">Versão 3.2 (Com Creatina & Biblioteca de Exercícios)</p>
+        <p style="color:var(--muted);font-size:13px">Versão 3.3 (Com Módulo de Cardio Otimizado)</p>
     </div>
 
 </section>
@@ -653,7 +665,7 @@ label {
 </nav>
 
 
-<!-- MODAL EXERCÍCIO COM BIBLIOTECA ABRANGENTE -->
+<!-- MODAL EXERCÍCIO COM BIBLIOTECA EXPANDIDA E CARDIO DINÂMICO -->
 <div id="exerciseModal" class="modal">
     <div class="modal-content">
         <div class="modal-title">
@@ -662,99 +674,168 @@ label {
         </div>
 
         <div class="field">
-            <label>Selecione da Biblioteca (70+ opções)</label>
+            <label>Selecione da Biblioteca (100+ opções)</label>
             <select id="exerciseLibrarySelect" onchange="selectFromLibrary(this.value)">
                 <option value="">Selecione ou digite abaixo...</option>
+
                 <optgroup label="Peito">
                     <option value="Supino Reto com Barra|Livre">Supino Reto com Barra</option>
                     <option value="Supino Inclinado com Barra|Livre">Supino Inclinado com Barra</option>
+                    <option value="Supino Declinado com Barra|Livre">Supino Declinado com Barra</option>
                     <option value="Supino Reto com Halteres|Livre">Supino Reto com Halteres</option>
                     <option value="Supino Inclinado com Halteres|Livre">Supino Inclinado com Halteres</option>
-                    <option value="Supino Declinado com Barra|Livre">Supino Declinado com Barra</option>
+                    <option value="Supino Declinado com Halteres|Livre">Supino Declinado com Halteres</option>
+
                     <option value="Crucifixo Reto com Halteres|Livre">Crucifixo Reto com Halteres</option>
                     <option value="Crucifixo Inclinado com Halteres|Livre">Crucifixo Inclinado com Halteres</option>
                     <option value="Crossover na Polia Alta|Polia">Crossover na Polia Alta</option>
                     <option value="Crossover na Polia Baixa|Polia">Crossover na Polia Baixa</option>
+                    <option value="Crossover na Polia Média|Polia">Crossover na Polia Média</option>
+
                     <option value="Peck Deck / Voador|Máquina">Peck Deck / Voador</option>
                     <option value="Chest Press|Máquina">Chest Press (Máquina)</option>
+                    <option value="Supino Inclinado Articulado|Máquina">Supino Inclinado Articulado</option>
                     <option value="Flexão de Braços|Livre">Flexão de Braços</option>
+                    <option value="Flexão Declinada|Livre">Flexão Declinada</option>
+                    <option value="Pullover com Halter|Livre">Pullover com Halter</option>
                 </optgroup>
+
                 <optgroup label="Costas">
                     <option value="Puxada Frontal|Polia">Puxada Frontal</option>
-                    <option value="Puxada me Pegada Fechada|Polia">Puxada Pegada Fechada</option>
+                    <option value="Puxada Pegada Fechada / Triângulo|Polia">Puxada Pegada Fechada / Triângulo</option>
+                    <option value="Puxada Supinada|Polia">Puxada Supinada</option>
+                    <option value="Puxada Articulada|Máquina">Puxada Articulada</option>
                     <option value="Remada Curvada com Barra|Livre">Remada Curvada com Barra</option>
-                    <option value="Remada Unilateral com Halter|Livre">Remada Unilateral com Halter (Serrote)</option>
+
+                    <option value="Remada Curvada Pegada Invertida|Livre">Remada Curvada Pegada Invertida</option>
+                    <option value="Remada Unilateral com Halter (Serrote)|Livre">Remada Unilateral com Halter (Serrote)</option>
                     <option value="Remada Baixa na Polia|Polia">Remada Baixa na Polia</option>
                     <option value="Remada Articulada|Máquina">Remada Articulada</option>
+                    <option value="Remada Cavaleiro / Cavalinho|Livre">Remada Cavaleiro / Cavalinho</option>
+
                     <option value="Pulldown na Polia|Polia">Pulldown na Polia</option>
                     <option value="Barra Fixa (Pronada/Supinada)|Livre">Barra Fixa</option>
+                    <option value="Graviton (Barra/Paralela)|Máquina">Graviton</option>
                     <option value="Levantamento Terra|Livre">Levantamento Terra</option>
                     <option value="Crucifixo Invertido na Polia|Polia">Crucifixo Invertido na Polia</option>
+                    <option value="Crucifixo Invertido com Halteres|Livre">Crucifixo Invertido com Halteres</option>
                 </optgroup>
+
                 <optgroup label="Quadríceps">
                     <option value="Agachamento Livre com Barra|Livre">Agachamento Livre com Barra</option>
+                    <option value="Agachamento Frontal com Barra|Livre">Agachamento Frontal com Barra</option>
+
                     <option value="Agachamento Hack|Máquina">Agachamento Hack</option>
+                    <option value="Agachamento no Smith|Máquina">Agachamento no Smith</option>
                     <option value="Leg Press 45°|Máquina">Leg Press 45°</option>
                     <option value="Leg Press Horizontal|Máquina">Leg Press Horizontal</option>
+                    <option value="Leg Press Unilateral|Máquina">Leg Press Unilateral</option>
+
                     <option value="Cadeira Extensora|Máquina">Cadeira Extensora</option>
+
                     <option value="Afundo / Passada|Livre">Afundo / Passada</option>
                     <option value="Agachamento Búlgaro|Livre">Agachamento Búlgaro</option>
-                    <option value="Agachamento Sumô|Livre">Agachamento Sumô</option>
+                    <option value="Agachamento Sumô com Halter|Livre">Agachamento Sumô com Halter</option>
+                    <option value="Sissy Squat|Livre">Sissy Squat</option>
                 </optgroup>
+
                 <optgroup label="Posterior de Coxa & Glúteos">
                     <option value="Mesa Flexora|Máquina">Mesa Flexora</option>
                     <option value="Cadeira Flexora|Máquina">Cadeira Flexora</option>
+                    <option value="Flexor Unilateral em Pé|Máquina">Flexor Unilateral em Pé</option>
+
                     <option value="Stiff com Barra|Livre">Stiff com Barra</option>
                     <option value="Stiff com Halteres|Livre">Stiff com Halteres</option>
+                    <option value="Good Morning / Bom Dia|Livre">Good Morning / Bom Dia</option>
 
-                    <option value="Elevacao Pelvica com Barra|Livre">Elevação Pélvica com Barra</option>
+                    <option value="Elevação Pélvica com Barra|Livre">Elevação Pélvica com Barra</option>
+
+                    <option value="Elevação Pélvica na Máquina|Máquina">Elevação Pélvica na Máquina</option>
                     <option value="Cadeira Abdutora|Máquina">Cadeira Abdutora</option>
                     <option value="Cadeira Adutora|Máquina">Cadeira Adutora</option>
+                    <option value="Glúteo na Polia (Coice)|Polia">Glúteo na Polia (Coice)</option>
                 </optgroup>
-                <optgroup label="Ombros">
+
+                <optgroup label="Ombros & Trapézio">
                     <option value="Desenvolvimento com Halteres|Livre">Desenvolvimento com Halteres</option>
-                    <option value="Desenvolvimento Militar|Livre">Desenvolvimento Militar</option>
+
+                    <option value="Desenvolvimento Militar com Barra|Livre">Desenvolvimento Militar com Barra</option>
+                    <option value="Desenvolvimento Arnold|Livre">Desenvolvimento Arnold</option>
                     <option value="Desenvolvimento na Máquina|Máquina">Desenvolvimento na Máquina</option>
                     <option value="Elevação Lateral com Halteres|Livre">Elevação Lateral com Halteres</option>
+
                     <option value="Elevação Lateral na Polia|Polia">Elevação Lateral na Polia</option>
+                    <option value="Elevação Lateral na Máquina|Máquina">Elevação Lateral na Máquina</option>
                     <option value="Elevação Frontal com Halteres|Livre">Elevação Frontal com Halteres</option>
+
+                    <option value="Elevação Frontal na Polia|Polia">Elevação Frontal na Polia</option>
+                    <option value="Elevação Frontal com Anilha|Livre">Elevação Frontal com Anilha</option>
+
                     <option value="Facepull na Polia|Polia">Facepull na Polia</option>
-                    <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres (Trapézio)</option>
+                    <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres</option>
+                    <option value="Encolhimento com Barra|Livre">Encolhimento com Barra</option>
                 </optgroup>
-                <optgroup label="Bíceps">
+
+                <optgroup label="Bíceps & Antebraço">
                     <option value="Rosca Direta com Barra|Livre">Rosca Direta com Barra</option>
                     <option value="Rosca Direta na Polia|Polia">Rosca Direta na Polia</option>
+
                     <option value="Rosca Alternada com Halteres|Livre">Rosca Alternada com Halteres</option>
+                    <option value="Rosca Inclinada com Halteres|Livre">Rosca Inclinada com Halteres</option>
                     <option value="Rosca Martelo com Halteres|Livre">Rosca Martelo com Halteres</option>
+
+                    <option value="Rosca Martelo na Polia (Corda)|Polia">Rosca Martelo na Polia (Corda)</option>
                     <option value="Rosca Scott com Barra EZ|Livre">Rosca Scott com Barra EZ</option>
+
                     <option value="Rosca Scott na Máquina|Máquina">Rosca Scott na Máquina</option>
-
                     <option value="Rosca Concentrada|Livre">Rosca Concentrada</option>
+                    <option value="Rosca Inversa com Barra|Livre">Rosca Inversa (Antebraço)</option>
+                    <option value="Flexão/Extensão de Punho|Livre">Flexão/Extensão de Punho</option>
                 </optgroup>
-                <optgroup label="Tríceps">
-                    <option value="Tríceps Pulley|Polia">Tríceps Pulley (Corda ou Barra)</option>
-                    <option value="Tríceps Testa com Barra|Livre">Tríceps Testa com Barra</option>
-                    <option value="Tríceps Francês com Halter|Livre">Tríceps Francês com Halter</option>
-                    <option value="Tríceps Coice na Polia|Polia">Tríceps Coice na Polia</option>
-                    <option value="Mergulho no Banco|Livre">Mergulho no Banco</option>
-                    <option value="Paralelas|Livre">Paralelas (Dips)</option>
-                </optgroup>
-                <optgroup label="Panturrilha & Abdômen">
-                    <option value="Gêmeos em Pé|Máquina">Gêmeos em Pé</option>
-                    <option value="Gêmeos Sentado|Máquina">Gêmeos Sentado</option>
-                    <option value="Abdominal Infra no Banco/Barra|Livre">Abdominal Infra</option>
-                    <option value="Abdominal Supra|Livre">Abdominal Supra</option>
-                    <option value="Abdominal na Polia|Polia">Abdominal na Polia</option>
 
-                    <option value="Prancha Abdominal|Livre">Prancha Abdominal</option>
+                <optgroup label="Tríceps">
+                    <option value="Tríceps Pulley (Barra Reta/W)|Polia">Tríceps Pulley (Barra Reta/W)</option>
+
+                    <option value="Tríceps Corda|Polia">Tríceps Corda</option>
+                    <option value="Tríceps Testa com Barra EZ|Livre">Tríceps Testa com Barra EZ</option>
+                    <option value="Tríceps Testa com Halteres|Livre">Tríceps Testa com Halteres</option>
+
+                    <option value="Tríceps Francês com Halter|Livre">Tríceps Francês com Halter</option>
+                    <option value="Tríceps Francês na Polia|Polia">Tríceps Francês na Polia</option>
+
+                    <option value="Tríceps Coice na Polia|Polia">Tríceps Coice na Polia</option>
+                    <option value="Supino Fechado|Livre">Supino Fechado</option>
+                    <option value="Mergulho no Banco|Livre">Mergulho no Banco</option>
+
+                    <option value="Paralelas (Dips)|Livre">Paralelas (Dips)</option>
                 </optgroup>
+
+                <optgroup label="Panturrilha & Abdômen">
+                    <option value="Gêmeos em Pé na Máquina|Máquina">Gêmeos em Pé</option>
+
+                    <option value="Gêmeos Sentado (Soleira)|Máquina">Gêmeos Sentado</option>
+                    <option value="Gêmeos no Leg Press|Máquina">Gêmeos no Leg Press</option>
+
+                    <option value="Abdominal Infra no Banco/Barra|Livre">Abdominal Infra (Barra/Banco)</option>
+                    <option value="Abdominal Supra|Livre">Abdominal Supra</option>
+
+                    <option value="Abdominal na Polia (Ajoelhado)|Polia">Abdominal na Polia</option>
+                    <option value="Abdominal na Máquina|Máquina">Abdominal na Máquina</option>
+                    <option value="Prancha Abdominal|Livre">Prancha Abdominal</option>
+                    <option value="Abdominal Infra na Infra/Paralela|Livre">Abdominal na Paralela</option>
+                </optgroup>
+
                 <optgroup label="Cardio">
                     <option value="Esteira (Corrida/Caminhada)|Cardio">Esteira (Corrida/Caminhada)</option>
                     <option value="Bicicleta Ergométrica|Cardio">Bicicleta Ergométrica</option>
                     <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
                     <option value="Remo Seco|Cardio">Remo Seco</option>
-                    <option value="Escada / Staimill|Cardio">Escada</option>
+
+                    <option value="Escada / Stairmaster|Cardio">Escada / Stairmaster</option>
                     <option value="Corda de Pular|Cardio">Corda de Pular</option>
+
+                    <option value="Air Bike|Cardio">Air Bike</option>
+                    <option value="Corrida de Rua|Cardio">Corrida de Rua</option>
                 </optgroup>
             </select>
         </div>
@@ -766,24 +847,25 @@ label {
 
         <div class="field">
             <label>Tipo</label>
-            <select id="exerciseType">
+            <select id="exerciseType" onchange="toggleSetCountVisibility(this.value)">
                 <option value="Livre">Peso livre</option>
                 <option value="Máquina">Máquina</option>
                 <option value="Polia">Polia</option>
-                <option value="Cardio">Cardio (Corrida, Bike, etc)</option>
+                <option value="Cardio">Cardio (Esteira, Bike, etc)</option>
                 <option value="Outro">Outro</option>
             </select>
         </div>
 
-        <div class="field">
-            <label>Número de séries / blocos</label>
+        <!-- ESCONDIDO SE FOR CARDIO -->
+        <div class="field" id="setCountField">
+            <label>Número de séries</label>
             <select id="setCount">
-                <option value="1">1 série/bloco</option>
-                <option value="2">2 séries/blocos</option>
-                <option value="3" selected>3 séries/blocos</option>
-                <option value="4">4 séries/blocos</option>
-                <option value="5">5 séries/blocos</option>
-                <option value="6">6 séries/blocos</option>
+                <option value="1">1 série</option>
+                <option value="2">2 séries</option>
+                <option value="3" selected>3 séries</option>
+                <option value="4">4 séries</option>
+                <option value="5">5 séries</option>
+                <option value="6">6 séries</option>
             </select>
         </div>
 
@@ -1085,6 +1167,8 @@ function openExerciseModal() {
     document.getElementById("exerciseModal").classList.add("show");
     document.getElementById("exerciseLibrarySelect").value = "";
     document.getElementById("exerciseName").value = "";
+    document.getElementById("exerciseType").value = "Livre";
+    toggleSetCountVisibility("Livre");
 }
 
 function closeExerciseModal() {
@@ -1096,6 +1180,16 @@ function selectFromLibrary(val) {
     const [name, type] = val.split("|");
     document.getElementById("exerciseName").value = name;
     document.getElementById("exerciseType").value = type;
+    toggleSetCountVisibility(type);
+}
+
+function toggleSetCountVisibility(type) {
+    const field = document.getElementById("setCountField");
+    if (type === "Cardio") {
+        field.style.display = "none";
+    } else {
+        field.style.display = "block";
+    }
 }
 
 function addExercise() {
@@ -1106,11 +1200,15 @@ function addExercise() {
     if (!name) return showToast("Digite ou selecione um exercício");
     if (!currentWorkout) return showToast("Comece um treino primeiro");
 
+    const isCardio = type === "Cardio";
     const exercise = {
         id: Date.now(),
         name: name,
         type: type,
-        sets: Array.from({ length: count }, () => ({ weight: "", reps: "" }))
+        // Cardio inicializa com 1 único bloco contendo metricas de corrida/esteira
+        sets: isCardio 
+            ? [{ time: "", distance: "", speed: "", incline: "" }] 
+            : Array.from({ length: count }, () => ({ weight: "", reps: "" }))
     };
 
     currentWorkout.exercises.push(exercise);
@@ -1134,23 +1232,58 @@ function renderWorkout() {
         div.className = "exercise";
         const isCardio = exercise.type === "Cardio";
 
-        let setsHTML = exercise.sets.map((set, setIndex) => `
-            <div class="set">
-                <div class="set-title">${isCardio ? 'Sessão' : 'Série'} ${setIndex + 1}</div>
-                <div class="row">
-                    <div>
-                        <label>${isCardio ? 'Tempo (min)' : 'Carga (kg)'}</label>
-                        <input type="number" step="${isCardio ? '1' : '0.5'}" inputmode="decimal" value="${set.weight}" placeholder="0"
-                            onchange="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)">
-                    </div>
-                    <div>
-                        <label>${isCardio ? 'Distância (km)' : 'Repetições'}</label>
-                        <input type="number" step="${isCardio ? '0.1' : '1'}" inputmode="decimal" value="${set.reps}" placeholder="0"
-                            onchange="updateSet(${exerciseIndex}, ${setIndex}, 'reps', this.value)">
+        let setsHTML = "";
+
+        if (isCardio) {
+            // Layout Otimizado para Cardio / Esteira
+            const set = exercise.sets[0] || { time: "", distance: "", speed: "", incline: "" };
+            setsHTML = `
+                <div class="set">
+                    <div class="set-title">Métricas da Sessão</div>
+                    <div class="row-4">
+                        <div>
+                            <label>Tempo (min)</label>
+                            <input type="number" step="1" inputmode="decimal" value="${set.time || ''}" placeholder="0"
+                                onchange="updateCardioSet(${exerciseIndex}, 'time', this.value)">
+                        </div>
+                        <div>
+                            <label>Distância (km)</label>
+                            <input type="number" step="0.1" inputmode="decimal" value="${set.distance || ''}" placeholder="0"
+                                onchange="updateCardioSet(${exerciseIndex}, 'distance', this.value)">
+                        </div>
+                        <div>
+                            <label>Velocidade (km/h)</label>
+                            <input type="number" step="0.1" inputmode="decimal" value="${set.speed || ''}" placeholder="0"
+                                onchange="updateCardioSet(${exerciseIndex}, 'speed', this.value)">
+                        </div>
+                        <div>
+                            <label>Inclinação (%)</label>
+                            <input type="number" step="0.5" inputmode="decimal" value="${set.incline || ''}" placeholder="0"
+                                onchange="updateCardioSet(${exerciseIndex}, 'incline', this.value)">
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join("");
+            `;
+        } else {
+            // Layout Normal de Musculação
+            setsHTML = exercise.sets.map((set, setIndex) => `
+                <div class="set">
+                    <div class="set-title">Série ${setIndex + 1}</div>
+                    <div class="row">
+                        <div>
+                            <label>Carga (kg)</label>
+                            <input type="number" step="0.5" inputmode="decimal" value="${set.weight || ''}" placeholder="0"
+                                onchange="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)">
+                        </div>
+                        <div>
+                            <label>Repetições</label>
+                            <input type="number" step="1" inputmode="decimal" value="${set.reps || ''}" placeholder="0"
+                                onchange="updateSet(${exerciseIndex}, ${setIndex}, 'reps', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+        }
 
         div.innerHTML = `
             <div class="exercise-header">
@@ -1161,8 +1294,7 @@ function renderWorkout() {
                 <button class="danger" onclick="removeExercise(${exerciseIndex})">×</button>
             </div>
             ${setsHTML}
-            <br>
-            <button class="secondary full" onclick="addSet(${exerciseIndex})">+ Adicionar ${isCardio ? 'bloco' : 'série'}</button>
+            ${!isCardio ? `<br><button class="secondary full" onclick="addSet(${exerciseIndex})">+ Adicionar série</button>` : ''}
         `;
         container.appendChild(div);
     });
@@ -1171,6 +1303,15 @@ function renderWorkout() {
 function updateSet(exIdx, setIdx, field, val) {
     if (!currentWorkout) return;
     currentWorkout.exercises[exIdx].sets[setIdx][field] = val;
+    saveActiveWorkout();
+}
+
+function updateCardioSet(exIdx, field, val) {
+    if (!currentWorkout) return;
+    if (!currentWorkout.exercises[exIdx].sets[0]) {
+        currentWorkout.exercises[exIdx].sets[0] = { time: "", distance: "", speed: "", incline: "" };
+    }
+    currentWorkout.exercises[exIdx].sets[0][field] = val;
     saveActiveWorkout();
 }
 
@@ -1259,8 +1400,9 @@ function updateWeeklyCardioSummary() {
             workout.exercises.forEach(exercise => {
                 if (exercise.type === "Cardio") {
                     exercise.sets.forEach(set => {
-                        const time = Number(set.weight) || 0;
-                        const dist = Number(set.reps) || 0;
+                        // Compatibilidade com formato antigo (weight/reps) e novo (time/distance)
+                        const time = Number(set.time !== undefined ? set.time : set.weight) || 0;
+                        const dist = Number(set.distance !== undefined ? set.distance : set.reps) || 0;
                         if (time > 0 || dist > 0) {
                             totalMinutes += time;
                             totalKm += dist;
@@ -1325,9 +1467,24 @@ function renderHistory() {
                     }
                 }
 
-                const setSummary = isCardio 
-                    ? exercise.sets.map(s => `${s.weight || 0} min / ${s.reps || 0} km`).join(", ")
-                    : `${exercise.sets.length} séries · ${formatNumber(volume)} kg`;
+                let setSummary = "";
+                if (isCardio) {
+                    const s = exercise.sets[0] || {};
+                    const t = s.time !== undefined ? s.time : s.weight;
+                    const d = s.distance !== undefined ? s.distance : s.reps;
+                    const sp = s.speed || 0;
+                    const inc = s.incline || 0;
+
+                    let details = [];
+                    if (t) details.push(`${t} min`);
+                    if (d) details.push(`${d} km`);
+                    if (sp) details.push(`${sp} km/h`);
+                    if (inc) details.push(`${inc}% inc.`);
+
+                    setSummary = details.length > 0 ? details.join(" · ") : "Sessão registrada";
+                } else {
+                    setSummary = `${exercise.sets.length} séries · ${formatNumber(volume)} kg`;
+                }
 
                 return `
                     <div style="padding:10px 0; border-top:1px solid var(--border);">
@@ -1351,6 +1508,7 @@ function renderHistory() {
 
 function populateExerciseSelect() {
     const select = document.getElementById("chartExerciseSelect");
+    const currentValue = select.value;
     select.innerHTML = '<option value="">Selecione um exercício...</option>';
 
     const names = new Set();
@@ -1364,6 +1522,8 @@ function populateExerciseSelect() {
         opt.textContent = name;
         select.appendChild(opt);
     });
+
+    select.value = currentValue;
 }
 
 function renderProgressChart() {
