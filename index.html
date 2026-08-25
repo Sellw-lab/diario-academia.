@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<title>Diário de Treino</title>
+<title>Diário de Treino & Suplementação</title>
 
 <!-- Chart.js para gráficos de evolução -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -169,6 +169,42 @@ label {
     .row-4 {
         grid-template-columns: repeat(4, 1fr);
     }
+}
+
+/* Perfil e Foto */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.profile-pic-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    background: var(--card2);
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-btn {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .exercise {
@@ -469,13 +505,17 @@ label {
         </div>
     </div>
 
-    <!-- META DE CREATINA NA TELA INICIAL -->
-    <div class="card" style="display: flex; align-items: center; justify-content: space-between;">
-        <div>
-            <h3 style="margin: 0; font-size: 16px;">🧪 Meta Diária de Creatina</h3>
-            <span style="color: var(--muted); font-size: 12px;">Dose diária ideal (0,07g/kg)</span>
+    <!-- META E CHECKLIST DE CREATINA NA TELA INICIAL -->
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div>
+                <h3 style="margin: 0; font-size: 16px;">🧪 Suplementação de Creatina</h3>
+                <span style="color: var(--muted); font-size: 12px;">Dose recomendada (0,07g/kg)</span>
+            </div>
+            <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
         </div>
-        <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
+        <p id="creatineStatusText" style="margin-bottom: 12px; font-size: 13px; color: var(--muted);">Status de hoje: Pendente</p>
+        <button id="homeCreatineBtn" class="full secondary" onclick="toggleCreatine()">Marcar como Tomada</button>
     </div>
 
     <div class="card">
@@ -606,6 +646,19 @@ label {
 <section id="profile" class="page">
 
     <div class="card">
+        <h2>👤 Perfil & Foto</h2>
+        <div class="profile-header">
+            <div class="profile-pic-container">
+                <img id="profilePicDisplay" class="profile-pic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%2394a3b8' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Foto de Perfil">
+            </div>
+            <div>
+                <label for="picInput" class="upload-btn">Alterar Foto de Perfil</label>
+                <input type="file" id="picInput" class="file-input" accept="image/*" onchange="handleProfilePicUpload(event)">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
         <h2>⚙️ Configurações & Suplementação</h2>
 
         <div class="field">
@@ -640,7 +693,7 @@ label {
     <div class="card">
         <h3>Diário de Treino</h3>
         <p style="color:var(--muted);font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
-        <p style="color:var(--muted);font-size:13px">Versão 3.3 (Com Módulo de Cardio Otimizado)</p>
+        <p style="color:var(--muted);font-size:13px">Versão 3.4 (Com Fotos e Checklist de Creatina)</p>
     </div>
 
 </section>
@@ -883,12 +936,18 @@ label {
 let data = JSON.parse(localStorage.getItem("diarioTreino")) || {
     workouts: [],
     water: {},
+    creatineTaken: {},
     settings: {
         weight: "",
         waterTarget: 3000,
-        creatineTarget: 0
+        creatineTarget: 0,
+        profilePic: ""
     }
 };
+
+// Garante objetos padrões caso venham de versões antigas
+if (!data.creatineTaken) data.creatineTaken = {};
+if (!data.settings) data.settings = {};
 
 let currentWorkout = null;
 let timerInterval = null;
@@ -901,6 +960,7 @@ let chartInstance = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     updateHeaderDate();
+    checkDailyReset();
     loadSettings();
     updateWater();
     renderHistory();
@@ -916,6 +976,11 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.serviceWorker.register(swUrl).catch(() => {});
     }
 });
+
+function checkDailyReset() {
+    // Atualização do estado diário da creatina e água no início do dia
+    updateHomeCreatineDisplay();
+}
 
 
 /* =========================
@@ -998,7 +1063,7 @@ function addWater(amount) {
     const current = getWaterToday();
 
     if (current >= target) {
-        showToast("Meta já atingida hoje! 🛑");
+        showToast("Meta de água já atingida hoje! 🛑");
         return;
     }
 
@@ -1006,6 +1071,10 @@ function addWater(amount) {
     if (!data.water[key]) data.water[key] = 0;
 
     data.water[key] += amount;
+    if (data.water[key] > target) {
+        data.water[key] = target;
+    }
+
     saveData();
     updateWater();
 
@@ -1056,8 +1125,22 @@ function updateWater() {
 
 
 /* =========================
-   CONFIGURAÇÕES & CREATINA
+   PERFIL, CONFIGURAÇÕES & CREATINA
 ========================= */
+
+function handleProfilePicUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            data.settings.profilePic = e.target.result;
+            saveData();
+            loadSettings();
+            showToast("Foto alterada com sucesso ✓");
+        };
+        reader.readAsDataURL(file);
+    }
+}
 
 function calculateSuggestedMetrics() {
     const weight = Number(document.getElementById("userWeight").value);
@@ -1080,6 +1163,11 @@ function calculateSuggestedMetrics() {
 function loadSettings() {
     document.getElementById("userWeight").value = data.settings.weight || "";
     document.getElementById("waterTarget").value = data.settings.waterTarget || 3000;
+    
+    if (data.settings.profilePic) {
+        document.getElementById("profilePicDisplay").src = data.settings.profilePic;
+    }
+
     calculateSuggestedMetrics();
     updateHomeCreatineDisplay();
 }
@@ -1096,9 +1184,36 @@ function saveSettings() {
     showToast("Configurações salvas ✓");
 }
 
+function toggleCreatine() {
+    const key = todayKey();
+    data.creatineTaken[key] = !data.creatineTaken[key];
+    saveData();
+    updateHomeCreatineDisplay();
+    showToast(data.creatineTaken[key] ? "Creatina marcada como tomada! 🧪" : "Creatina desmarcada");
+}
+
 function updateHomeCreatineDisplay() {
     const creatineVal = data.settings.creatineTarget || (data.settings.weight ? (Number(data.settings.weight) * 0.07).toFixed(1) : 0);
     document.getElementById("homeCreatineTarget").textContent = `${creatineVal}g`;
+
+    const key = todayKey();
+    const isTaken = !!data.creatineTaken[key];
+    const btn = document.getElementById("homeCreatineBtn");
+    const statusText = document.getElementById("creatineStatusText");
+
+    if (isTaken) {
+        btn.classList.remove("secondary");
+        btn.classList.add("green");
+        btn.textContent = "✓ Creatina Tomada Hoje";
+        statusText.textContent = "Status de hoje: Concluído 🎉";
+        statusText.style.color = "var(--green)";
+    } else {
+        btn.classList.remove("green");
+        btn.classList.add("secondary");
+        btn.textContent = "Marcar como Tomada";
+        statusText.textContent = "Status de hoje: Pendente";
+        statusText.style.color = "var(--muted)";
+    }
 }
 
 
@@ -1205,7 +1320,6 @@ function addExercise() {
         id: Date.now(),
         name: name,
         type: type,
-        // Cardio inicializa com 1 único bloco contendo metricas de corrida/esteira
         sets: isCardio 
             ? [{ time: "", distance: "", speed: "", incline: "" }] 
             : Array.from({ length: count }, () => ({ weight: "", reps: "" }))
@@ -1235,7 +1349,6 @@ function renderWorkout() {
         let setsHTML = "";
 
         if (isCardio) {
-            // Layout Otimizado para Cardio / Esteira
             const set = exercise.sets[0] || { time: "", distance: "", speed: "", incline: "" };
             setsHTML = `
                 <div class="set">
@@ -1265,7 +1378,6 @@ function renderWorkout() {
                 </div>
             `;
         } else {
-            // Layout Normal de Musculação
             setsHTML = exercise.sets.map((set, setIndex) => `
                 <div class="set">
                     <div class="set-title">Série ${setIndex + 1}</div>
@@ -1400,7 +1512,6 @@ function updateWeeklyCardioSummary() {
             workout.exercises.forEach(exercise => {
                 if (exercise.type === "Cardio") {
                     exercise.sets.forEach(set => {
-                        // Compatibilidade com formato antigo (weight/reps) e novo (time/distance)
                         const time = Number(set.time !== undefined ? set.time : set.weight) || 0;
                         const dist = Number(set.distance !== undefined ? set.distance : set.reps) || 0;
                         if (time > 0 || dist > 0) {
@@ -1679,7 +1790,7 @@ function clearAllData() {
     if (prompt('Digite "APAGAR" para excluir todos os seus dados.') !== "APAGAR") return;
     localStorage.removeItem("diarioTreino");
     localStorage.removeItem("activeWorkout");
-    data = { workouts: [], water: {}, settings: { weight: "", waterTarget: 3000, creatineTarget: 0 } };
+    data = { workouts: [], water: {}, creatineTaken: {}, settings: { weight: "", waterTarget: 3000, creatineTarget: 0, profilePic: "" } };
     currentWorkout = null;
     loadSettings();
     updateWater();
