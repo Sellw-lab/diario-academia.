@@ -2,1522 +2,1843 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Meu Treino</title>
+<title>Diário de Treino</title>
 
 <style>
+:root {
+    --bg: #0b0b0f;
+    --card: #15151c;
+    --card2: #1d1d26;
+    --text: #ffffff;
+    --muted: #9999a8;
+    --accent: #7c5cff;
+    --green: #31d158;
+    --red: #ff453a;
+    --border: #292936;
+}
 
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
-    background: #090909;
-    color: #ffffff;
-    min-height: 100vh;
-    padding-bottom: 40px;
+    padding-bottom: 90px;
 }
 
-.container {
-    width: 100%;
-    max-width: 600px;
-    margin: auto;
-    padding: 20px 16px 40px;
+header {
+    padding: 25px 18px 15px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(11,11,15,.94);
+    backdrop-filter: blur(15px);
 }
 
-/* TOPO */
-
-.topo {
-    padding-top: 12px;
-    margin-bottom: 25px;
+header h1 {
+    margin: 0;
+    font-size: 27px;
 }
 
-.pequeno {
-    color: #8e8e93;
+header p {
+    margin: 5px 0 0;
+    color: var(--muted);
     font-size: 14px;
-    margin-bottom: 5px;
 }
 
-.titulo {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -1px;
+main {
+    padding: 10px 15px;
+    max-width: 700px;
+    margin: auto;
 }
 
-.subtitulo {
-    color: #8e8e93;
-    margin-top: 5px;
+.page {
+    display: none;
 }
 
-/* CARDS */
+.page.active {
+    display: block;
+}
 
 .card {
-    background: #151515;
-    border: 1px solid #242424;
-    border-radius: 22px;
-    padding: 18px;
-    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 17px;
+    margin-bottom: 14px;
 }
 
-/* RESUMO */
-
-.resumo {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 18px;
+.card h2,
+.card h3 {
+    margin-top: 0;
 }
 
-.resumo-item {
-    background: #1d1d1d;
-    border-radius: 15px;
-    padding: 13px 5px;
-    text-align: center;
+button,
+select,
+input {
+    font: inherit;
 }
 
-.resumo-numero {
-    font-size: 20px;
-    font-weight: 800;
+button {
+    border: 0;
+    border-radius: 13px;
+    padding: 13px 15px;
+    color: white;
+    background: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
 }
 
-.resumo-label {
-    font-size: 11px;
-    color: #8e8e93;
-    margin-top: 4px;
+button:active {
+    transform: scale(.97);
 }
 
-/* TÍTULOS */
-
-.titulo-secao {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
+button.secondary {
+    background: var(--card2);
+    border: 1px solid var(--border);
 }
 
-.titulo-secao h2 {
-    font-size: 20px;
+button.danger {
+    background: #3a1717;
+    color: #ff6b63;
 }
 
-.icone {
-    font-size: 22px;
+button.green {
+    background: #17351f;
+    color: var(--green);
 }
 
-/* INPUTS */
-
-label {
-    display: block;
-    color: #a8a8ad;
-    font-size: 13px;
-    margin-bottom: 7px;
-    margin-top: 14px;
+.full {
+    width: 100%;
 }
 
 input,
 select {
     width: 100%;
-    background: #202020;
-    color: #ffffff;
-    border: 1px solid #303030;
-    border-radius: 13px;
-    padding: 14px;
-    font-size: 16px;
+    background: var(--card2);
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px;
     outline: none;
 }
 
 input:focus,
 select:focus {
-    border-color: #666;
+    border-color: var(--accent);
 }
 
-/* BOTÕES */
-
-button {
-    border: none;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 13px;
-    padding: 13px 15px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 6px;
 }
 
-.btn-principal {
-    width: 100%;
-    background: #ffffff;
-    color: #000000;
-    margin-top: 15px;
+.field {
+    margin-bottom: 12px;
 }
 
-.btn-principal:active {
-    transform: scale(.98);
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
-.btn-salvar {
-    width: 100%;
-    background: #ffffff;
-    color: #000000;
-    font-size: 17px;
-    padding: 17px;
-    margin: 5px 0 25px;
-    border-radius: 17px;
+.row3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
 }
 
-.btn-salvar:active {
-    transform: scale(.98);
-}
-
-/* EXERCÍCIO */
-
-.exercicio {
-    background: #1b1b1b;
-    border: 1px solid #292929;
+.exercise {
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 18px;
     padding: 15px;
-    margin-top: 14px;
+    margin-bottom: 12px;
 }
 
-.exercicio-topo {
+.exercise-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 13px;
+    align-items: flex-start;
+    gap: 10px;
 }
 
-.exercicio-nome {
+.exercise-name {
     font-size: 17px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
-.btn-excluir {
-    background: #292929;
-    color: #ff5c5c;
-    padding: 7px 9px;
-    font-size: 12px;
-}
-
-.cabecalho-series {
-    display: grid;
-    grid-template-columns: 35px 1fr 1fr 32px;
-    gap: 7px;
-    color: #777;
+.exercise-type {
+    display: inline-block;
     font-size: 11px;
-    margin-bottom: 7px;
+    color: var(--muted);
+    margin-top: 4px;
 }
 
-.serie {
-    display: grid;
-    grid-template-columns: 35px 1fr 1fr 32px;
-    gap: 7px;
-    align-items: center;
+.set {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.set-title {
+    color: var(--muted);
+    font-size: 12px;
     margin-bottom: 8px;
 }
 
-.numero-serie {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-    background: #292929;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 800;
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
 }
 
-.serie input {
-    padding: 9px;
-    font-size: 14px;
+.stat {
+    background: var(--card2);
+    padding: 13px 8px;
+    border-radius: 13px;
+    text-align: center;
 }
 
-.btn-remover-serie {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    background: #292929;
-    color: #888;
+.stat strong {
+    display: block;
+    font-size: 19px;
 }
 
-.btn-adicionar-serie {
-    width: 100%;
-    background: #242424;
-    color: #ffffff;
-    margin-top: 5px;
-    font-size: 13px;
+.stat span {
+    font-size: 11px;
+    color: var(--muted);
 }
 
-/* CARDIO */
-
-.cardio-box {
-    background: #1b1b1b;
-    border-radius: 17px;
-    padding: 14px;
-    margin-top: 12px;
-}
-
-/* HISTÓRICO */
-
-.historico-card {
-    background: #151515;
-    border: 1px solid #242424;
-    border-radius: 18px;
-    margin-bottom: 12px;
+.progress {
+    height: 7px;
+    background: #292936;
+    border-radius: 10px;
     overflow: hidden;
+    margin-top: 8px;
 }
 
-.historico-cabecalho {
-    padding: 16px;
-    cursor: pointer;
+.progress div {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 10px;
 }
 
-.historico-data {
-    color: #8e8e93;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.historico-nome {
-    font-size: 18px;
+.water-number {
+    font-size: 42px;
     font-weight: 800;
-    margin-top: 5px;
+    text-align: center;
 }
 
-.historico-resumo {
-    color: #8e8e93;
-    font-size: 13px;
-    margin-top: 7px;
+.water-target {
+    text-align: center;
+    color: var(--muted);
 }
 
-.historico-conteudo {
-    display: none;
-    padding: 0 16px 16px;
-    border-top: 1px solid #252525;
+.water-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 15px;
 }
 
-.historico-conteudo.aberto {
+.history-item {
+    background: var(--card2);
+    border-radius: 14px;
+    padding: 13px;
+    margin-bottom: 9px;
+}
+
+.history-item strong {
     display: block;
 }
 
-.historico-exercicio {
-    padding-top: 15px;
+.history-item small {
+    color: var(--muted);
 }
 
-.historico-exercicio strong {
-    font-size: 15px;
+.badge {
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    background: #282638;
+    color: #c5bcff;
 }
 
-.historico-serie {
-    color: #a8a8ad;
-    margin-top: 7px;
-    font-size: 14px;
+.improved {
+    color: var(--green);
 }
 
-.historico-serie strong {
+.worse {
+    color: var(--red);
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 76px;
+    background: rgba(21,21,28,.96);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 20;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-btn {
+    background: transparent;
+    border-radius: 0;
+    color: var(--muted);
+    padding: 8px 2px;
+    font-size: 11px;
+}
+
+.nav-btn span {
+    display: block;
+    font-size: 22px;
+    margin-bottom: 2px;
+}
+
+.nav-btn.active {
     color: white;
 }
 
-.historico-cardio {
-    background: #1d1d1d;
-    border-radius: 12px;
-    padding: 12px;
-    margin-top: 15px;
-    font-size: 13px;
-    color: #b5b5b5;
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.75);
+    display: none;
+    align-items: flex-end;
+    z-index: 50;
 }
 
-.btn-excluir-treino {
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--card);
     width: 100%;
-    margin-top: 18px;
-    background: #251515;
-    color: #ff5c5c;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 25px 25px 0 0;
+    padding: 20px;
+    padding-bottom: 35px;
 }
 
-/* VAZIO */
-
-.vazio {
-    text-align: center;
-    color: #777;
-    padding: 25px 10px;
-    font-size: 14px;
+.modal-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* SELETOR */
-
-select {
-    appearance: none;
+.close {
+    background: var(--card2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
 }
 
-/* RESPONSIVO */
+.toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: white;
+    color: black;
+    padding: 12px 17px;
+    border-radius: 12px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: .3s;
+    z-index: 100;
+}
 
-@media (max-width: 380px) {
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
 
-    .titulo {
-        font-size: 30px;
+@media (min-width: 700px) {
+    .bottom-nav {
+        max-width: 700px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 18px 18px 0 0;
     }
-
-    .container {
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<header>
+    <h1>🏋️ Diário de Treino</h1>
+    <p id="headerDate"></p>
+</header>
 
-    <!-- TOPO -->
+<main>
 
-    <div class="topo">
-
-        <div class="pequeno">
-            DIÁRIO DE ACADEMIA
-        </div>
-
-        <div class="titulo">
-            Meu Treino 🏋️
-        </div>
-
-        <div class="subtitulo">
-            Registre sua evolução.
-        </div>
-
-    </div>
-
-
-    <!-- NOVO TREINO -->
+<!-- INÍCIO -->
+<section id="home" class="page active">
 
     <div class="card">
+        <h2>Resumo de hoje</h2>
 
-        <div class="titulo-secao">
+        <div class="stats">
+            <div class="stat">
+                <strong id="todayExercises">0</strong>
+                <span>Exercícios</span>
+            </div>
 
-            <h2>🔥 Novo treino</h2>
+            <div class="stat">
+                <strong id="todaySets">0</strong>
+                <span>Séries</span>
+            </div>
 
+            <div class="stat">
+                <strong id="todayVolume">0</strong>
+                <span>Volume kg</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💧 Água</h2>
+
+        <div class="water-number">
+            <span id="waterCurrent">0</span> ml
         </div>
 
+        <div class="water-target">
+            Meta: <span id="waterTargetText">3000</span> ml
+        </div>
 
-        <label>Data</label>
+        <div class="progress">
+            <div id="waterProgress" style="width:0%"></div>
+        </div>
 
-        <input
-            type="date"
-            id="dataTreino"
-        >
+        <div class="water-buttons">
+            <button onclick="addWater(250)">+250</button>
+            <button onclick="addWater(500)">+500</button>
+            <button onclick="addWater(1000)">+1000</button>
+        </div>
 
+        <br>
 
-        <label>Nome do treino</label>
-
-        <input
-            type="text"
-            id="nomeTreino"
-            placeholder="Ex: Peito + Tríceps"
-        >
-
-
-        <label>Adicionar exercício</label>
-
-        <select id="exercicioSelect">
-
-            <option value="">
-                Escolha um exercício
-            </option>
-
-            <optgroup label="Peito">
-
-                <option>Supino reto</option>
-                <option>Supino inclinado</option>
-                <option>Crucifixo máquina</option>
-                <option>Crossover</option>
-                <option>Peck deck</option>
-
-            </optgroup>
-
-            <optgroup label="Costas">
-
-                <option>Puxada frontal</option>
-                <option>Remada baixa</option>
-                <option>Remada cavalinho</option>
-                <option>Remada curvada</option>
-                <option>Pulldown</option>
-
-            </optgroup>
-
-            <optgroup label="Ombros">
-
-                <option>Desenvolvimento</option>
-                <option>Elevação lateral</option>
-                <option>Elevação frontal</option>
-                <option>Crucifixo inverso</option>
-
-            </optgroup>
-
-            <optgroup label="Bíceps">
-
-                <option>Rosca direta</option>
-                <option>Rosca alternada</option>
-                <option>Rosca martelo</option>
-                <option>Rosca Scott</option>
-
-            </optgroup>
-
-            <optgroup label="Tríceps">
-
-                <option>Tríceps pulley</option>
-                <option>Tríceps corda</option>
-                <option>Tríceps francês</option>
-                <option>Tríceps testa</option>
-
-            </optgroup>
-
-            <optgroup label="Pernas">
-
-                <option>Agachamento</option>
-                <option>Leg press</option>
-                <option>Cadeira extensora</option>
-                <option>Mesa flexora</option>
-                <option>Cadeira flexora</option>
-                <option>Panturrilha</option>
-
-            </optgroup>
-
-        </select>
-
-
-        <button
-            class="btn-principal"
-            onclick="adicionarExercicio()"
-        >
-            ＋ Adicionar exercício
+        <button class="secondary full" onclick="resetWater()">
+            Zerar água
         </button>
-
-
-        <div id="exerciciosContainer"></div>
-
     </div>
-
-
-    <!-- CARDIO -->
 
     <div class="card">
+        <h2>Treino</h2>
 
-        <div class="titulo-secao">
-
-            <h2>🏃 Cardio</h2>
-
+        <div class="field">
+            <label>Nome do treino</label>
+            <input id="workoutName" placeholder="Ex: Peito e Tríceps">
         </div>
 
-
-        <div class="cardio-box">
-
-            <label>Tipo</label>
-
-            <select id="tipoCardio">
-
-                <option value="">
-                    Não fiz cardio
-                </option>
-
-                <option>Esteira</option>
-                <option>Bicicleta</option>
-                <option>Elíptico</option>
-                <option>Caminhada</option>
-                <option>Corrida</option>
-
-            </select>
-
-
-            <label>Tempo (min)</label>
-
-            <input
-                type="number"
-                id="tempoCardio"
-                placeholder="20"
-                min="0"
-            >
-
-
-            <label>Velocidade (km/h)</label>
-
-            <input
-                type="number"
-                id="velocidadeCardio"
-                placeholder="5.0"
-                step="0.1"
-                min="0"
-            >
-
-
-            <label>Distância (km)</label>
-
-            <input
-                type="number"
-                id="distanciaCardio"
-                placeholder="1.6"
-                step="0.1"
-                min="0"
-            >
-
-        </div>
-
+        <button class="full" onclick="startWorkout()">
+            + Começar treino
+        </button>
     </div>
 
+</section>
 
-    <!-- RESUMO DO TREINO -->
 
-    <div
-        class="card"
-        id="resumoAtual"
-    >
+<!-- TREINO -->
+<section id="workout" class="page">
 
-        <div class="titulo-secao">
-
-            <h2>📊 Resumo</h2>
-
+    <div class="card">
+        <div class="field">
+            <label>Treino atual</label>
+            <input id="activeWorkoutName" placeholder="Nome do treino">
         </div>
 
-        <div class="resumo">
-
-            <div class="resumo-item">
-
-                <div
-                    class="resumo-numero"
-                    id="totalExercicios"
-                >
-                    0
-                </div>
-
-                <div class="resumo-label">
-                    Exercícios
-                </div>
-
-            </div>
-
-
-            <div class="resumo-item">
-
-                <div
-                    class="resumo-numero"
-                    id="totalSeries"
-                >
-                    0
-                </div>
-
-                <div class="resumo-label">
-                    Séries
-                </div>
-
-            </div>
-
-
-            <div class="resumo-item">
-
-                <div
-                    class="resumo-numero"
-                    id="totalCardio"
-                >
-                    0
-                </div>
-
-                <div class="resumo-label">
-                    Cardio
-                </div>
-
-            </div>
-
-        </div>
-
+        <button class="full green" onclick="finishWorkout()">
+            ✓ Finalizar treino
+        </button>
     </div>
 
+    <div id="exerciseList"></div>
 
-    <!-- SALVAR -->
-
-    <button
-        class="btn-salvar"
-        onclick="salvarTreino()"
-    >
-        💾 Finalizar treino
+    <button class="full" onclick="openExerciseModal()">
+        + Adicionar exercício
     </button>
 
+    <br><br>
 
-    <!-- HISTÓRICO -->
+    <button class="secondary full" onclick="cancelWorkout()">
+        Cancelar treino
+    </button>
+
+</section>
+
+
+<!-- HISTÓRICO -->
+<section id="history" class="page">
 
     <div class="card">
-
-        <div class="titulo-secao">
-
-            <h2>📊 Histórico</h2>
-
-        </div>
-
-        <div id="historico"></div>
-
+        <h2>📈 Histórico</h2>
+        <p style="color:var(--muted)">
+            Veja seus treinos anteriores e acompanhe sua evolução.
+        </p>
     </div>
 
+    <div id="historyList"></div>
+
+</section>
+
+
+<!-- PERFIL -->
+<section id="profile" class="page">
+
+    <div class="card">
+        <h2>⚙️ Configurações</h2>
+
+        <div class="field">
+            <label>Seu peso atual (kg)</label>
+            <input id="userWeight" type="number" step="0.1" placeholder="72">
+        </div>
+
+        <div class="field">
+            <label>Meta diária de água (ml)</label>
+            <input id="waterTarget" type="number" placeholder="3000">
+        </div>
+
+        <button class="full" onclick="saveSettings()">
+            Salvar configurações
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💾 Dados</h2>
+
+        <button class="secondary full" onclick="exportData()">
+            Exportar meus dados
+        </button>
+
+        <br><br>
+
+        <button class="secondary full" onclick="importData()">
+            Importar dados
+        </button>
+
+        <br><br>
+
+        <button class="danger full" onclick="clearAllData()">
+            Apagar todos os dados
+        </button>
+    </div>
+
+    <div class="card">
+        <h3>Diário de Treino</h3>
+        <p style="color:var(--muted);font-size:13px">
+            Seus dados ficam armazenados localmente no navegador.
+        </p>
+        <p style="color:var(--muted);font-size:13px">
+            Versão 2.0
+        </p>
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- MENU -->
+<nav class="bottom-nav">
+
+    <button class="nav-btn active" onclick="showPage('home', this)">
+        <span>🏠</span>
+        Início
+    </button>
+
+    <button class="nav-btn" onclick="showPage('workout', this)">
+        <span>🏋️</span>
+        Treino
+    </button>
+
+    <button class="nav-btn" onclick="showPage('history', this)">
+        <span>📊</span>
+        Histórico
+    </button>
+
+    <button class="nav-btn" onclick="showPage('profile', this)">
+        <span>⚙️</span>
+        Perfil
+    </button>
+
+</nav>
+
+
+<!-- MODAL EXERCÍCIO -->
+<div id="exerciseModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-title">
+            <h2>Adicionar exercício</h2>
+
+            <button class="close" onclick="closeExerciseModal()">
+                ×
+            </button>
+        </div>
+
+        <div class="field">
+            <label>Nome do exercício</label>
+
+            <input
+                id="exerciseName"
+                placeholder="Ex: Supino inclinado"
+            >
+        </div>
+
+        <div class="field">
+            <label>Tipo</label>
+
+            <select id="exerciseType">
+                <option value="Livre">Peso livre</option>
+                <option value="Máquina">Máquina</option>
+                <option value="Polia">Polia</option>
+                <option value="Cardio">Cardio</option>
+                <option value="Outro">Outro</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Número de séries</label>
+
+            <select id="setCount">
+                <option value="1">1 série</option>
+                <option value="2">2 séries</option>
+                <option value="3" selected>3 séries</option>
+                <option value="4">4 séries</option>
+                <option value="5">5 séries</option>
+                <option value="6">6 séries</option>
+                <option value="7">7 séries</option>
+                <option value="8">8 séries</option>
+            </select>
+        </div>
+
+        <button class="full" onclick="addExercise()">
+            Adicionar
+        </button>
+
+    </div>
 </div>
+
+
+<div id="toast" class="toast"></div>
 
 
 <script>
 
-let exerciciosAtuais = [];
+/* =========================
+   BANCO DE DADOS
+========================= */
+
+let data = JSON.parse(
+    localStorage.getItem("diarioTreino")
+) || {
+    workouts: [],
+    water: {},
+    settings: {
+        weight: "",
+        waterTarget: 3000
+    }
+};
+
+let currentWorkout = null;
 
 
-/* DATA ATUAL */
+/* =========================
+   INICIALIZAÇÃO
+========================= */
 
-const hoje = new Date();
+document.addEventListener("DOMContentLoaded", () => {
 
-document.getElementById("dataTreino").value =
-    hoje.toISOString().split("T")[0];
+    updateHeaderDate();
 
+    loadSettings();
 
-/* ADICIONAR EXERCÍCIO */
+    updateWater();
 
-function adicionarExercicio() {
+    renderHistory();
 
-    const select =
-        document.getElementById("exercicioSelect");
-
-    const nome = select.value;
+});
 
 
-    if (!nome) {
+/* =========================
+   NAVEGAÇÃO
+========================= */
 
-        alert("Escolha um exercício.");
+function showPage(page, button) {
 
-        return;
+    document.querySelectorAll(".page")
+        .forEach(p => p.classList.remove("active"));
 
+    document.getElementById(page)
+        .classList.add("active");
+
+    document.querySelectorAll(".nav-btn")
+        .forEach(b => b.classList.remove("active"));
+
+    if (button) {
+        button.classList.add("active");
     }
 
+    if (page === "history") {
+        renderHistory();
+    }
 
-    const existe =
-        exerciciosAtuais.find(
-            e => e.nome === nome
+    if (page === "home") {
+        updateTodaySummary();
+    }
+}
+
+
+/* =========================
+   DATA
+========================= */
+
+function todayKey() {
+
+    const d = new Date();
+
+    return d.getFullYear() +
+        "-" +
+        String(d.getMonth()+1).padStart(2,"0") +
+        "-" +
+        String(d.getDate()).padStart(2,"0");
+}
+
+
+function updateHeaderDate() {
+
+    const date = new Date();
+
+    document.getElementById("headerDate")
+        .textContent = date.toLocaleDateString(
+            "pt-BR",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long"
+            }
         );
+}
 
 
-    if (existe) {
+/* =========================
+   STORAGE
+========================= */
 
-        alert("Esse exercício já está no treino.");
+function saveData() {
 
-        return;
+    localStorage.setItem(
+        "diarioTreino",
+        JSON.stringify(data)
+    );
+}
 
+
+/* =========================
+   ÁGUA
+========================= */
+
+function getWaterToday() {
+
+    const key = todayKey();
+
+    return data.water[key] || 0;
+}
+
+
+function addWater(amount) {
+
+    const key = todayKey();
+
+    if (!data.water[key]) {
+        data.water[key] = 0;
     }
 
+    data.water[key] += amount;
 
-    exerciciosAtuais.push({
+    saveData();
+
+    updateWater();
+
+    showToast("Água adicionada 💧");
+}
+
+
+function resetWater() {
+
+    const key = todayKey();
+
+    data.water[key] = 0;
+
+    saveData();
+
+    updateWater();
+
+    showToast("Água zerada");
+}
+
+
+function updateWater() {
+
+    const current = getWaterToday();
+
+    const target =
+        Number(data.settings.waterTarget) || 3000;
+
+    document.getElementById("waterCurrent")
+        .textContent = current;
+
+    document.getElementById("waterTargetText")
+        .textContent = target;
+
+    let percent =
+        (current / target) * 100;
+
+    percent = Math.min(percent, 100);
+
+    document.getElementById("waterProgress")
+        .style.width = percent + "%";
+}
+
+
+/* =========================
+   CONFIGURAÇÕES
+========================= */
+
+function loadSettings() {
+
+    document.getElementById("userWeight")
+        .value = data.settings.weight || "";
+
+    document.getElementById("waterTarget")
+        .value = data.settings.waterTarget || 3000;
+}
+
+
+function saveSettings() {
+
+    data.settings.weight =
+        document.getElementById("userWeight").value;
+
+    data.settings.waterTarget =
+        Number(
+            document.getElementById("waterTarget").value
+        ) || 3000;
+
+    saveData();
+
+    updateWater();
+
+    showToast("Configurações salvas ✓");
+}
+
+
+/* =========================
+   COMEÇAR TREINO
+========================= */
+
+function startWorkout() {
+
+    const name =
+        document.getElementById("workoutName").value.trim();
+
+    currentWorkout = {
 
         id: Date.now(),
 
-        nome: nome,
+        name: name || "Treino",
 
-        series: [
+        date: new Date().toISOString(),
 
-            {
-                peso: "",
-                repeticoes: ""
-            }
+        exercises: []
 
-        ]
+    };
 
-    });
+    document.getElementById("activeWorkoutName")
+        .value = currentWorkout.name;
 
+    renderWorkout();
 
-    select.value = "";
+    showPage("workout");
 
-    renderizar();
-
+    showToast("Treino iniciado 🏋️");
 }
 
 
-/* RENDERIZAR */
+/* =========================
+   MODAL
+========================= */
 
-function renderizar() {
+function openExerciseModal() {
 
-    const container =
-        document.getElementById(
-            "exerciciosContainer"
+    document.getElementById("exerciseModal")
+        .classList.add("show");
+
+    document.getElementById("exerciseName")
+        .focus();
+}
+
+
+function closeExerciseModal() {
+
+    document.getElementById("exerciseModal")
+        .classList.remove("show");
+}
+
+
+/* =========================
+   ADICIONAR EXERCÍCIO
+========================= */
+
+function addExercise() {
+
+    const name =
+        document.getElementById("exerciseName")
+        .value.trim();
+
+    const type =
+        document.getElementById("exerciseType")
+        .value;
+
+    const count =
+        Number(
+            document.getElementById("setCount")
+            .value
         );
 
+    if (!name) {
 
-    container.innerHTML = "";
-
-
-    exerciciosAtuais.forEach(
-        (exercicio, index) => {
-
-            const div =
-                document.createElement("div");
-
-            div.className = "exercicio";
-
-
-            let html = `
-
-                <div class="exercicio-topo">
-
-                    <div class="exercicio-nome">
-
-                        🏋️ ${exercicio.nome}
-
-                    </div>
-
-                    <button
-                        class="btn-excluir"
-                        onclick="removerExercicio(${index})"
-                    >
-                        Excluir
-                    </button>
-
-                </div>
-
-                <div class="cabecalho-series">
-
-                    <div>SÉRIE</div>
-
-                    <div>PESO</div>
-
-                    <div>REPS</div>
-
-                    <div></div>
-
-                </div>
-
-            `;
-
-
-            exercicio.series.forEach(
-                (serie, serieIndex) => {
-
-                    html += `
-
-                        <div class="serie">
-
-                            <div class="numero-serie">
-                                ${serieIndex + 1}
-                            </div>
-
-                            <input
-                                type="number"
-                                placeholder="kg"
-                                value="${serie.peso}"
-                                min="0"
-                                step="0.1"
-                                onchange="
-                                alterarPeso(
-                                    ${index},
-                                    ${serieIndex},
-                                    this.value
-                                )"
-                            >
-
-                            <input
-                                type="number"
-                                placeholder="reps"
-                                value="${serie.repeticoes}"
-                                min="0"
-                                onchange="
-                                alterarReps(
-                                    ${index},
-                                    ${serieIndex},
-                                    this.value
-                                )"
-                            >
-
-                            <button
-                                class="btn-remover-serie"
-                                onclick="
-                                removerSerie(
-                                    ${index},
-                                    ${serieIndex}
-                                )"
-                            >
-                                ×
-                            </button>
-
-                        </div>
-
-                    `;
-
-                }
-            );
-
-
-            html += `
-
-                <button
-                    class="btn-adicionar-serie"
-                    onclick="adicionarSerie(${index})"
-                >
-                    ＋ Adicionar série
-                </button>
-
-            `;
-
-
-            div.innerHTML = html;
-
-            container.appendChild(div);
-
-        }
-    );
-
-
-    atualizarResumo();
-
-}
-
-
-/* ADICIONAR SÉRIE */
-
-function adicionarSerie(index) {
-
-    exerciciosAtuais[index].series.push({
-
-        peso: "",
-
-        repeticoes: ""
-
-    });
-
-
-    renderizar();
-
-}
-
-
-/* REMOVER SÉRIE */
-
-function removerSerie(
-    exercicioIndex,
-    serieIndex
-) {
-
-    if (
-        exerciciosAtuais[
-            exercicioIndex
-        ].series.length <= 1
-    ) {
-
-        alert(
-            "O exercício precisa ter pelo menos uma série."
-        );
+        showToast("Digite o nome do exercício");
 
         return;
+    }
+
+    if (!currentWorkout) {
+
+        showToast("Comece um treino primeiro");
+
+        return;
+    }
+
+    const exercise = {
+
+        id: Date.now(),
+
+        name: name,
+
+        type: type,
+
+        sets: []
+
+    };
+
+    for (let i = 0; i < count; i++) {
+
+        exercise.sets.push({
+
+            weight: "",
+
+            reps: ""
+
+        });
 
     }
 
+    currentWorkout.exercises.push(exercise);
 
-    exerciciosAtuais[
-        exercicioIndex
-    ].series.splice(
-        serieIndex,
-        1
-    );
+    document.getElementById("exerciseName").value = "";
+
+    closeExerciseModal();
+
+    renderWorkout();
+}
 
 
-    renderizar();
+/* =========================
+   RENDERIZAR TREINO
+========================= */
+
+function renderWorkout() {
+
+    const container =
+        document.getElementById("exerciseList");
+
+    container.innerHTML = "";
+
+    if (!currentWorkout ||
+        currentWorkout.exercises.length === 0) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                Nenhum exercício adicionado.<br><br>
+                Toque em "Adicionar exercício".
+            </div>
+        `;
+
+        return;
+    }
+
+    currentWorkout.exercises.forEach(
+        (exercise, exerciseIndex) => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "exercise";
+
+        let setsHTML = "";
+
+        exercise.sets.forEach(
+            (set, setIndex) => {
+
+            setsHTML += `
+
+                <div class="set">
+
+                    <div class="set-title">
+                        Série ${setIndex + 1}
+                    </div>
+
+                    <div class="row">
+
+                        <div>
+                            <label>Carga (kg)</label>
+
+                            <input
+                                type="number"
+                                step="0.5"
+                                inputmode="decimal"
+                                value="${set.weight}"
+                                placeholder="0"
+                                onchange="
+                                    updateSet(
+                                        ${exerciseIndex},
+                                        ${setIndex},
+                                        'weight',
+                                        this.value
+                                    )
+                                "
+                            >
+                        </div>
+
+                        <div>
+                            <label>Repetições</label>
+
+                            <input
+                                type="number"
+                                inputmode="numeric"
+                                value="${set.reps}"
+                                placeholder="0"
+                                onchange="
+                                    updateSet(
+                                        ${exerciseIndex},
+                                        ${setIndex},
+                                        'reps',
+                                        this.value
+                                    )
+                                "
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+        });
+
+
+        div.innerHTML = `
+
+            <div class="exercise-header">
+
+                <div>
+
+                    <div class="exercise-name">
+                        ${escapeHTML(exercise.name)}
+                    </div>
+
+                    <span class="exercise-type">
+                        ${exercise.type}
+                    </span>
+
+                </div>
+
+                <button
+                    class="danger"
+                    onclick="removeExercise(${exerciseIndex})"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            ${setsHTML}
+
+            <br>
+
+            <button
+                class="secondary full"
+                onclick="addSet(${exerciseIndex})"
+            >
+                + Adicionar série
+            </button>
+
+        `;
+
+        container.appendChild(div);
+
+    });
 
 }
 
 
-/* REMOVER EXERCÍCIO */
+/* =========================
+   ALTERAR SÉRIE
+========================= */
 
-function removerExercicio(index) {
+function updateSet(
+    exerciseIndex,
+    setIndex,
+    field,
+    value
+) {
 
-    exerciciosAtuais.splice(
+    if (!currentWorkout) return;
+
+    currentWorkout
+        .exercises[exerciseIndex]
+        .sets[setIndex][field] = value;
+}
+
+
+/* =========================
+   ADICIONAR SÉRIE
+========================= */
+
+function addSet(exerciseIndex) {
+
+    currentWorkout
+        .exercises[exerciseIndex]
+        .sets.push({
+            weight: "",
+            reps: ""
+        });
+
+    renderWorkout();
+}
+
+
+/* =========================
+   REMOVER EXERCÍCIO
+========================= */
+
+function removeExercise(index) {
+
+    if (!confirm(
+        "Remover este exercício?"
+    )) return;
+
+    currentWorkout.exercises.splice(
         index,
         1
     );
 
-    renderizar();
-
+    renderWorkout();
 }
 
 
-/* ALTERAR PESO */
+/* =========================
+   FINALIZAR TREINO
+========================= */
 
-function alterarPeso(
-    exercicioIndex,
-    serieIndex,
-    valor
-) {
+function finishWorkout() {
 
-    exerciciosAtuais[
-        exercicioIndex
-    ].series[
-        serieIndex
-    ].peso = valor;
+    if (!currentWorkout) return;
 
-}
+    const name =
+        document.getElementById("activeWorkoutName")
+        .value.trim();
 
+    currentWorkout.name =
+        name || "Treino";
 
-/* ALTERAR REPETIÇÕES */
+    currentWorkout.date =
+        new Date().toISOString();
 
-function alterarReps(
-    exercicioIndex,
-    serieIndex,
-    valor
-) {
-
-    exerciciosAtuais[
-        exercicioIndex
-    ].series[
-        serieIndex
-    ].repeticoes = valor;
-
-}
-
-
-/* RESUMO */
-
-function atualizarResumo() {
-
-    let totalSeries = 0;
-
-    exerciciosAtuais.forEach(
-        exercicio => {
-
-            totalSeries +=
-                exercicio.series.length;
-
-        }
+    data.workouts.unshift(
+        JSON.parse(
+            JSON.stringify(currentWorkout)
+        )
     );
 
+    saveData();
 
-    document.getElementById(
-        "totalExercicios"
-    ).textContent =
-        exerciciosAtuais.length;
+    currentWorkout = null;
 
+    document.getElementById("exerciseList")
+        .innerHTML = "";
 
-    document.getElementById(
-        "totalSeries"
-    ).textContent =
-        totalSeries;
+    updateTodaySummary();
 
+    showPage("home");
 
-    const cardio =
-        document.getElementById(
-            "tempoCardio"
-        ).value;
+    showToast("Treino salvo com sucesso ✓");
+}
 
 
-    document.getElementById(
-        "totalCardio"
-    ).textContent =
-        cardio ? cardio + "m" : "0";
+/* =========================
+   CANCELAR
+========================= */
+
+function cancelWorkout() {
+
+    if (!confirm(
+        "Cancelar este treino? Os dados serão perdidos."
+    )) return;
+
+    currentWorkout = null;
+
+    showPage("home");
+}
+
+
+/* =========================
+   RESUMO
+========================= */
+
+function updateTodaySummary() {
+
+    const today =
+        todayKey();
+
+    const workouts =
+        data.workouts.filter(
+            workout =>
+                workout.date.startsWith(today)
+        );
+
+    let exercises = 0;
+    let sets = 0;
+    let volume = 0;
+
+    workouts.forEach(workout => {
+
+        exercises +=
+            workout.exercises.length;
+
+        workout.exercises.forEach(
+            exercise => {
+
+            sets += exercise.sets.length;
+
+            exercise.sets.forEach(set => {
+
+                const weight =
+                    Number(set.weight) || 0;
+
+                const reps =
+                    Number(set.reps) || 0;
+
+                volume +=
+                    weight * reps;
+
+            });
+
+        });
+
+    });
+
+    document.getElementById("todayExercises")
+        .textContent = exercises;
+
+    document.getElementById("todaySets")
+        .textContent = sets;
+
+    document.getElementById("todayVolume")
+        .textContent = formatNumber(volume);
+}
+
+
+/* =========================
+   HISTÓRICO
+========================= */
+
+function renderHistory() {
+
+    const container =
+        document.getElementById("historyList");
+
+    container.innerHTML = "";
+
+    if (data.workouts.length === 0) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                Você ainda não possui treinos registrados.
+            </div>
+        `;
+
+        return;
+    }
+
+    data.workouts.forEach(
+        (workout, index) => {
+
+        const date =
+            new Date(workout.date);
+
+        const totalVolume =
+            calculateWorkoutVolume(workout);
+
+        const previous =
+            findPreviousExerciseData(
+                workout
+            );
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "history-item";
+
+        div.innerHTML = `
+
+            <strong>
+                ${escapeHTML(workout.name)}
+            </strong>
+
+            <small>
+                ${date.toLocaleDateString("pt-BR")}
+                às
+                ${date.toLocaleTimeString(
+                    "pt-BR",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                )}
+            </small>
+
+            <br><br>
+
+            <span class="badge">
+                ${workout.exercises.length}
+                exercícios
+            </span>
+
+            <span class="badge">
+                ${totalVolume} kg
+            </span>
+
+            <br><br>
+
+            ${workout.exercises.map(
+                exercise => {
+
+                const volume =
+                    calculateExerciseVolume(
+                        exercise
+                    );
+
+                const previousData =
+                    previous[normalize(
+                        exercise.name
+                    )];
+
+                let comparison = "";
+
+                if (previousData) {
+
+                    const currentMax =
+                        getMaxWeight(exercise);
+
+                    const previousMax =
+                        previousData.max;
+
+                    if (currentMax > previousMax) {
+
+                        comparison = `
+                            <div class="improved">
+                                ↑ Aumentou carga:
+                                ${previousMax} → ${currentMax} kg
+                            </div>
+                        `;
+
+                    } else if (
+                        currentMax < previousMax
+                    ) {
+
+                        comparison = `
+                            <div class="worse">
+                                ↓ Carga:
+                                ${previousMax} → ${currentMax} kg
+                            </div>
+                        `;
+
+                    } else {
+
+                        comparison = `
+                            <div style="color:var(--muted)">
+                                → Mesma carga máxima:
+                                ${currentMax} kg
+                            </div>
+                        `;
+                    }
+                }
+
+                return `
+
+                    <div style="
+                        padding:10px 0;
+                        border-top:1px solid var(--border);
+                    ">
+
+                        <strong>
+                            ${escapeHTML(exercise.name)}
+                        </strong>
+
+                        <small>
+                            ${exercise.sets.length}
+                            séries ·
+                            ${formatNumber(volume)} kg
+                        </small>
+
+                        ${comparison}
+
+                    </div>
+                `;
+
+            }).join("")}
+
+            <br>
+
+            <button
+                class="danger full"
+                onclick="deleteWorkout(${index})"
+            >
+                Excluir treino
+            </button>
+
+        `;
+
+        container.appendChild(div);
+
+    });
 
 }
 
 
-/* ATUALIZAR CARDIO */
+/* =========================
+   COMPARAÇÃO
+========================= */
 
-document.getElementById(
-    "tempoCardio"
-).addEventListener(
-    "input",
-    atualizarResumo
-);
+function findPreviousExerciseData(
+    currentWorkout
+) {
 
+    const result = {};
 
-/* SALVAR */
+    const currentDate =
+        new Date(currentWorkout.date);
 
-function salvarTreino() {
+    const previousWorkouts =
+        data.workouts
+        .filter(workout => {
 
-    const data =
-        document.getElementById(
-            "dataTreino"
-        ).value;
+            return (
+                workout.id !== currentWorkout.id &&
+                new Date(workout.date) < currentDate
+            );
 
-
-    const nome =
-        document.getElementById(
-            "nomeTreino"
-        ).value.trim();
-
-
-    if (!nome) {
-
-        alert(
-            "Digite o nome do treino."
+        })
+        .sort(
+            (a,b) =>
+                new Date(b.date) -
+                new Date(a.date)
         );
 
-        return;
+    previousWorkouts.forEach(workout => {
 
-    }
+        workout.exercises.forEach(exercise => {
 
+            const key =
+                normalize(exercise.name);
+
+            if (!result[key]) {
+
+                result[key] = {
+
+                    max:
+                        getMaxWeight(exercise),
+
+                    volume:
+                        calculateExerciseVolume(
+                            exercise
+                        )
+
+                };
+
+            }
+
+        });
+
+    });
+
+    return result;
+}
+
+
+function getMaxWeight(exercise) {
+
+    let max = 0;
+
+    exercise.sets.forEach(set => {
+
+        const weight =
+            Number(set.weight) || 0;
+
+        if (weight > max) {
+            max = weight;
+        }
+
+    });
+
+    return max;
+}
+
+
+/* =========================
+   CÁLCULOS
+========================= */
+
+function calculateWorkoutVolume(
+    workout
+) {
+
+    let total = 0;
+
+    workout.exercises.forEach(
+        exercise => {
+
+        total +=
+            calculateExerciseVolume(
+                exercise
+            );
+
+    });
+
+    return formatNumber(total);
+}
+
+
+function calculateExerciseVolume(
+    exercise
+) {
+
+    let total = 0;
+
+    exercise.sets.forEach(set => {
+
+        const weight =
+            Number(set.weight) || 0;
+
+        const reps =
+            Number(set.reps) || 0;
+
+        total +=
+            weight * reps;
+
+    });
+
+    return total;
+}
+
+
+/* =========================
+   EXCLUIR TREINO
+========================= */
+
+function deleteWorkout(index) {
+
+    if (!confirm(
+        "Excluir este treino permanentemente?"
+    )) return;
+
+    data.workouts.splice(index, 1);
+
+    saveData();
+
+    renderHistory();
+
+    updateTodaySummary();
+
+    showToast("Treino excluído");
+}
+
+
+/* =========================
+   EXPORTAR
+========================= */
+
+function exportData() {
+
+    const json =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+
+    const blob =
+        new Blob(
+            [json],
+            {
+                type: "application/json"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "meu-diario-de-treino.json";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    showToast("Dados exportados");
+}
+
+
+/* =========================
+   IMPORTAR
+========================= */
+
+function importData() {
+
+    const input =
+        document.createElement("input");
+
+    input.type = "file";
+
+    input.accept = ".json";
+
+    input.onchange = event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) return;
+
+        const reader =
+            new FileReader();
+
+        reader.onload = e => {
+
+            try {
+
+                const imported =
+                    JSON.parse(
+                        e.target.result
+                    );
+
+                if (
+                    !imported.workouts ||
+                    !imported.settings
+                ) {
+
+                    throw new Error();
+
+                }
+
+                data = imported;
+
+                saveData();
+
+                loadSettings();
+
+                updateWater();
+
+                renderHistory();
+
+                updateTodaySummary();
+
+                showToast(
+                    "Dados importados ✓"
+                );
+
+            } catch {
+
+                showToast(
+                    "Arquivo inválido"
+                );
+
+            }
+
+        };
+
+        reader.readAsText(file);
+
+    };
+
+    input.click();
+}
+
+
+/* =========================
+   APAGAR DADOS
+========================= */
+
+function clearAllData() {
+
+    const confirmation =
+        prompt(
+            'Digite "APAGAR" para excluir todos os seus dados.'
+        );
 
     if (
-        exerciciosAtuais.length === 0
-    ) {
+        confirmation !== "APAGAR"
+    ) return;
 
-        alert(
-            "Adicione pelo menos um exercício."
-        );
+    localStorage.removeItem(
+        "diarioTreino"
+    );
 
-        return;
+    data = {
 
-    }
+        workouts: [],
 
+        water: {},
 
-    const treino = {
+        settings: {
 
-        id: Date.now(),
+            weight: "",
 
-        data: data,
-
-        nome: nome,
-
-        exercicios:
-            exerciciosAtuais,
-
-        cardio: {
-
-            tipo:
-                document.getElementById(
-                    "tipoCardio"
-                ).value,
-
-            tempo:
-                document.getElementById(
-                    "tempoCardio"
-                ).value,
-
-            velocidade:
-                document.getElementById(
-                    "velocidadeCardio"
-                ).value,
-
-            distancia:
-                document.getElementById(
-                    "distanciaCardio"
-                ).value
+            waterTarget: 3000
 
         }
 
     };
 
+    currentWorkout = null;
 
-    const historico =
-        JSON.parse(
-            localStorage.getItem(
-                "treinos"
-            )
-        ) || [];
+    loadSettings();
 
+    updateWater();
 
-    historico.unshift(treino);
+    renderHistory();
 
+    updateTodaySummary();
 
-    localStorage.setItem(
-        "treinos",
-        JSON.stringify(historico)
-    );
-
-
-    alert(
-        "Treino salvo! 💪"
-    );
-
-
-    limparTreino();
-
-    carregarHistorico();
-
+    showToast("Todos os dados foram apagados");
 }
 
 
-/* LIMPAR */
-
-function limparTreino() {
-
-    exerciciosAtuais = [];
-
-
-    document.getElementById(
-        "nomeTreino"
-    ).value = "";
-
-
-    document.getElementById(
-        "tipoCardio"
-    ).value = "";
-
-
-    document.getElementById(
-        "tempoCardio"
-    ).value = "";
-
-
-    document.getElementById(
-        "velocidadeCardio"
-    ).value = "";
-
-
-    document.getElementById(
-        "distanciaCardio"
-    ).value = "";
-
-
-    renderizar();
-
-}
-
-
-/* HISTÓRICO */
-
-function carregarHistorico() {
-
-    const container =
-        document.getElementById(
-            "historico"
-        );
-
-
-    const historico =
-        JSON.parse(
-            localStorage.getItem(
-                "treinos"
-            )
-        ) || [];
-
-
-    container.innerHTML = "";
-
-
-    if (
-        historico.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <div class="vazio">
-
-                🏋️
-
-                <br><br>
-
-                Seus treinos aparecerão aqui.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    historico.forEach(
-        (treino, index) => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "historico-card";
-
-
-            const totalSeries =
-                treino.exercicios.reduce(
-                    (
-                        total,
-                        exercicio
-                    ) =>
-                        total +
-                        exercicio.series.length,
-                    0
-                );
-
-
-            const cardio =
-                treino.cardio &&
-                treino.cardio.tempo
-                    ? treino.cardio.tempo + " min"
-                    : "Sem cardio";
-
-
-            card.innerHTML = `
-
-                <div
-                    class="historico-cabecalho"
-                    onclick="
-                    abrirHistorico(${index})
-                    "
-                >
-
-                    <div class="historico-data">
-
-                        ${formatarData(
-                            treino.data
-                        )}
-
-                    </div>
-
-
-                    <div class="historico-nome">
-
-                        ${treino.nome}
-
-                    </div>
-
-
-                    <div class="historico-resumo">
-
-                        ${treino.exercicios.length}
-                        exercícios
-                        •
-                        ${totalSeries}
-                        séries
-                        •
-                        ${cardio}
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="historico-conteudo"
-                    id="historico-${index}"
-                >
-
-                    ${renderizarHistorico(
-                        treino
-                    )}
-
-                    <button
-                        class="btn-excluir-treino"
-                        onclick="
-                        excluirTreino(${index})
-                        "
-                    >
-
-                        🗑️ Excluir treino
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            container.appendChild(card);
-
-        }
-    );
-
-}
-
-
-/* HISTÓRICO DETALHADO */
-
-function renderizarHistorico(treino) {
-
-    let html = "";
-
-
-    treino.exercicios.forEach(
-        exercicio => {
-
-            html += `
-
-                <div class="historico-exercicio">
-
-                    <strong>
-                        🏋️ ${exercicio.nome}
-                    </strong>
-
-            `;
-
-
-            exercicio.series.forEach(
-                (serie, index) => {
-
-                    html += `
-
-                        <div class="historico-serie">
-
-                            Série ${index + 1}:
-
-                            <strong>
-                                ${serie.peso || 0} kg
-                            </strong>
-
-                            ×
-
-                            <strong>
-                                ${serie.repeticoes || 0} reps
-                            </strong>
-
-                        </div>
-
-                    `;
-
-                }
-            );
-
-
-            html += `</div>`;
-
-        }
-    );
-
-
-    if (
-        treino.cardio &&
-        treino.cardio.tipo
-    ) {
-
-        html += `
-
-            <div class="historico-cardio">
-
-                🏃 <strong>
-                    ${treino.cardio.tipo}
-                </strong>
-
-                <br><br>
-
-                ⏱️
-                ${treino.cardio.tempo || 0}
-                minutos
-
-                ${
-                    treino.cardio.velocidade
-                    ?
-                    ` • ${treino.cardio.velocidade} km/h`
-                    :
-                    ""
-                }
-
-                ${
-                    treino.cardio.distancia
-                    ?
-                    ` • ${treino.cardio.distancia} km`
-                    :
-                    ""
-                }
-
-            </div>
-
-        `;
-
-    }
-
-
-    return html;
-
-}
-
-
-/* ABRIR HISTÓRICO */
-
-function abrirHistorico(index) {
-
-    const elemento =
-        document.getElementById(
-            "historico-" + index
-        );
-
-
-    elemento.classList.toggle(
-        "aberto"
-    );
-
-}
-
-
-/* EXCLUIR */
-
-function excluirTreino(index) {
-
-    const confirmar =
-        confirm(
-            "Excluir este treino?"
-        );
-
-
-    if (!confirmar) return;
-
-
-    const historico =
-        JSON.parse(
-            localStorage.getItem(
-                "treinos"
-            )
-        ) || [];
-
-
-    historico.splice(
-        index,
-        1
-    );
-
-
-    localStorage.setItem(
-        "treinos",
-        JSON.stringify(
-            historico
+/* =========================
+   UTILIDADES
+========================= */
+
+function normalize(text) {
+
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
         )
-    );
-
-
-    carregarHistorico();
-
+        .trim();
 }
 
 
-/* DATA */
+function escapeHTML(text) {
 
-function formatarData(data) {
-
-    const partes =
-        data.split("-");
-
-
-    const meses = [
-
-        "JAN",
-        "FEV",
-        "MAR",
-        "ABR",
-        "MAI",
-        "JUN",
-        "JUL",
-        "AGO",
-        "SET",
-        "OUT",
-        "NOV",
-        "DEZ"
-
-    ];
-
-
-    return `
-        ${partes[2]}
-        ${meses[
-            Number(partes[1]) - 1
-        ]}
-        ${partes[0]}
-    `;
-
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
-/* INICIAR */
+function formatNumber(number) {
 
-renderizar();
+    return Number(number)
+        .toLocaleString(
+            "pt-BR",
+            {
+                maximumFractionDigits: 1
+            }
+        );
+}
 
-carregarHistorico();
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2200);
+}
+
+
+/* =========================
+   ATUALIZAÇÃO AUTOMÁTICA
+========================= */
+
+setInterval(() => {
+
+    updateWater();
+
+    updateTodaySummary();
+
+}, 30000);
 
 </script>
 
