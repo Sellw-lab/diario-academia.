@@ -213,7 +213,7 @@ label {
 
 .stat strong {
     display: block;
-    font-size: 19px;
+    font-size: 18px;
 }
 
 .stat span {
@@ -440,7 +440,7 @@ label {
 <section id="home" class="page active">
 
     <div class="card">
-        <h2>Resumo de hoje</h2>
+        <h2>Resumo de Hoje</h2>
         <div class="stats">
             <div class="stat">
                 <strong id="todayExercises">0</strong>
@@ -453,6 +453,33 @@ label {
             <div class="stat">
                 <strong id="todayVolume">0</strong>
                 <span>Volume kg</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- META DE CREATINA NA TELA INICIAL -->
+    <div class="card" style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <h3 style="margin: 0; font-size: 16px;">🧪 Meta Diária de Creatina</h3>
+            <span style="color: var(--muted); font-size: 12px;">Dose diária ideal (0,07g/kg)</span>
+        </div>
+        <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
+    </div>
+
+    <div class="card">
+        <h2>🏃 Cardio nos Últimos 7 Dias</h2>
+        <div class="stats">
+            <div class="stat">
+                <strong id="weeklyCardioTime">0 min</strong>
+                <span>Tempo Total</span>
+            </div>
+            <div class="stat">
+                <strong id="weeklyCardioDist">0 km</strong>
+                <span>Distância</span>
+            </div>
+            <div class="stat">
+                <strong id="weeklyCardioSessions">0</strong>
+                <span>Sessões</span>
             </div>
         </div>
     </div>
@@ -567,17 +594,23 @@ label {
 <section id="profile" class="page">
 
     <div class="card">
-        <h2>⚙️ Configurações</h2>
+        <h2>⚙️ Configurações & Suplementação</h2>
 
         <div class="field">
             <label>Seu peso atual (kg)</label>
-            <input id="userWeight" type="number" step="0.1" placeholder="72" onchange="calculateSuggestedWater()">
+            <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" onchange="calculateSuggestedMetrics()">
         </div>
 
         <div class="field">
             <label>Meta diária de água (ml)</label>
             <input id="waterTarget" type="number" placeholder="3000">
             <small style="color:var(--muted); font-size:11px;" id="waterSuggestionText"></small>
+        </div>
+
+        <div class="field">
+            <label>🧪 Dose diária de Creatina recomendada</label>
+            <input id="creatineTarget" type="text" readonly style="background: var(--card); border-color: var(--border); font-weight: bold; color: var(--accent);">
+            <small style="color:var(--muted); font-size:11px;">Calculado automaticamente (0,07g por kg corporal)</small>
         </div>
 
         <button class="full" onclick="saveSettings()">Salvar configurações</button>
@@ -595,7 +628,7 @@ label {
     <div class="card">
         <h3>Diário de Treino</h3>
         <p style="color:var(--muted);font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
-        <p style="color:var(--muted);font-size:13px">Versão 3.0 (com PWA & Timer)</p>
+        <p style="color:var(--muted);font-size:13px">Versão 3.2 (Com Creatina & Biblioteca de Exercícios)</p>
     </div>
 
 </section>
@@ -620,7 +653,7 @@ label {
 </nav>
 
 
-<!-- MODAL EXERCÍCIO -->
+<!-- MODAL EXERCÍCIO COM BIBLIOTECA ABRANGENTE -->
 <div id="exerciseModal" class="modal">
     <div class="modal-content">
         <div class="modal-title">
@@ -629,8 +662,106 @@ label {
         </div>
 
         <div class="field">
-            <label>Nome do exercício</label>
-            <input id="exerciseName" placeholder="Ex: Supino inclinado">
+            <label>Selecione da Biblioteca (70+ opções)</label>
+            <select id="exerciseLibrarySelect" onchange="selectFromLibrary(this.value)">
+                <option value="">Selecione ou digite abaixo...</option>
+                <optgroup label="Peito">
+                    <option value="Supino Reto com Barra|Livre">Supino Reto com Barra</option>
+                    <option value="Supino Inclinado com Barra|Livre">Supino Inclinado com Barra</option>
+                    <option value="Supino Reto com Halteres|Livre">Supino Reto com Halteres</option>
+                    <option value="Supino Inclinado com Halteres|Livre">Supino Inclinado com Halteres</option>
+                    <option value="Supino Declinado com Barra|Livre">Supino Declinado com Barra</option>
+                    <option value="Crucifixo Reto com Halteres|Livre">Crucifixo Reto com Halteres</option>
+                    <option value="Crucifixo Inclinado com Halteres|Livre">Crucifixo Inclinado com Halteres</option>
+                    <option value="Crossover na Polia Alta|Polia">Crossover na Polia Alta</option>
+                    <option value="Crossover na Polia Baixa|Polia">Crossover na Polia Baixa</option>
+                    <option value="Peck Deck / Voador|Máquina">Peck Deck / Voador</option>
+                    <option value="Chest Press|Máquina">Chest Press (Máquina)</option>
+                    <option value="Flexão de Braços|Livre">Flexão de Braços</option>
+                </optgroup>
+                <optgroup label="Costas">
+                    <option value="Puxada Frontal|Polia">Puxada Frontal</option>
+                    <option value="Puxada me Pegada Fechada|Polia">Puxada Pegada Fechada</option>
+                    <option value="Remada Curvada com Barra|Livre">Remada Curvada com Barra</option>
+                    <option value="Remada Unilateral com Halter|Livre">Remada Unilateral com Halter (Serrote)</option>
+                    <option value="Remada Baixa na Polia|Polia">Remada Baixa na Polia</option>
+                    <option value="Remada Articulada|Máquina">Remada Articulada</option>
+                    <option value="Pulldown na Polia|Polia">Pulldown na Polia</option>
+                    <option value="Barra Fixa (Pronada/Supinada)|Livre">Barra Fixa</option>
+                    <option value="Levantamento Terra|Livre">Levantamento Terra</option>
+                    <option value="Crucifixo Invertido na Polia|Polia">Crucifixo Invertido na Polia</option>
+                </optgroup>
+                <optgroup label="Quadríceps">
+                    <option value="Agachamento Livre com Barra|Livre">Agachamento Livre com Barra</option>
+                    <option value="Agachamento Hack|Máquina">Agachamento Hack</option>
+                    <option value="Leg Press 45°|Máquina">Leg Press 45°</option>
+                    <option value="Leg Press Horizontal|Máquina">Leg Press Horizontal</option>
+                    <option value="Cadeira Extensora|Máquina">Cadeira Extensora</option>
+                    <option value="Afundo / Passada|Livre">Afundo / Passada</option>
+                    <option value="Agachamento Búlgaro|Livre">Agachamento Búlgaro</option>
+                    <option value="Agachamento Sumô|Livre">Agachamento Sumô</option>
+                </optgroup>
+                <optgroup label="Posterior de Coxa & Glúteos">
+                    <option value="Mesa Flexora|Máquina">Mesa Flexora</option>
+                    <option value="Cadeira Flexora|Máquina">Cadeira Flexora</option>
+                    <option value="Stiff com Barra|Livre">Stiff com Barra</option>
+                    <option value="Stiff com Halteres|Livre">Stiff com Halteres</option>
+
+                    <option value="Elevacao Pelvica com Barra|Livre">Elevação Pélvica com Barra</option>
+                    <option value="Cadeira Abdutora|Máquina">Cadeira Abdutora</option>
+                    <option value="Cadeira Adutora|Máquina">Cadeira Adutora</option>
+                </optgroup>
+                <optgroup label="Ombros">
+                    <option value="Desenvolvimento com Halteres|Livre">Desenvolvimento com Halteres</option>
+                    <option value="Desenvolvimento Militar|Livre">Desenvolvimento Militar</option>
+                    <option value="Desenvolvimento na Máquina|Máquina">Desenvolvimento na Máquina</option>
+                    <option value="Elevação Lateral com Halteres|Livre">Elevação Lateral com Halteres</option>
+                    <option value="Elevação Lateral na Polia|Polia">Elevação Lateral na Polia</option>
+                    <option value="Elevação Frontal com Halteres|Livre">Elevação Frontal com Halteres</option>
+                    <option value="Facepull na Polia|Polia">Facepull na Polia</option>
+                    <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres (Trapézio)</option>
+                </optgroup>
+                <optgroup label="Bíceps">
+                    <option value="Rosca Direta com Barra|Livre">Rosca Direta com Barra</option>
+                    <option value="Rosca Direta na Polia|Polia">Rosca Direta na Polia</option>
+                    <option value="Rosca Alternada com Halteres|Livre">Rosca Alternada com Halteres</option>
+                    <option value="Rosca Martelo com Halteres|Livre">Rosca Martelo com Halteres</option>
+                    <option value="Rosca Scott com Barra EZ|Livre">Rosca Scott com Barra EZ</option>
+                    <option value="Rosca Scott na Máquina|Máquina">Rosca Scott na Máquina</option>
+
+                    <option value="Rosca Concentrada|Livre">Rosca Concentrada</option>
+                </optgroup>
+                <optgroup label="Tríceps">
+                    <option value="Tríceps Pulley|Polia">Tríceps Pulley (Corda ou Barra)</option>
+                    <option value="Tríceps Testa com Barra|Livre">Tríceps Testa com Barra</option>
+                    <option value="Tríceps Francês com Halter|Livre">Tríceps Francês com Halter</option>
+                    <option value="Tríceps Coice na Polia|Polia">Tríceps Coice na Polia</option>
+                    <option value="Mergulho no Banco|Livre">Mergulho no Banco</option>
+                    <option value="Paralelas|Livre">Paralelas (Dips)</option>
+                </optgroup>
+                <optgroup label="Panturrilha & Abdômen">
+                    <option value="Gêmeos em Pé|Máquina">Gêmeos em Pé</option>
+                    <option value="Gêmeos Sentado|Máquina">Gêmeos Sentado</option>
+                    <option value="Abdominal Infra no Banco/Barra|Livre">Abdominal Infra</option>
+                    <option value="Abdominal Supra|Livre">Abdominal Supra</option>
+                    <option value="Abdominal na Polia|Polia">Abdominal na Polia</option>
+
+                    <option value="Prancha Abdominal|Livre">Prancha Abdominal</option>
+                </optgroup>
+                <optgroup label="Cardio">
+                    <option value="Esteira (Corrida/Caminhada)|Cardio">Esteira (Corrida/Caminhada)</option>
+                    <option value="Bicicleta Ergométrica|Cardio">Bicicleta Ergométrica</option>
+                    <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
+                    <option value="Remo Seco|Cardio">Remo Seco</option>
+                    <option value="Escada / Staimill|Cardio">Escada</option>
+                    <option value="Corda de Pular|Cardio">Corda de Pular</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Nome do exercício customizado</label>
+            <input id="exerciseName" placeholder="Ou digite aqui...">
         </div>
 
         <div class="field">
@@ -639,20 +770,20 @@ label {
                 <option value="Livre">Peso livre</option>
                 <option value="Máquina">Máquina</option>
                 <option value="Polia">Polia</option>
-                <option value="Cardio">Cardio</option>
+                <option value="Cardio">Cardio (Corrida, Bike, etc)</option>
                 <option value="Outro">Outro</option>
             </select>
         </div>
 
         <div class="field">
-            <label>Número de séries</label>
+            <label>Número de séries / blocos</label>
             <select id="setCount">
-                <option value="1">1 série</option>
-                <option value="2">2 séries</option>
-                <option value="3" selected>3 séries</option>
-                <option value="4">4 séries</option>
-                <option value="5">5 séries</option>
-                <option value="6">6 séries</option>
+                <option value="1">1 série/bloco</option>
+                <option value="2">2 séries/blocos</option>
+                <option value="3" selected>3 séries/blocos</option>
+                <option value="4">4 séries/blocos</option>
+                <option value="5">5 séries/blocos</option>
+                <option value="6">6 séries/blocos</option>
             </select>
         </div>
 
@@ -672,7 +803,8 @@ let data = JSON.parse(localStorage.getItem("diarioTreino")) || {
     water: {},
     settings: {
         weight: "",
-        waterTarget: 3000
+        waterTarget: 3000,
+        creatineTarget: 0
     }
 };
 
@@ -691,9 +823,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateWater();
     renderHistory();
     checkActiveWorkout();
-    populateExerciseSelect();
 
-    // Registrar Service Worker simples embutido para PWA
     if ('serviceWorker' in navigator) {
         const swBlob = new Blob([`
             self.addEventListener('fetch', event => {
@@ -835,7 +965,6 @@ function updateWater() {
     const reached = current >= target && target > 0;
     document.getElementById("waterMetaReachedMessage").style.display = reached ? "block" : "none";
 
-    // Bloquear/desbloquear entradas
     document.getElementById("btnW250").disabled = reached;
     document.getElementById("btnW500").disabled = reached;
     document.getElementById("btnW1000").disabled = reached;
@@ -845,32 +974,49 @@ function updateWater() {
 
 
 /* =========================
-   CONFIGURAÇÕES & METAS
+   CONFIGURAÇÕES & CREATINA
 ========================= */
 
-function calculateSuggestedWater() {
+function calculateSuggestedMetrics() {
     const weight = Number(document.getElementById("userWeight").value);
     if (weight > 0) {
-        const suggested = Math.round(weight * 35);
-        document.getElementById("waterSuggestionText").textContent = `Sugerido por peso (35ml/kg): ${suggested} ml`;
+        // Água
+        const suggestedWater = Math.round(weight * 35);
+        document.getElementById("waterSuggestionText").textContent = `Sugerido por peso (35ml/kg): ${suggestedWater} ml`;
         if (!document.getElementById("waterTarget").value) {
-            document.getElementById("waterTarget").value = suggested;
+            document.getElementById("waterTarget").value = suggestedWater;
         }
+
+        // Creatina (0,07g por kg)
+        const suggestedCreatine = (weight * 0.07).toFixed(1);
+        document.getElementById("creatineTarget").value = `${suggestedCreatine} g/dia`;
+    } else {
+        document.getElementById("creatineTarget").value = "0 g/dia";
     }
 }
 
 function loadSettings() {
     document.getElementById("userWeight").value = data.settings.weight || "";
     document.getElementById("waterTarget").value = data.settings.waterTarget || 3000;
-    calculateSuggestedWater();
+    calculateSuggestedMetrics();
+    updateHomeCreatineDisplay();
 }
 
 function saveSettings() {
-    data.settings.weight = document.getElementById("userWeight").value;
+    const weight = document.getElementById("userWeight").value;
+    data.settings.weight = weight;
     data.settings.waterTarget = Number(document.getElementById("waterTarget").value) || 3000;
+    data.settings.creatineTarget = weight ? (Number(weight) * 0.07).toFixed(1) : 0;
+
     saveData();
     updateWater();
+    updateHomeCreatineDisplay();
     showToast("Configurações salvas ✓");
+}
+
+function updateHomeCreatineDisplay() {
+    const creatineVal = data.settings.creatineTarget || (data.settings.weight ? (Number(data.settings.weight) * 0.07).toFixed(1) : 0);
+    document.getElementById("homeCreatineTarget").textContent = `${creatineVal}g`;
 }
 
 
@@ -932,16 +1078,24 @@ function stopTimer() {
 
 
 /* =========================
-   MODAL & EXERCÍCIOS
+   MODAL & BIBLIOTECA DE EXERCÍCIOS
 ========================= */
 
 function openExerciseModal() {
     document.getElementById("exerciseModal").classList.add("show");
-    document.getElementById("exerciseName").focus();
+    document.getElementById("exerciseLibrarySelect").value = "";
+    document.getElementById("exerciseName").value = "";
 }
 
 function closeExerciseModal() {
     document.getElementById("exerciseModal").classList.remove("show");
+}
+
+function selectFromLibrary(val) {
+    if (!val) return;
+    const [name, type] = val.split("|");
+    document.getElementById("exerciseName").value = name;
+    document.getElementById("exerciseType").value = type;
 }
 
 function addExercise() {
@@ -949,7 +1103,7 @@ function addExercise() {
     const type = document.getElementById("exerciseType").value;
     const count = Number(document.getElementById("setCount").value);
 
-    if (!name) return showToast("Digite o nome do exercício");
+    if (!name) return showToast("Digite ou selecione um exercício");
     if (!currentWorkout) return showToast("Comece um treino primeiro");
 
     const exercise = {
@@ -978,19 +1132,20 @@ function renderWorkout() {
     currentWorkout.exercises.forEach((exercise, exerciseIndex) => {
         const div = document.createElement("div");
         div.className = "exercise";
+        const isCardio = exercise.type === "Cardio";
 
         let setsHTML = exercise.sets.map((set, setIndex) => `
             <div class="set">
-                <div class="set-title">Série ${setIndex + 1}</div>
+                <div class="set-title">${isCardio ? 'Sessão' : 'Série'} ${setIndex + 1}</div>
                 <div class="row">
                     <div>
-                        <label>Carga (kg)</label>
-                        <input type="number" step="0.5" inputmode="decimal" value="${set.weight}" placeholder="0"
+                        <label>${isCardio ? 'Tempo (min)' : 'Carga (kg)'}</label>
+                        <input type="number" step="${isCardio ? '1' : '0.5'}" inputmode="decimal" value="${set.weight}" placeholder="0"
                             onchange="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)">
                     </div>
                     <div>
-                        <label>Repetições</label>
-                        <input type="number" inputmode="numeric" value="${set.reps}" placeholder="0"
+                        <label>${isCardio ? 'Distância (km)' : 'Repetições'}</label>
+                        <input type="number" step="${isCardio ? '0.1' : '1'}" inputmode="decimal" value="${set.reps}" placeholder="0"
                             onchange="updateSet(${exerciseIndex}, ${setIndex}, 'reps', this.value)">
                     </div>
                 </div>
@@ -1007,7 +1162,7 @@ function renderWorkout() {
             </div>
             ${setsHTML}
             <br>
-            <button class="secondary full" onclick="addSet(${exerciseIndex})">+ Adicionar série</button>
+            <button class="secondary full" onclick="addSet(${exerciseIndex})">+ Adicionar ${isCardio ? 'bloco' : 'série'}</button>
         `;
         container.appendChild(div);
     });
@@ -1061,7 +1216,7 @@ function cancelWorkout() {
 
 
 /* =========================
-   RESUMO & HISTÓRICO
+   RESUMOS & CARDIO SEMANAL
 ========================= */
 
 function updateTodaySummary() {
@@ -1072,17 +1227,60 @@ function updateTodaySummary() {
     workouts.forEach(w => {
         exercises += w.exercises.length;
         w.exercises.forEach(e => {
-            sets += e.sets.length;
-            e.sets.forEach(s => {
-                volume += (Number(s.weight) || 0) * (Number(s.reps) || 0);
-            });
+            if (e.type !== "Cardio") {
+                sets += e.sets.length;
+                e.sets.forEach(s => {
+                    volume += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+                });
+            }
         });
     });
 
     document.getElementById("todayExercises").textContent = exercises;
     document.getElementById("todaySets").textContent = sets;
     document.getElementById("todayVolume").textContent = formatNumber(volume);
+
+    updateWeeklyCardioSummary();
+    updateHomeCreatineDisplay();
 }
+
+function updateWeeklyCardioSummary() {
+    const now = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(now.getDate() - 7);
+
+    let totalMinutes = 0;
+    let totalKm = 0;
+    let totalSessions = 0;
+
+    data.workouts.forEach(workout => {
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= sevenDaysAgo && workoutDate <= now) {
+            workout.exercises.forEach(exercise => {
+                if (exercise.type === "Cardio") {
+                    exercise.sets.forEach(set => {
+                        const time = Number(set.weight) || 0;
+                        const dist = Number(set.reps) || 0;
+                        if (time > 0 || dist > 0) {
+                            totalMinutes += time;
+                            totalKm += dist;
+                            totalSessions++;
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    document.getElementById("weeklyCardioTime").textContent = `${formatNumber(totalMinutes)} min`;
+    document.getElementById("weeklyCardioDist").textContent = `${formatNumber(totalKm)} km`;
+    document.getElementById("weeklyCardioSessions").textContent = totalSessions;
+}
+
+
+/* =========================
+   HISTÓRICO
+========================= */
 
 function renderHistory() {
     const container = document.getElementById("historyList");
@@ -1106,14 +1304,15 @@ function renderHistory() {
             <small>${date.toLocaleDateString("pt-BR")} às ${date.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})}</small>
             <br><br>
             <span class="badge">${workout.exercises.length} exercícios</span>
-            <span class="badge">${totalVolume} kg</span>
+            <span class="badge">${totalVolume} kg vol.</span>
             <br><br>
             ${workout.exercises.map(exercise => {
+                const isCardio = exercise.type === "Cardio";
                 const volume = calculateExerciseVolume(exercise);
                 const previousData = previous[normalize(exercise.name)];
                 let comparison = "";
 
-                if (previousData) {
+                if (!isCardio && previousData) {
                     const currentMax = getMaxWeight(exercise);
                     const previousMax = previousData.max;
 
@@ -1126,10 +1325,14 @@ function renderHistory() {
                     }
                 }
 
+                const setSummary = isCardio 
+                    ? exercise.sets.map(s => `${s.weight || 0} min / ${s.reps || 0} km`).join(", ")
+                    : `${exercise.sets.length} séries · ${formatNumber(volume)} kg`;
+
                 return `
                     <div style="padding:10px 0; border-top:1px solid var(--border);">
-                        <strong>${escapeHTML(exercise.name)}</strong>
-                        <small>${exercise.sets.length} séries · ${formatNumber(volume)} kg</small>
+                        <strong>${escapeHTML(exercise.name)} <small>(${exercise.type})</small></strong>
+                        <small style="display:block;">${setSummary}</small>
                         ${comparison}
                     </div>
                 `;
@@ -1151,7 +1354,9 @@ function populateExerciseSelect() {
     select.innerHTML = '<option value="">Selecione um exercício...</option>';
 
     const names = new Set();
-    data.workouts.forEach(w => w.exercises.forEach(e => names.add(e.name)));
+    data.workouts.forEach(w => w.exercises.forEach(e => {
+        if (e.type !== "Cardio") names.add(e.name);
+    }));
 
     names.forEach(name => {
         const opt = document.createElement("option");
@@ -1221,12 +1426,14 @@ function findPreviousExerciseData(currentWorkout) {
 
     previousWorkouts.forEach(workout => {
         workout.exercises.forEach(exercise => {
-            const key = normalize(exercise.name);
-            if (!result[key]) {
-                result[key] = {
-                    max: getMaxWeight(exercise),
-                    volume: calculateExerciseVolume(exercise)
-                };
+            if (exercise.type !== "Cardio") {
+                const key = normalize(exercise.name);
+                if (!result[key]) {
+                    result[key] = {
+                        max: getMaxWeight(exercise),
+                        volume: calculateExerciseVolume(exercise)
+                    };
+                }
             }
         });
     });
@@ -1235,16 +1442,20 @@ function findPreviousExerciseData(currentWorkout) {
 }
 
 function getMaxWeight(exercise) {
+    if (exercise.type === "Cardio") return 0;
     return Math.max(0, ...exercise.sets.map(s => Number(s.weight) || 0));
 }
 
 function calculateWorkoutVolume(workout) {
     let total = 0;
-    workout.exercises.forEach(e => total += calculateExerciseVolume(e));
+    workout.exercises.forEach(e => {
+        if (e.type !== "Cardio") total += calculateExerciseVolume(e);
+    });
     return formatNumber(total);
 }
 
 function calculateExerciseVolume(exercise) {
+    if (exercise.type === "Cardio") return 0;
     return exercise.sets.reduce((sum, s) => sum + ((Number(s.weight) || 0) * (Number(s.reps) || 0)), 0);
 }
 
@@ -1308,7 +1519,7 @@ function clearAllData() {
     if (prompt('Digite "APAGAR" para excluir todos os seus dados.') !== "APAGAR") return;
     localStorage.removeItem("diarioTreino");
     localStorage.removeItem("activeWorkout");
-    data = { workouts: [], water: {}, settings: { weight: "", waterTarget: 3000 } };
+    data = { workouts: [], water: {}, settings: { weight: "", waterTarget: 3000, creatineTarget: 0 } };
     currentWorkout = null;
     loadSettings();
     updateWater();
