@@ -176,18 +176,6 @@ label {
     gap: 10px;
 }
 
-.row-4 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-@media (min-width: 480px) {
-    .row-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
 .file-input {
     display: none;
 }
@@ -369,6 +357,7 @@ label {
     font-size: 11px;
     background: #282638;
     color: #c5bcff;
+    margin-top: 4px;
 }
 
 .empty {
@@ -668,7 +657,7 @@ label {
     <div class="card">
         <h3>Diário de Treino</h3>
         <p style="color:var(--muted);font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
-        <p style="color:var(--muted);font-size:13px">Versão 3.5 (Com otimização de imagem e cards retráteis)</p>
+        <p style="color:var(--muted);font-size:13px">Versão 3.6 (Com seleção de séries, novas bibliotecas e backup corrigido)</p>
     </div>
 </section>
 
@@ -714,6 +703,7 @@ label {
                     <option value="Crucifixo Inclinado com Halteres|Livre">Crucifixo Inclinado com Halteres</option>
                     <option value="Crucifixo Declinado com Halteres|Livre">Crucifixo Declinado com Halteres</option>
                     <option value="Pullover com Halter|Livre">Pullover com Halter</option>
+                    <option value="Pullover na Polia Alta|Polia">Pullover na Polia Alta</option>
                     <option value="Crossover na Polia Alta|Polia">Crossover na Polia Alta</option>
                     <option value="Crossover na Polia Média|Polia">Crossover na Polia Média</option>
                     <option value="Crossover na Polia Baixa|Polia">Crossover na Polia Baixa</option>
@@ -768,9 +758,10 @@ label {
                     <option value="Elevação Frontal com Halteres|Livre">Elevação Frontal com Halteres</option>
                     <option value="Elevação Frontal com Anilha|Livre">Elevação Frontal com Anilha</option>
                     <option value="Elevação Frontal na Polia com Corda|Polia">Elevação Frontal na Polia com Corda</option>
+                    <option value="Elevação Y no Banco Inclinado|Livre">Elevação Y no Banco Inclinado</option>
                     <option value="Crucifixo Invertido com Halteres|Livre">Crucifixo Invertido com Halteres</option>
                     <option value="Crucifixo Invertido no Peck Deck|Máquina">Crucifixo Invertido no Peck Deck</option>
-                    <option value="Crucifixo Invertido na Polia (Face Pull)|Polia">Face Pull na Polia (Com Corda)</option>
+                    <option value="Face Pull na Polia (Com Corda)|Polia">Face Pull na Polia (Com Corda)</option>
                     <option value="Encolhimento com Barra|Livre">Encolhimento com Barra</option>
                     <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres</option>
                     <option value="Encolhimento na Polia Baixa|Polia">Encolhimento na Polia Baixa</option>
@@ -819,6 +810,7 @@ label {
                     <option value="Agachamento Frontal com Barra|Livre">Agachamento Frontal com Barra</option>
                     <option value="Agachamento no Barra Guiada (Smith)|Máquina">Agachamento no Smith</option>
                     <option value="Agachamento Sumô com Halter/Anilha|Livre">Agachamento Sumô com Halter</option>
+                    <option value="Agachamento Goblet com Halter|Livre">Agachamento Goblet com Halter</option>
                     <option value="Agachamento Búlgaro com Halteres|Livre">Agachamento Búlgaro com Halteres</option>
                     <option value="Afundo com Halteres|Livre">Afundo com Halteres</option>
                     <option value="Passada / Avanço em Movimento|Livre">Passada / Avanço com Halteres</option>
@@ -839,6 +831,7 @@ label {
                 <optgroup label="🍑 Glúteos & Adutores/Abdutores">
                     <option value="Elevação Pélvica com Barra|Livre">Elevação Pélvica com Barra</option>
                     <option value="Elevação Pélvica em Máquina|Máquina">Elevação Pélvica em Máquina</option>
+                    <option value="Elevação Pélvica Unilateral|Livre">Elevação Pélvica Unilateral</option>
                     <option value="Cadeira Abdutora|Máquina">Cadeira Abdutora</option>
                     <option value="Cadeira Adutora|Máquina">Cadeira Adutora</option>
                     <option value="Glúteo Caneleira no Solo|Livre">Glúteo Caneleira no Solo</option>
@@ -865,6 +858,19 @@ label {
                     <option value="Prancha Frontal Estática|Livre">Prancha Frontal Estática</option>
                     <option value="Prancha Lateral|Livre">Prancha Lateral</option>
                 </optgroup>
+
+                <optgroup label="🏃 Cardio & Exercícios Aeróbicos">
+                    <option value="Corrida / Caminhada na Esteira|Cardio">Corrida / Caminhada na Esteira</option>
+                    <option value="Bicicleta Ergométrica|Cardio">Bicicleta Ergométrica</option>
+                    <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
+                    <option value="Simulador de Escada|Cardio">Simulador de Escada</option>
+
+                    <option value="Remo Seco (Ergômetro)|Cardio">Remo Seco (Ergômetro)</option>
+                    <option value="Corda Naval|Cardio">Corda Naval</option>
+                    <option value="Pular Corda|Cardio">Pular Corda</option>
+                    <option value="Polichinelos|Cardio">Polichinelos</option>
+                    <option value="Burpees|Cardio">Burpees</option>
+                </optgroup>
             </select>
         </div>
 
@@ -880,6 +886,18 @@ label {
                 <option value="Máquina">Máquina</option>
                 <option value="Polia">Polia / Cabo</option>
                 <option value="Cardio">Cardio</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Quantidade Inicial de Séries</label>
+            <select id="newExerciseSetsCount">
+                <option value="1">1 Série</option>
+                <option value="2">2 Séries</option>
+                <option value="3" selected>3 Séries</option>
+                <option value="4">4 Séries</option>
+                <option value="5">5 Séries</option>
+                <option value="6">6 Séries</option>
             </select>
         </div>
 
@@ -980,18 +998,13 @@ function handleProfilePicUpload(event) {
 function calculateSuggestedMetrics() {
     const weightVal = parseFloat(document.getElementById('userWeight').value);
     if (!isNaN(weightVal) && weightVal > 0) {
-        // Cálculo da Meta de Água (35ml / kg)
         const suggestedWater = Math.round(weightVal * 35);
-        
-        // Atualiza a sugestão visual
         document.getElementById('waterSuggestionText').innerText = `Sugestão com base no seu peso (${weightVal}kg): ${suggestedWater}ml/dia`;
         
-        // CORREÇÃO AQUI: Altera a meta real no campo e salva automaticamente no estado
         document.getElementById('waterTarget').value = suggestedWater;
         state.profile.waterTarget = suggestedWater;
         state.profile.weight = weightVal;
         
-        // Atualiza a dose recomendada de Creatina (0,07g / kg)
         const suggestedCreatine = (weightVal * 0.07).toFixed(1);
         document.getElementById('creatineTarget').value = `${suggestedCreatine}g`;
 
@@ -1134,6 +1147,7 @@ function selectFromLibrary(val) {
 function addExerciseToWorkout() {
     const name = document.getElementById('newExerciseName').value.trim();
     const type = document.getElementById('newExerciseType').value;
+    const setsCount = parseInt(document.getElementById('newExerciseSetsCount').value) || 3;
 
     if (!name) {
         showToast("Insira o nome do exercício!");
@@ -1144,12 +1158,22 @@ function addExerciseToWorkout() {
         startWorkout();
     }
 
+    // Cria as séries com base na quantidade selecionada no modal
+    const sets = [];
+    for (let i = 0; i < setsCount; i++) {
+        if (type === 'Cardio') {
+            sets.push({ time: 15, dist: 2 });
+        } else {
+            sets.push({ weight: 0, reps: 0 });
+        }
+    }
+
     state.currentWorkout.exercises.push({
         id: Date.now(),
         name: name,
         type: type,
         collapsed: false,
-        sets: type === 'Cardio' ? [{ time: 15, dist: 2 }] : [{ weight: 0, reps: 0 }]
+        sets: sets
     });
 
     document.getElementById('newExerciseName').value = '';
@@ -1215,7 +1239,7 @@ function renderCurrentWorkout() {
                             <input type="number" step="0.1" value="${s.dist || ''}" onchange="updateSetData(${exIdx}, ${sIdx}, 'dist', this.value)">
                         </div>
                     </div>
-                    ${ex.sets.length > 1 ? `<button class="danger" style="padding:4px 8px; font-size:11px; margin-top:5px;" onclick="removeSet(${exIdx}, ${sIdx})">Remover Séria</button>` : ''}
+                    ${ex.sets.length > 1 ? `<button class="danger" style="padding:4px 8px; font-size:11px; margin-top:5px;" onclick="removeSet(${exIdx}, ${sIdx})">Remover Série</button>` : ''}
                 </div>`;
             } else {
                 return `
@@ -1314,7 +1338,6 @@ function stopTimer() {
 function updateHomeSummary() {
     const todayStr = getTodayKey();
 
-    // Filtra treinos finalizados hoje
     const todayWorkouts = state.history.filter(w => {
         const d = new Date(w.endTime || w.startTime);
         const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -1431,7 +1454,6 @@ function renderProgressChart() {
     const labels = [];
     const dataMaxWeights = [];
 
-    // Percorre histórico do mais antigo para o mais novo
     [...state.history].reverse().forEach(w => {
         w.exercises.forEach(e => {
             if (e.name === selectedEx && e.sets.length > 0) {
@@ -1514,34 +1536,53 @@ function loadData() {
     calculateSuggestedMetrics();
 }
 
+// CORREÇÃO: EXPORTAÇÃO MODERNA E COMPATÍVEL
 function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `diario_treino_backup_${getTodayKey()}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    try {
+        const jsonStr = JSON.stringify(state, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.href = url;
+        downloadAnchor.download = `diario_treino_backup_${getTodayKey()}.json`;
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        
+        document.body.removeChild(downloadAnchor);
+        URL.revokeObjectURL(url);
+        showToast("Backup gerado com sucesso!");
+    } catch (err) {
+        alert("Erro ao exportar dados: " + err.message);
+    }
 }
 
+// CORREÇÃO: IMPORTAÇÃO LEITORA DE TEXTO JSON
 function importData() {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'application/json';
+    input.accept = '.json,application/json';
     input.onchange = e => {
         const file = e.target.files[0];
+        if (!file) return;
+
         const reader = new FileReader();
         reader.onload = event => {
             try {
-                state = JSON.parse(event.target.result);
-                saveData();
-                loadData();
-                showToast("Dados importados com sucesso!");
+                const importedData = JSON.parse(event.target.result);
+                if (typeof importedData === 'object' && importedData !== null) {
+                    state = importedData;
+                    saveData();
+                    loadData();
+                    showToast("Dados importados com sucesso!");
+                } else {
+                    throw new Error("Estrutura do arquivo inválida.");
+                }
             } catch (err) {
-                alert("Arquivo JSON inválido!");
+                alert("Erro ao importar: O arquivo não é um JSON válido de backup.");
             }
         };
-        reader.readAsDataURL(file);
+        reader.readAsText(file); // Corrigido de readAsDataURL para readAsText
     };
     input.click();
 }
