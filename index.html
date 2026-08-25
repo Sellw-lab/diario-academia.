@@ -641,7 +641,7 @@ label {
         <h2>⚙️ Configurações & Suplementação</h2>
         <div class="field">
             <label>Seu peso atual (kg)</label>
-            <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" onchange="calculateSuggestedMetrics()">
+            <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" oninput="calculateSuggestedMetrics()">
         </div>
         <div class="field">
             <label>Meta diária de água (ml)</label>
@@ -690,7 +690,7 @@ label {
     </button>
 </nav>
 
-<!-- MODAL EXERCÍCIO CORRIGIDO -->
+<!-- MODAL EXERCÍCIO -->
 <div id="exerciseModal" class="modal">
     <div class="modal-content">
         <div class="modal-title">
@@ -864,377 +864,432 @@ label {
                     <option value="Abdominal Bicicleta|Livre">Abdominal Bicicleta</option>
                     <option value="Prancha Frontal Estática|Livre">Prancha Frontal Estática</option>
                     <option value="Prancha Lateral|Livre">Prancha Lateral</option>
-                    <option value="Rotação de Tronco no Cabo (Woodchopper)|Polia">Rotação de Tronco no Cabo (Woodchopper)</option>
-                </optgroup>
-
-                <optgroup label="🏃 Cardio & Esteira">
-                    <option value="Esteira (Caminhada / Corrida)|Cardio">Esteira (Caminhada / Corrida)</option>
-                    <option value="Bicicleta Ergométrica Sentada|Cardio">Bicicleta Ergométrica Sentada</option>
-                    <option value="Bicicleta Ergométrica Horizontal|Cardio">Bicicleta Ergométrica Horizontal</option>
-                    <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
-                    <option value="Simulador de Escada / Escalador|Cardio">Simulador de Escada</option>
-                    <option value="Remo Ergométrico|Cardio">Remo Ergométrico</option>
-                    <option value="Corda de Pular|Cardio">Corda de Pular</option>
-                    <option value="Air Bike|Cardio">Air Bike</option>
                 </optgroup>
             </select>
         </div>
 
         <div class="field">
             <label>Nome do Exercício</label>
-            <input id="exerciseName" placeholder="Ex: Supino Reto">
+            <input id="newExerciseName" placeholder="Ex: Supino Reto">
         </div>
 
         <div class="field">
             <label>Tipo de Equipamento</label>
-            <select id="exerciseType" onchange="toggleSetCountVisibility(this.value)">
-                <option value="Livre">Livre (Anilhas/Halteres)</option>
-                <option value="Polia">Polia / Cabos</option>
+            <select id="newExerciseType">
+                <option value="Livre">Livre (Halter / Barra)</option>
                 <option value="Máquina">Máquina</option>
+                <option value="Polia">Polia / Cabo</option>
                 <option value="Cardio">Cardio</option>
             </select>
         </div>
 
-        <div class="field" id="setCountField">
-            <label>Quantidade de Séries Iniciais</label>
-            <input id="setCount" type="number" value="3" min="1" max="10">
-        </div>
-
-        <button class="full" onclick="addExercise()">Adicionar ao Treino</button>
+        <button class="full" onclick="addExerciseToWorkout()">Adicionar ao Treino</button>
     </div>
 </div>
 
-<!-- TOAST DE NOTIFICAÇÕES -->
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast">Mensagem</div>
 
 <script>
-/* =========================
-   BANCO DE DADOS & ESTADO
-========================= */
-
-let data = JSON.parse(localStorage.getItem("diarioTreino")) || {
-    workouts: [],
-    water: {},
-    creatineTaken: {},
-    settings: {
-        weight: "",
-        waterTarget: 3000,
-        creatineTarget: 0,
-        profilePic: ""
-    }
+// --- ESTADO DA APLICAÇÃO ---
+let state = {
+    history: [],
+    currentWorkout: null,
+    profile: {
+        weight: 70,
+        waterTarget: 2450,
+        profilePic: ''
+    },
+    waterLogs: {},
+    creatineLogs: {}
 };
 
-if (!data.creatineTaken) data.creatineTaken = {};
-if (!data.settings) data.settings = {};
-
-let currentWorkout = null;
 let timerInterval = null;
 let chartInstance = null;
 
-
-/* =========================
-   INICIALIZAÇÃO
-========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-    updateHeaderDate();
-    loadSettings();
-    updateWater();
+// --- INICIALIZAÇÃO ---
+window.onload = function() {
+    loadData();
+    setupDate();
+    updateWaterUI();
+    updateCreatineUI();
+    updateHomeSummary();
     renderHistory();
-    checkActiveWorkout();
-});
+    populateChartSelect();
+};
 
-function todayKey() {
-    const d = new Date();
-    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+function setupDate() {
+    const now = new Date();
+    const options = { weekday: 'long', day: 'numeric', month: 'short' };
+    document.getElementById('headerDate').innerText = now.toLocaleDateString('pt-BR', options);
 }
 
-function updateHeaderDate() {
-    const date = new Date();
-    document.getElementById("headerDate").textContent = date.toLocaleDateString("pt-BR", {
-        weekday: "long", day: "numeric", month: "long"
-    });
+function getTodayKey() {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 }
 
-function saveData() {
-    localStorage.setItem("diarioTreino", JSON.stringify(data));
+// --- NAVEGAÇÃO ---
+function showPage(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(pageId).classList.add('active');
+    if(btn) btn.classList.add('active');
+
+    if(pageId === 'home') {
+        updateHomeSummary();
+        updateWaterUI();
+        updateCreatineUI();
+    } else if(pageId === 'history') {
+        renderHistory();
+        populateChartSelect();
+    }
 }
 
-
-/* =========================
-   UPLOAD E COMPRESSÃO DE FOTO (CANVAS)
-========================= */
-
+// --- FOTO DE PERFIL ---
 function triggerProfilePicUpload() {
-    document.getElementById("picInput").click();
+    document.getElementById('picInput').click();
 }
 
 function handleProfilePicUpload(event) {
     const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const maxSize = 200;
-
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-                if (width > maxSize) {
-                    height *= maxSize / width;
-                    width = maxSize;
-                }
-            } else {
-                if (height > maxSize) {
-                    width *= maxSize / height;
-                    height = maxSize;
-                }
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 150;
+                canvas.height = 150;
+                ctx.drawImage(img, 0, 0, 150, 150);
+                const compressedSrc = canvas.toDataURL('image/jpeg', 0.7);
+                
+                document.getElementById('headerProfilePic').src = compressedSrc;
+                state.profile.profilePic = compressedSrc;
+                saveData();
+                showToast("Foto de perfil atualizada!");
             }
-
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
-
-            data.settings.profilePic = compressedBase64;
-            saveData();
-            loadSettings();
-            showToast("Foto atualizada ✓");
+            img.src = e.target.result;
         };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-
-/* =========================
-   PERSISTÊNCIA DO TREINO
-========================= */
-
-function checkActiveWorkout() {
-    const saved = localStorage.getItem("activeWorkout");
-    if (saved) {
-        try {
-            currentWorkout = JSON.parse(saved);
-            document.getElementById("activeWorkoutName").value = currentWorkout.name;
-            renderWorkout();
-        } catch (e) {
-            localStorage.removeItem("activeWorkout");
-        }
+        reader.readAsDataURL(file);
     }
 }
 
-function saveActiveWorkout() {
-    if (currentWorkout) {
-        localStorage.setItem("activeWorkout", JSON.stringify(currentWorkout));
+// --- SUGESTÕES DE ÁGUA E CREATINA AUTOMÁTICAS ---
+function calculateSuggestedMetrics() {
+    const weightVal = parseFloat(document.getElementById('userWeight').value);
+    if (!isNaN(weightVal) && weightVal > 0) {
+        // Cálculo da Meta de Água (35ml / kg)
+        const suggestedWater = Math.round(weightVal * 35);
+        
+        // Atualiza a sugestão visual
+        document.getElementById('waterSuggestionText').innerText = `Sugestão com base no seu peso (${weightVal}kg): ${suggestedWater}ml/dia`;
+        
+        // CORREÇÃO AQUI: Altera a meta real no campo e salva automaticamente no estado
+        document.getElementById('waterTarget').value = suggestedWater;
+        state.profile.waterTarget = suggestedWater;
+        state.profile.weight = weightVal;
+        
+        // Atualiza a dose recomendada de Creatina (0,07g / kg)
+        const suggestedCreatine = (weightVal * 0.07).toFixed(1);
+        document.getElementById('creatineTarget').value = `${suggestedCreatine}g`;
+
+        saveData();
+        updateWaterUI();
+        updateCreatineUI();
     } else {
-        localStorage.removeItem("activeWorkout");
+        document.getElementById('waterSuggestionText').innerText = '';
+        document.getElementById('creatineTarget').value = '';
     }
 }
 
-
-/* =========================
-   NAVEGAÇÃO
-========================= */
-
-function showPage(page, button) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(page).classList.add("active");
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-
-    if (button) button.classList.add("active");
-
-    if (page === "history") {
-        renderHistory();
-        populateExerciseSelect();
-        renderProgressChart();
-    }
-    if (page === "home") updateTodaySummary();
-}
-
-
-/* =========================
-   ÁGUA
-========================= */
-
-function getWaterToday() {
-    return data.water[todayKey()] || 0;
-}
-
+// --- GERENCIAMENTO DE ÁGUA ---
 function addWater(amount) {
-    const target = Number(data.settings.waterTarget) || 3000;
-    const current = getWaterToday();
+    const today = getTodayKey();
+    const current = state.waterLogs[today] || 0;
+    const target = state.profile.waterTarget || 3000;
 
     if (current >= target) {
-        showToast("Meta de água atingida hoje!");
+        showToast("Meta de água já alcançada hoje!");
         return;
     }
 
-    const key = todayKey();
-    if (!data.water[key]) data.water[key] = 0;
-
-    data.water[key] += amount;
-    if (data.water[key] > target) data.water[key] = target;
-
+    state.waterLogs[today] = current + amount;
     saveData();
-    updateWater();
-    showToast(data.water[key] >= target ? "🎉 Meta atingida!" : "Água adicionada 💧");
+    updateWaterUI();
+    showToast(`+${amount}ml de água registrados!`);
 }
 
 function addCustomWater() {
-    const input = document.getElementById("customWaterInput");
-    const val = Number(input.value);
-    if (!val || val <= 0) return showToast("Digite um valor válido");
-    addWater(val);
-    input.value = "";
+    const input = document.getElementById('customWaterInput');
+    const val = parseInt(input.value);
+    if (val && val > 0) {
+        addWater(val);
+        input.value = '';
+    }
 }
 
 function resetWater() {
-    data.water[todayKey()] = 0;
+    const today = getTodayKey();
+    state.waterLogs[today] = 0;
     saveData();
-    updateWater();
-    showToast("Água zerada");
+    updateWaterUI();
+    showToast("Consumo de água zerado!");
 }
 
-function updateWater() {
-    const current = getWaterToday();
-    const target = Number(data.settings.waterTarget) || 3000;
+function updateWaterUI() {
+    const today = getTodayKey();
+    const current = state.waterLogs[today] || 0;
+    const target = state.profile.waterTarget || 3000;
 
-    document.getElementById("waterCurrent").textContent = current;
-    document.getElementById("waterTargetText").textContent = target;
+    document.getElementById('waterCurrent').innerText = current;
+    document.getElementById('waterTargetText').innerText = target;
 
-    let percent = Math.min((current / target) * 100, 100);
-    document.getElementById("waterProgress").style.width = percent + "%";
+    const pct = Math.min(100, Math.round((current / target) * 100));
+    document.getElementById('waterProgress').style.width = pct + '%';
 
-    const reached = current >= target && target > 0;
-    document.getElementById("waterMetaReachedMessage").style.display = reached ? "block" : "none";
+    const actionArea = document.getElementById('waterActionArea');
+    const reachedMsg = document.getElementById('waterMetaReachedMessage');
 
-    document.getElementById("btnW250").disabled = reached;
-    document.getElementById("btnW500").disabled = reached;
-    document.getElementById("btnW1000").disabled = reached;
-    document.getElementById("btnWCustom").disabled = reached;
-    document.getElementById("customWaterInput").disabled = reached;
-}
-
-
-/* =========================
-   CONFIGURAÇÕES & CREATINA
-========================= */
-
-function calculateSuggestedMetrics() {
-    const weight = Number(document.getElementById("userWeight").value);
-    if (weight > 0) {
-        const suggestedWater = Math.round(weight * 35);
-        document.getElementById("waterSuggestionText").textContent = `Sugerido por peso (35ml/kg): ${suggestedWater} ml`;
-        if (!document.getElementById("waterTarget").value) {
-            document.getElementById("waterTarget").value = suggestedWater;
-        }
-        const suggestedCreatine = (weight * 0.07).toFixed(1);
-        document.getElementById("creatineTarget").value = `${suggestedCreatine} g/dia`;
+    if (current >= target && target > 0) {
+        actionArea.style.display = 'none';
+        reachedMsg.style.display = 'block';
     } else {
-        document.getElementById("creatineTarget").value = "0 g/dia";
+        actionArea.style.display = 'block';
+        reachedMsg.style.display = 'none';
     }
 }
 
-function loadSettings() {
-    document.getElementById("userWeight").value = data.settings.weight || "";
-    document.getElementById("waterTarget").value = data.settings.waterTarget || 3000;
-    
-    if (data.settings.profilePic) {
-        document.getElementById("headerProfilePic").src = data.settings.profilePic;
-    }
-
-    calculateSuggestedMetrics();
-    updateHomeCreatineDisplay();
-}
-
-function saveSettings() {
-    const weight = document.getElementById("userWeight").value;
-    data.settings.weight = weight;
-    data.settings.waterTarget = Number(document.getElementById("waterTarget").value) || 3000;
-    data.settings.creatineTarget = weight ? (Number(weight) * 0.07).toFixed(1) : 0;
-
-    saveData();
-    updateWater();
-    updateHomeCreatineDisplay();
-    showToast("Configurações salvas ✓");
-}
-
+// --- GERENCIAMENTO DE CREATINA ---
 function toggleCreatine() {
-    const key = todayKey();
-    data.creatineTaken[key] = !data.creatineTaken[key];
+    const today = getTodayKey();
+    state.creatineLogs[today] = !state.creatineLogs[today];
     saveData();
-    updateHomeCreatineDisplay();
-    showToast(data.creatineTaken[key] ? "Creatina marcada como tomada! 🧪" : "Creatina desmarcada");
+    updateCreatineUI();
 }
 
-function updateHomeCreatineDisplay() {
-    const creatineVal = data.settings.creatineTarget || (data.settings.weight ? (Number(data.settings.weight) * 0.07).toFixed(1) : 0);
-    document.getElementById("homeCreatineTarget").textContent = `${creatineVal}g`;
+function updateCreatineUI() {
+    const today = getTodayKey();
+    const taken = !!state.creatineLogs[today];
+    const weight = state.profile.weight || 70;
+    const dose = (weight * 0.07).toFixed(1);
 
-    const key = todayKey();
-    const isTaken = !!data.creatineTaken[key];
-    const btn = document.getElementById("homeCreatineBtn");
-    const statusText = document.getElementById("creatineStatusText");
+    document.getElementById('homeCreatineTarget').innerText = `${dose}g`;
+    
+    const statusText = document.getElementById('creatineStatusText');
+    const btn = document.getElementById('homeCreatineBtn');
 
-    if (isTaken) {
-        btn.classList.remove("secondary");
-        btn.classList.add("green");
-        btn.textContent = "✓ Creatina Tomada Hoje";
-        statusText.textContent = "Status de hoje: Concluído 🎉";
+    if (taken) {
+        statusText.innerText = "Status de hoje: ✅ Tomada!";
         statusText.style.color = "var(--green)";
+        btn.innerText = "Desmarcar Creatina";
+        btn.className = "full secondary";
     } else {
-        btn.classList.remove("green");
-        btn.classList.add("secondary");
-        btn.textContent = "Marcar como Tomada";
-        statusText.textContent = "Status de hoje: Pendente";
+        statusText.innerText = "Status de hoje: ⏳ Pendente";
         statusText.style.color = "var(--muted)";
+        btn.innerText = "Marcar como Tomada";
+        btn.className = "full green";
     }
 }
 
-
-/* =========================
-   TREINO & TIMER
-========================= */
-
+// --- FLUXO DE TREINO ---
 function startWorkout() {
-    const name = document.getElementById("workoutName").value.trim();
-    currentWorkout = {
-        id: Date.now(),
-        name: name || "Treino",
-        date: new Date().toISOString(),
+    const nameInput = document.getElementById('workoutName');
+    const name = nameInput.value.trim() || "Treino do Dia";
+
+    state.currentWorkout = {
+        name: name,
+        startTime: new Date().toISOString(),
         exercises: []
     };
 
-    document.getElementById("activeWorkoutName").value = currentWorkout.name;
-    saveActiveWorkout();
-    renderWorkout();
-    showPage("workout");
-    showToast("Treino iniciado 🏋️");
+    document.getElementById('activeWorkoutName').value = name;
+    nameInput.value = '';
+    renderCurrentWorkout();
+    showPage('workout', document.querySelectorAll('.nav-btn')[1]);
 }
 
 function updateWorkoutTitle(val) {
-    if (currentWorkout) {
-        currentWorkout.name = val.trim() || "Treino";
-        saveActiveWorkout();
+    if (state.currentWorkout) {
+        state.currentWorkout.name = val || "Treino Sem Nome";
     }
 }
 
+function openExerciseModal() {
+    document.getElementById('exerciseModal').classList.add('show');
+}
+
+function closeExerciseModal() {
+    document.getElementById('exerciseModal').classList.remove('show');
+}
+
+function selectFromLibrary(val) {
+    if (!val) return;
+    const [name, type] = val.split('|');
+    document.getElementById('newExerciseName').value = name;
+    document.getElementById('newExerciseType').value = type;
+}
+
+function addExerciseToWorkout() {
+    const name = document.getElementById('newExerciseName').value.trim();
+    const type = document.getElementById('newExerciseType').value;
+
+    if (!name) {
+        showToast("Insira o nome do exercício!");
+        return;
+    }
+
+    if (!state.currentWorkout) {
+        startWorkout();
+    }
+
+    state.currentWorkout.exercises.push({
+        id: Date.now(),
+        name: name,
+        type: type,
+        collapsed: false,
+        sets: type === 'Cardio' ? [{ time: 15, dist: 2 }] : [{ weight: 0, reps: 0 }]
+    });
+
+    document.getElementById('newExerciseName').value = '';
+    document.getElementById('exerciseLibrarySelect').value = '';
+    closeExerciseModal();
+    renderCurrentWorkout();
+}
+
+function toggleCollapse(exIndex) {
+    state.currentWorkout.exercises[exIndex].collapsed = !state.currentWorkout.exercises[exIndex].collapsed;
+    renderCurrentWorkout();
+}
+
+function removeExercise(exIndex) {
+    state.currentWorkout.exercises.splice(exIndex, 1);
+    renderCurrentWorkout();
+}
+
+function addSet(exIndex) {
+    const ex = state.currentWorkout.exercises[exIndex];
+    if (ex.type === 'Cardio') {
+        const lastSet = ex.sets[ex.sets.length - 1] || { time: 10, dist: 1 };
+        ex.sets.push({ ...lastSet });
+    } else {
+        const lastSet = ex.sets[ex.sets.length - 1] || { weight: 0, reps: 0 };
+        ex.sets.push({ ...lastSet });
+    }
+    renderCurrentWorkout();
+}
+
+function removeSet(exIndex, setIndex) {
+    state.currentWorkout.exercises[exIndex].sets.splice(setIndex, 1);
+    renderCurrentWorkout();
+}
+
+function updateSetData(exIndex, setIndex, field, value) {
+    state.currentWorkout.exercises[exIndex].sets[setIndex][field] = parseFloat(value) || 0;
+}
+
+function renderCurrentWorkout() {
+    const container = document.getElementById('exerciseList');
+    if (!state.currentWorkout || state.currentWorkout.exercises.length === 0) {
+        container.innerHTML = '<div class="empty">Nenhum exercício adicionado ainda.</div>';
+        return;
+    }
+
+    container.innerHTML = state.currentWorkout.exercises.map((ex, exIdx) => {
+        const isCollapsed = ex.collapsed ? 'collapsed' : '';
+        const isCardio = ex.type === 'Cardio';
+
+        let setsHTML = ex.sets.map((s, sIdx) => {
+            if (isCardio) {
+                return `
+                <div class="set">
+                    <div class="set-title">Sessão ${sIdx + 1}</div>
+                    <div class="row">
+                        <div>
+                            <label>Tempo (min)</label>
+                            <input type="number" value="${s.time || ''}" onchange="updateSetData(${exIdx}, ${sIdx}, 'time', this.value)">
+                        </div>
+                        <div>
+                            <label>Distância (km)</label>
+                            <input type="number" step="0.1" value="${s.dist || ''}" onchange="updateSetData(${exIdx}, ${sIdx}, 'dist', this.value)">
+                        </div>
+                    </div>
+                    ${ex.sets.length > 1 ? `<button class="danger" style="padding:4px 8px; font-size:11px; margin-top:5px;" onclick="removeSet(${exIdx}, ${sIdx})">Remover Séria</button>` : ''}
+                </div>`;
+            } else {
+                return `
+                <div class="set">
+                    <div class="set-title">Série ${sIdx + 1}</div>
+                    <div class="row">
+                        <div>
+                            <label>Carga (kg)</label>
+                            <input type="number" step="0.5" value="${s.weight || ''}" onchange="updateSetData(${exIdx}, ${sIdx}, 'weight', this.value)">
+                        </div>
+                        <div>
+                            <label>Repetições</label>
+                            <input type="number" value="${s.reps || ''}" onchange="updateSetData(${exIdx}, ${sIdx}, 'reps', this.value)">
+                        </div>
+                    </div>
+                    ${ex.sets.length > 1 ? `<button class="danger" style="padding:4px 8px; font-size:11px; margin-top:5px;" onclick="removeSet(${exIdx}, ${sIdx})">Remover Série</button>` : ''}
+                </div>`;
+            }
+        }).join('');
+
+        return `
+        <div class="exercise ${isCollapsed}">
+            <div class="exercise-header">
+                <div>
+                    <span class="exercise-name">${ex.name}</span>
+                    <span class="exercise-type">${ex.type}</span>
+                </div>
+                <div class="exercise-header-actions">
+                    <button class="toggle-btn" onclick="toggleCollapse(${exIdx})">${ex.collapsed ? 'Expandir' : 'Recolher'}</button>
+                    <button class="danger" style="padding:8px 10px; font-size:12px;" onclick="removeExercise(${exIdx})">✕</button>
+                </div>
+            </div>
+            <div class="exercise-body">
+                ${setsHTML}
+                <button class="secondary full" style="margin-top:10px;" onclick="addSet(${exIdx})">+ Adicionar Série</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function finishWorkout() {
+    if (!state.currentWorkout || state.currentWorkout.exercises.length === 0) {
+        showToast("Adicione pelo menos um exercício!");
+        return;
+    }
+
+    state.currentWorkout.endTime = new Date().toISOString();
+    state.history.unshift(state.currentWorkout);
+    state.currentWorkout = null;
+
+    saveData();
+    renderCurrentWorkout();
+    showToast("Treino finalizado e salvo!");
+    showPage('home', document.querySelectorAll('.nav-btn')[0]);
+}
+
+function cancelWorkout() {
+    if (confirm("Deseja cancelar o treino atual? Dados não salvos serão perdidos.")) {
+        state.currentWorkout = null;
+        renderCurrentWorkout();
+        showPage('home', document.querySelectorAll('.nav-btn')[0]);
+    }
+}
+
+// --- TIMER DE DESCANSO ---
 function startTimer(seconds) {
     stopTimer();
     let left = seconds;
-    const display = document.getElementById("timerDisplay");
-
+    const display = document.getElementById('timerDisplay');
+    
     const updateDisplay = () => {
-        const m = String(Math.floor(left / 60)).padStart(2, "0");
-        const s = String(left % 60).padStart(2, "0");
-        display.textContent = `${m}:${s}`;
+        const m = String(Math.floor(left / 60)).padStart(2, '0');
+        const s = String(left % 60).padStart(2, '0');
+        display.innerText = `${m}:${s}`;
     };
 
     updateDisplay();
@@ -1242,8 +1297,8 @@ function startTimer(seconds) {
         left--;
         if (left < 0) {
             stopTimer();
-            display.textContent = "PRONTO!";
-            showToast("⏰ Descanso concluído!");
+            display.innerText = "FIM!";
+            showToast("⏱️ Tempo de descanso terminado!");
         } else {
             updateDisplay();
         }
@@ -1252,367 +1307,140 @@ function startTimer(seconds) {
 
 function stopTimer() {
     if (timerInterval) clearInterval(timerInterval);
-    document.getElementById("timerDisplay").textContent = "00:00";
+    document.getElementById('timerDisplay').innerText = "00:00";
 }
 
+// --- RESUMO HOME ---
+function updateHomeSummary() {
+    const todayStr = getTodayKey();
 
-/* =========================
-   MODAL & LÓGICA DE CARDS RETRÁTEIS
-========================= */
-
-function openExerciseModal() {
-    document.getElementById("exerciseModal").classList.add("show");
-    document.getElementById("exerciseLibrarySelect").value = "";
-    document.getElementById("exerciseName").value = "";
-    document.getElementById("exerciseType").value = "Livre";
-    toggleSetCountVisibility("Livre");
-}
-
-function closeExerciseModal() {
-    document.getElementById("exerciseModal").classList.remove("show");
-}
-
-function selectFromLibrary(val) {
-    if (!val) return;
-    const [name, type] = val.split("|");
-    document.getElementById("exerciseName").value = name;
-    document.getElementById("exerciseType").value = type;
-    toggleSetCountVisibility(type);
-}
-
-function toggleSetCountVisibility(type) {
-    document.getElementById("setCountField").style.display = type === "Cardio" ? "none" : "block";
-}
-
-function addExercise() {
-    const name = document.getElementById("exerciseName").value.trim();
-    const type = document.getElementById("exerciseType").value;
-    const count = Number(document.getElementById("setCount").value);
-
-    if (!name) return showToast("Digite ou selecione um exercício");
-    if (!currentWorkout) return showToast("Comece um treino primeiro");
-
-    currentWorkout.exercises.forEach(ex => ex.collapsed = true);
-
-    const isCardio = type === "Cardio";
-    const exercise = {
-        id: Date.now(),
-        name: name,
-        type: type,
-        collapsed: false,
-        sets: isCardio 
-            ? [{ time: "", distance: "", speed: "", incline: "" }] 
-            : Array.from({ length: count }, () => ({ weight: "", reps: "" }))
-    };
-
-    currentWorkout.exercises.push(exercise);
-    saveActiveWorkout();
-    
-    document.getElementById("exerciseName").value = "";
-    document.getElementById("exerciseLibrarySelect").value = "";
-    closeExerciseModal();
-    renderWorkout();
-}
-
-function toggleExerciseCollapse(index) {
-    if (!currentWorkout || !currentWorkout.exercises[index]) return;
-    currentWorkout.exercises[index].collapsed = !currentWorkout.exercises[index].collapsed;
-    saveActiveWorkout();
-    renderWorkout();
-}
-
-function renderWorkout() {
-    const container = document.getElementById("exerciseList");
-    container.innerHTML = "";
-
-    if (!currentWorkout || currentWorkout.exercises.length === 0) {
-        container.innerHTML = `<div class="card empty">Nenhum exercício adicionado.<br><br>Toque em "Adicionar exercício".</div>`;
-        return;
-    }
-
-    currentWorkout.exercises.forEach((exercise, exerciseIndex) => {
-        const div = document.createElement("div");
-        const isCollapsed = !!exercise.collapsed;
-        div.className = `exercise ${isCollapsed ? 'collapsed' : ''}`;
-        const isCardio = exercise.type === "Cardio";
-
-        let setsHTML = "";
-
-        if (isCardio) {
-            const set = exercise.sets[0] || { time: "", distance: "", speed: "", incline: "" };
-            setsHTML = `
-                <div class="set">
-                    <div class="set-title">Métricas da Sessão</div>
-                    <div class="row-4">
-                        <div>
-                            <label>Tempo (min)</label>
-                            <input type="number" step="1" value="${set.time || ''}" placeholder="0" onchange="updateCardioSet(${exerciseIndex}, 'time', this.value)">
-                        </div>
-                        <div>
-                            <label>Distância (km)</label>
-                            <input type="number" step="0.1" value="${set.distance || ''}" placeholder="0" onchange="updateCardioSet(${exerciseIndex}, 'distance', this.value)">
-                        </div>
-                        <div>
-                            <label>Velocidade (km/h)</label>
-                            <input type="number" step="0.1" value="${set.speed || ''}" placeholder="0" onchange="updateCardioSet(${exerciseIndex}, 'speed', this.value)">
-                        </div>
-                        <div>
-                            <label>Inclinação (%)</label>
-                            <input type="number" step="0.5" value="${set.incline || ''}" placeholder="0" onchange="updateCardioSet(${exerciseIndex}, 'incline', this.value)">
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            setsHTML = exercise.sets.map((set, setIndex) => `
-                <div class="set">
-                    <div class="set-title">Série ${setIndex + 1}</div>
-                    <div class="row">
-                        <div>
-                            <label>Carga (kg)</label>
-                            <input type="number" step="0.5" value="${set.weight || ''}" placeholder="0" onchange="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)">
-                        </div>
-                        <div>
-                            <label>Repetições</label>
-                            <input type="number" step="1" value="${set.reps || ''}" placeholder="0" onchange="updateSet(${exerciseIndex}, ${setIndex}, 'reps', this.value)">
-                        </div>
-                    </div>
-                </div>
-            `).join("");
-        }
-
-        div.innerHTML = `
-            <div class="exercise-header">
-                <div>
-                    <div class="exercise-name">${escapeHTML(exercise.name)}</div>
-                    <span class="exercise-type">${escapeHTML(exercise.type)} • ${exercise.sets.length} ${isCardio ? 'sessão' : 'série(s)'}</span>
-                </div>
-                <div class="exercise-header-actions">
-                    <button class="toggle-btn" onclick="toggleExerciseCollapse(${exerciseIndex})">
-                        ${isCollapsed ? 'Editar ▲' : 'Recolher ▼'}
-                    </button>
-                    <button class="danger" onclick="removeExercise(${exerciseIndex})">×</button>
-                </div>
-            </div>
-            <div class="exercise-body">
-                ${setsHTML}
-                ${!isCardio ? `<br><button class="secondary full" onclick="addSet(${exerciseIndex})">+ Adicionar série</button>` : ''}
-            </div>
-        `;
-        container.appendChild(div);
+    // Filtra treinos finalizados hoje
+    const todayWorkouts = state.history.filter(w => {
+        const d = new Date(w.endTime || w.startTime);
+        const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return k === todayStr;
     });
-}
 
-function updateSet(exIdx, setIdx, field, val) {
-    if (!currentWorkout) return;
-    currentWorkout.exercises[exIdx].sets[setIdx][field] = val;
-    saveActiveWorkout();
-}
+    let exCount = 0;
+    let setsCount = 0;
+    let volumeTotal = 0;
 
-function updateCardioSet(exIdx, field, val) {
-    if (!currentWorkout) return;
-    if (!currentWorkout.exercises[exIdx].sets[0]) {
-        currentWorkout.exercises[exIdx].sets[0] = { time: "", distance: "", speed: "", incline: "" };
-    }
-    currentWorkout.exercises[exIdx].sets[0][field] = val;
-    saveActiveWorkout();
-}
-
-function addSet(exIdx) {
-    currentWorkout.exercises[exIdx].sets.push({ weight: "", reps: "" });
-    saveActiveWorkout();
-    renderWorkout();
-}
-
-function removeExercise(idx) {
-    if (!confirm("Remover este exercício?")) return;
-    currentWorkout.exercises.splice(idx, 1);
-    saveActiveWorkout();
-    renderWorkout();
-}
-
-function finishWorkout() {
-    if (!currentWorkout) return;
-
-    currentWorkout.name = document.getElementById("activeWorkoutName").value.trim() || "Treino";
-    currentWorkout.date = new Date().toISOString();
-
-    data.workouts.unshift(JSON.parse(JSON.stringify(currentWorkout)));
-    saveData();
-
-    currentWorkout = null;
-    saveActiveWorkout();
-
-    document.getElementById("exerciseList").innerHTML = "";
-    stopTimer();
-    updateTodaySummary();
-    showPage("home");
-    showToast("Treino salvo com sucesso ✓");
-}
-
-function cancelWorkout() {
-    if (!confirm("Cancelar este treino? Os dados em andamento serão perdidos.")) return;
-    currentWorkout = null;
-    saveActiveWorkout();
-    stopTimer();
-    showPage("home");
-}
-
-
-/* =========================
-   RESUMOS
-========================= */
-
-function updateTodaySummary() {
-    const today = todayKey();
-    const workouts = data.workouts.filter(w => w.date.startsWith(today));
-
-    let exercises = 0, sets = 0, volume = 0;
-    workouts.forEach(w => {
-        exercises += w.exercises.length;
+    todayWorkouts.forEach(w => {
         w.exercises.forEach(e => {
-            if (e.type !== "Cardio") {
-                sets += e.sets.length;
+            exCount++;
+            if (e.type !== 'Cardio') {
                 e.sets.forEach(s => {
-                    volume += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+                    setsCount++;
+                    volumeTotal += (s.weight || 0) * (s.reps || 0);
                 });
             }
         });
     });
 
-    document.getElementById("todayExercises").textContent = exercises;
-    document.getElementById("todaySets").textContent = sets;
-    document.getElementById("todayVolume").textContent = formatNumber(volume);
+    document.getElementById('todayExercises').innerText = exCount;
+    document.getElementById('todaySets').innerText = setsCount;
+    document.getElementById('todayVolume').innerText = Math.round(volumeTotal);
 
-    updateWeeklyCardioSummary();
-    updateHomeCreatineDisplay();
-}
-
-function updateWeeklyCardioSummary() {
+    // Cardio 7 Dias
     const now = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(now.getDate() - 7);
+    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
 
-    let totalMinutes = 0, totalKm = 0, totalSessions = 0;
+    let cTime = 0;
+    let cDist = 0;
+    let cSessions = 0;
 
-    data.workouts.forEach(workout => {
-        const workoutDate = new Date(workout.date);
-        if (workoutDate >= sevenDaysAgo && workoutDate <= now) {
-            workout.exercises.forEach(exercise => {
-                if (exercise.type === "Cardio") {
-                    exercise.sets.forEach(set => {
-                        const time = Number(set.time !== undefined ? set.time : set.weight) || 0;
-                        const dist = Number(set.distance !== undefined ? set.distance : set.reps) || 0;
-                        if (time > 0 || dist > 0) {
-                            totalMinutes += time;
-                            totalKm += dist;
-                            totalSessions++;
-                        }
+    state.history.forEach(w => {
+        const wDate = new Date(w.endTime || w.startTime);
+        if (wDate >= sevenDaysAgo) {
+            w.exercises.forEach(e => {
+                if (e.type === 'Cardio') {
+                    e.sets.forEach(s => {
+                        cSessions++;
+                        cTime += (s.time || 0);
+                        cDist += (s.dist || 0);
                     });
                 }
             });
         }
     });
 
-    document.getElementById("weeklyCardioTime").textContent = `${formatNumber(totalMinutes)} min`;
-    document.getElementById("weeklyCardioDist").textContent = `${formatNumber(totalKm)} km`;
-    document.getElementById("weeklyCardioSessions").textContent = totalSessions;
+    document.getElementById('weeklyCardioTime').innerText = `${cTime} min`;
+    document.getElementById('weeklyCardioDist').innerText = `${cDist.toFixed(1)} km`;
+    document.getElementById('weeklyCardioSessions').innerText = cSessions;
 }
 
-
-/* =========================
-   HISTÓRICO
-========================= */
-
+// --- HISTÓRICO & GRÁFICOS ---
 function renderHistory() {
-    const container = document.getElementById("historyList");
-    container.innerHTML = "";
-
-    if (data.workouts.length === 0) {
-        container.innerHTML = `<div class="card empty">Você ainda não possui treinos registrados.</div>`;
+    const container = document.getElementById('historyList');
+    if (state.history.length === 0) {
+        container.innerHTML = '<div class="empty">Nenhum treino no histórico.</div>';
         return;
     }
 
-    data.workouts.forEach((workout, index) => {
-        const date = new Date(workout.date);
-        const totalVolume = calculateWorkoutVolume(workout);
+    container.innerHTML = state.history.map((w, idx) => {
+        const d = new Date(w.endTime || w.startTime);
+        const dateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-        const div = document.createElement("div");
-        div.className = "history-item";
+        const exSummary = w.exercises.map(e => `<span class="badge">${e.name}</span>`).join(' ');
 
-        div.innerHTML = `
-            <strong>${escapeHTML(workout.name)}</strong>
-            <small>${date.toLocaleDateString("pt-BR")} às ${date.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})}</small>
-            <br><br>
-            <span class="badge">${workout.exercises.length} exercícios</span>
-            <span class="badge">${totalVolume} kg vol.</span>
-            <br><br>
-            ${workout.exercises.map(exercise => {
-                const isCardio = exercise.type === "Cardio";
-                const volume = calculateExerciseVolume(exercise);
-                let setSummary = "";
-
-                if (isCardio) {
-                    const s = exercise.sets[0] || {};
-                    setSummary = `${s.time || 0} min · ${s.distance || 0} km`;
-                } else {
-                    setSummary = `${exercise.sets.length} séries · ${formatNumber(volume)} kg`;
-                }
-
-                return `
-                    <div style="padding:8px 0; border-top:1px solid var(--border);">
-                        <strong>${escapeHTML(exercise.name)} <small>(${escapeHTML(exercise.type)})</small></strong>
-                        <small style="display:block;">${setSummary}</small>
-                    </div>
-                `;
-            }).join("")}
-            <br>
-            <button class="danger full" onclick="deleteWorkout(${index})">Excluir treino</button>
-        `;
-        container.appendChild(div);
-    });
+        return `
+        <div class="history-item">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <strong>${w.name}</strong>
+                    <small>${dateStr}</small>
+                </div>
+                <button class="danger" style="padding:5px 8px; font-size:11px;" onclick="deleteHistoryItem(${idx})">Excluir</button>
+            </div>
+            <div style="margin-top:8px;">${exSummary}</div>
+        </div>`;
+    }).join('');
 }
 
+function deleteHistoryItem(idx) {
+    if (confirm("Excluir este treino do histórico?")) {
+        state.history.splice(idx, 1);
+        saveData();
+        renderHistory();
+        populateChartSelect();
+        showToast("Treino removido!");
+    }
+}
 
-/* =========================
-   GRÁFICO
-========================= */
+function populateChartSelect() {
+    const select = document.getElementById('chartExerciseSelect');
+    const exercisesSet = new Set();
 
-function populateExerciseSelect() {
-    const select = document.getElementById("chartExerciseSelect");
-    const currentValue = select.value;
-    select.innerHTML = '<option value="">Selecione um exercício...</option>';
-
-    const names = new Set();
-    data.workouts.forEach(w => w.exercises.forEach(e => {
-        if (e.type !== "Cardio") names.add(e.name);
-    }));
-
-    names.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
+    state.history.forEach(w => {
+        w.exercises.forEach(e => {
+            if (e.type !== 'Cardio') exercisesSet.add(e.name);
+        });
     });
 
-    select.value = currentValue;
+    select.innerHTML = '<option value="">Selecione um exercício...</option>' +
+        Array.from(exercisesSet).map(e => `<option value="${e}">${e}</option>`).join('');
 }
 
 function renderProgressChart() {
-    const selected = document.getElementById("chartExerciseSelect").value;
-    const ctx = document.getElementById("progressChart").getContext("2d");
+    const selectedEx = document.getElementById('chartExerciseSelect').value;
+    const ctx = document.getElementById('progressChart').getContext('2d');
 
     if (chartInstance) chartInstance.destroy();
-    if (!selected) return;
+    if (!selectedEx) return;
 
-    const points = [];
-    data.workouts.slice().reverse().forEach(w => {
+    const labels = [];
+    const dataMaxWeights = [];
+
+    // Percorre histórico do mais antigo para o mais novo
+    [...state.history].reverse().forEach(w => {
         w.exercises.forEach(e => {
-            if (normalize(e.name) === normalize(selected)) {
-                points.push({
-                    date: new Date(w.date).toLocaleDateString("pt-BR", {day:'2-digit', month:'2-digit'}),
-                    maxWeight: getMaxWeight(e)
-                });
+            if (e.name === selectedEx && e.sets.length > 0) {
+                const maxWeight = Math.max(...e.sets.map(s => s.weight || 0));
+                if (maxWeight > 0) {
+                    const d = new Date(w.endTime || w.startTime);
+                    labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+                    dataMaxWeights.push(maxWeight);
+                }
             }
         });
     });
@@ -1620,12 +1448,12 @@ function renderProgressChart() {
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: points.map(p => p.date),
+            labels: labels,
             datasets: [{
-                label: 'Carga Máx (kg)',
-                data: points.map(p => p.maxWeight),
+                label: 'Carga Máxima (kg)',
+                data: dataMaxWeights,
                 borderColor: '#7c5cff',
-                backgroundColor: 'rgba(124, 92, 255, 0.2)',
+                backgroundColor: 'rgba(124, 92, 255, 0.1)',
                 fill: true,
                 tension: 0.3
             }]
@@ -1634,128 +1462,105 @@ function renderProgressChart() {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                y: { ticks: { color: '#9999a8' }, grid: { color: '#292936' } },
-                x: { ticks: { color: '#9999a8' }, grid: { color: '#292936' } }
+                y: { grid: { color: '#292936' }, ticks: { color: '#9999a8' } },
+                x: { grid: { color: '#292936' }, ticks: { color: '#9999a8' } }
             },
-            plugins: { legend: { display: false } }
+            plugins: {
+                legend: { labels: { color: '#ffffff' } }
+            }
         }
     });
 }
 
+// --- CONFIGURAÇÕES & PERSISTÊNCIA DE DADOS ---
+function saveSettings() {
+    const weightVal = parseFloat(document.getElementById('userWeight').value) || 70;
+    const waterVal = parseInt(document.getElementById('waterTarget').value) || 3000;
 
-/* =========================
-   CÁLCULOS
-========================= */
+    state.profile.weight = weightVal;
+    state.profile.waterTarget = waterVal;
 
-function getMaxWeight(exercise) {
-    if (exercise.type === "Cardio") return 0;
-    return Math.max(0, ...exercise.sets.map(s => Number(s.weight) || 0));
-}
-
-function calculateWorkoutVolume(workout) {
-    let total = 0;
-    workout.exercises.forEach(e => {
-        if (e.type !== "Cardio") total += calculateExerciseVolume(e);
-    });
-    return formatNumber(total);
-}
-
-function calculateExerciseVolume(exercise) {
-    if (exercise.type === "Cardio") return 0;
-    return exercise.sets.reduce((sum, s) => sum + ((Number(s.weight) || 0) * (Number(s.reps) || 0)), 0);
-}
-
-function deleteWorkout(index) {
-    if (!confirm("Excluir este treino permanentemente?")) return;
-    data.workouts.splice(index, 1);
     saveData();
-    renderHistory();
-    updateTodaySummary();
-    populateExerciseSelect();
-    showToast("Treino excluído");
+    updateWaterUI();
+    updateCreatineUI();
+    showToast("Configurações salvas!");
 }
 
+function saveData() {
+    localStorage.setItem('gym_diary_data', JSON.stringify(state));
+}
 
-/* =========================
-   IMPORT / EXPORT
-========================= */
+function loadData() {
+    const saved = localStorage.getItem('gym_diary_data');
+    if (saved) {
+        try {
+            state = JSON.parse(saved);
+        } catch (e) {
+            console.error("Erro ao carregar dados", e);
+        }
+    }
+
+    if (!state.profile) state.profile = { weight: 70, waterTarget: 2450 };
+    if (!state.waterLogs) state.waterLogs = {};
+    if (!state.creatineLogs) state.creatineLogs = {};
+
+    document.getElementById('userWeight').value = state.profile.weight || '';
+    document.getElementById('waterTarget').value = state.profile.waterTarget || 3000;
+    
+    if (state.profile.profilePic) {
+        document.getElementById('headerProfilePic').src = state.profile.profilePic;
+    }
+
+    calculateSuggestedMetrics();
+}
 
 function exportData() {
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "meu-diario-de-treino.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast("Dados exportados");
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `diario_treino_backup_${getTodayKey()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
 }
 
 function importData() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json";
-    input.onchange = event => {
-        const file = event.target.files[0];
-        if (!file) return;
-
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = e => {
+        const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = event => {
             try {
-                const imported = JSON.parse(e.target.result);
-                if (!imported.workouts || !imported.settings) throw new Error();
-                data = imported;
+                state = JSON.parse(event.target.result);
                 saveData();
-                loadSettings();
-                updateWater();
-                renderHistory();
-                updateTodaySummary();
-                showToast("Dados importados ✓");
-            } catch {
-                showToast("Arquivo inválido");
+                loadData();
+                showToast("Dados importados com sucesso!");
+            } catch (err) {
+                alert("Arquivo JSON inválido!");
             }
         };
-        reader.readAsText(file);
+        reader.readAsDataURL(file);
     };
     input.click();
 }
 
 function clearAllData() {
-    if (prompt('Digite "APAGAR" para excluir todos os seus dados.') !== "APAGAR") return;
-    localStorage.removeItem("diarioTreino");
-    localStorage.removeItem("activeWorkout");
-    data = { workouts: [], water: {}, creatineTaken: {}, settings: { weight: "", waterTarget: 3000, creatineTarget: 0, profilePic: "" } };
-    currentWorkout = null;
-    loadSettings();
-    updateWater();
-    renderHistory();
-    updateTodaySummary();
-    showToast("Todos os dados apagados");
+    if (confirm("ATENÇÃO: Deseja apagar todos os dados registrados permanentemente?")) {
+        localStorage.removeItem('gym_diary_data');
+        location.reload();
+    }
 }
 
-
-/* =========================
-   AUXILIARES
-========================= */
-
-function normalize(text) {
-    return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-}
-
-function escapeHTML(text) {
-    return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-function formatNumber(number) {
-    return Number(number).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
-}
-
-function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2200);
+// --- UTILITÁRIOS ---
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
 }
 </script>
 
