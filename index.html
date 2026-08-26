@@ -92,7 +92,7 @@ button, select, input {
 }
 button {
   border: 0;
-  border-radius: 13px;
+  border-radius: 13px; 
   padding: 13px 15px;
   color: white;
   background: var(--accent);
@@ -140,7 +140,7 @@ label {
   color: var(--muted);
   font-size: 13px;
   margin-bottom: 6px;
-}
+} 
 .field {
   margin-bottom: 12px;
 }
@@ -435,182 +435,178 @@ label {
   <input type="file" id="picInput" class="file-input" accept="image/*" onchange="handleProfilePicUpload(event)">
 </header>
 <main>
-  <!-- INÍCIO -->
-  <section id="home" class="page active">
-    <div class="card">
-      <h2>Resumo de Hoje</h2>
-      <div class="stats">
-        <div class="stat">
-          <strong id="todayExercises">0</strong>
-          <span>Exercícios</span>
-        </div>
-        <div class="stat">
-          <strong id="todaySets">0</strong>
-          <span>Séries</span>
-        </div>
-        <div class="stat">
-          <strong id="todayVolume">0</strong>
-          <span>Volume kg</span>
-        </div>
+<!-- INÍCIO -->
+<section id="home" class="page active">
+  <div class="card">
+    <h2>Resumo de Hoje</h2>
+    <div class="stats">
+      <div class="stat">
+        <strong id="todayExercises">0</strong>
+        <span>Exercícios</span>
+      </div>
+      <div class="stat">
+        <strong id="todaySets">0</strong>
+        <span>Séries</span>
+      </div>
+      <div class="stat">
+        <strong id="todayVolume">0</strong>
+        <span>Volume kg</span>
       </div>
     </div>
-    
-    <div class="card">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-        <div>
-          <h3 style="margin: 0; font-size: 16px;">Suplementação de Creatina</h3>
-          <span style="color: var(--muted); font-size: 12px;">Dose recomendada (0,07g/kg)</span>
-        </div>
-        <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
+  </div>
+  <div class="card">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <div>
+        <h3 style="margin: 0; font-size: 16px;">Suplementação de Creatina</h3>
+        <span style="color: var(--muted); font-size: 12px;">Dose recomendada (0,07g/kg)</span>
       </div>
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-        <p id="creatineStatusText" style="margin: 0; font-size: 13px; color: var(--muted);">Status de hoje: Pendente</p>
-        <div id="creatineStreak" class="streak-badge">🔥 0 dias</div>
-      </div>
-      <button id="homeCreatineBtn" class="full secondary" onclick="toggleCreatine()">Marcar como Tomada</button>
+      <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
     </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <p id="creatineStatusText" style="margin: 0; font-size: 13px; color: var(--muted);">Status de hoje: Pendente</p>
+      <div id="creatineStreak" class="streak-badge">0 dias</div>
+    </div>
+    <button id="homeCreatineBtn" class="full secondary" onclick="toggleCreatine()">Marcar como Tomada</button>
+  </div>
+  <div class="card">
+    <h2>Cardio nos Últimos 7 Dias</h2>
+    <div class="stats">
+      <div class="stat">
+        <strong id="weeklyCardioTime">0 min</strong>
+        <span>Tempo Total</span>
+      </div>
+      <div class="stat">
+        <strong id="weeklyCardioDist">0 km</strong>
+        <span>Distância</span>
+      </div>
+      <div class="stat">
+        <strong id="weeklyCardioSessions">0</strong>
+        <span>Sessões</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h2 style="margin: 0;">Água</h2>
+      <div id="waterStreak" class="streak-badge">0 dias</div>
+    </div>
+    <div class="water-number">
+      <span id="waterCurrent">0</span> ml
+    </div>
+    <div class="water-target">
+      Meta: <span id="waterTargetText">3000</span> ml
+    </div>
+    <div class="progress">
+      <div id="waterProgress" style="width:0%"></div>
+    </div>
+    <div id="waterActionArea">
+      <div class="water-buttons">
+        <button id="btnW250" onclick="addWater(250)">+250</button>
+        <button id="btnW500" onclick="addWater(500)">+500</button>
+        <button id="btnW600" onclick="addWater(600)">+600</button>
+        <button id="btnW1000" onclick="addWater(1000)">+1000</button>
+      </div>
+      <div class="water-custom">
+        <input id="customWaterInput" type="number" placeholder="Qtd personalizada (ml)">
+        <button id="btnWCustom" onclick="addCustomWater()">Adicionar</button>
+      </div>
+    </div>
+    <div id="waterMetaReachedMessage" class="water-message" style="display:none;">
+      Parabéns! Você atingiu sua meta de água hoje. Registro concluído!
+    </div>
+    <br>
+    <button class="secondary full" onclick="resetWater()">Zerar água</button>
+  </div>
+  <div class="card">
+    <h2>Treino</h2>
+    <div class="field">
+      <label for="workoutName">Nome do treino</label>
+      <input id="workoutName" placeholder="Ex: Peito e Triceps">
+    </div>
+    <button class="full" onclick="startWorkout()">+ Começar treino</button>
+  </div>
+</section>
 
-    <div class="card">
-      <h2>Cardio nos Últimos 7 Dias</h2>
-      <div class="stats">
-        <div class="stat">
-          <strong id="weeklyCardioTime">0 min</strong>
-          <span>Tempo Total</span>
-        </div>
-        <div class="stat">
-          <strong id="weeklyCardioDist">0 km</strong>
-          <span>Distância</span>
-        </div>
-        <div class="stat">
-          <strong id="weeklyCardioSessions">0</strong>
-          <span>Sessões</span>
-        </div>
+<!-- TREINO -->
+<section id="workout" class="page">
+  <div class="card">
+    <div class="field">
+      <label for="activeWorkoutName">Treino atual</label>
+      <input id="activeWorkoutName" placeholder="Nome do treino" oninput="updateWorkoutTitle(this.value)">
+    </div>
+    <div class="timer-box">
+      <label>Descanso entre séries</label>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <div class="timer-controls">
+        <button class="secondary" onclick="startTimer(30)">30s</button>
+        <button class="secondary" onclick="startTimer(60)">60s</button>
+        <button class="secondary" onclick="startTimer(90)">90s</button>
+        <button class="secondary" onclick="startTimer(120)">120s</button>
+        <button class="danger" onclick="stopTimer()">Parar</button>
       </div>
     </div>
+    <button class="full green" onclick="finishWorkout()">Finalizar treino</button>
+  </div>
+  <div id="exerciseList"></div>
+  <button class="full" onclick="openExerciseModal()">+ Adicionar exercício</button>
+  <br><br>
+  <button class="secondary full" onclick="cancelWorkout()">Cancelar treino</button>
+</section>
 
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h2 style="margin: 0;">Água</h2>
-        <div id="waterStreak" class="streak-badge">🔥 0 dias</div>
-      </div>
-      <div class="water-number">
-        <span id="waterCurrent">0</span> ml
-      </div>
-      <div class="water-target">
-        Meta: <span id="waterTargetText">3000</span> ml
-      </div>
-      <div class="progress">
-        <div id="waterProgress" style="width:0%"></div>
-      </div>
-      <div id="waterActionArea">
-        <div class="water-buttons">
-          <button id="btnW250" onclick="addWater(250)">+250</button>
-          <button id="btnW500" onclick="addWater(500)">+500</button>
-          <button id="btnW600" onclick="addWater(600)">+600</button>
-          <button id="btnW1000" onclick="addWater(1000)">+1000</button>
-        </div>
-        <div class="water-custom">
-          <input id="customWaterInput" type="number" placeholder="Qtd personalizada (ml)">
-          <button id="btnWCustom" onclick="addCustomWater()">Adicionar</button>
-        </div>
-      </div>
-      <div id="waterMetaReachedMessage" class="water-message" style="display:none;">
-        Parabéns! Você atingiu sua meta de água hoje. Registro concluído!
-      </div>
-      <br>
-      <button class="secondary full" onclick="resetWater()">Zerar água</button>
+<!-- HISTÓRICO -->
+<section id="history" class="page">
+  <div class="card">
+    <h2>Histórico & Evolução</h2>
+    <p style="color:var(--muted)">Acompanhe suas cargas e evolução histórica.</p>
+  </div>
+  <div class="card">
+    <h3>Evolução por Exercício</h3>
+    <div class="field">
+      <select id="chartExerciseSelect" onchange="renderProgressChart()">
+        <option value="">Selecione um exercício...</option>
+      </select>
     </div>
+    <div style="position: relative; height:220px;">
+      <canvas id="progressChart"></canvas>
+    </div>
+  </div>
+  <div id="historyList"></div>
+</section>
 
-    <div class="card">
-      <h2>Treino</h2>
-      <div class="field">
-        <label for="workoutName">Nome do treino</label>
-        <input id="workoutName" placeholder="Ex: Peito e Triceps">
-      </div>
-      <button class="full" onclick="startWorkout()">+ Começar treino</button>
+<!-- PERFIL -->
+<section id="profile" class="page">
+  <div class="card">
+    <h2>Configurações & Suplementação</h2>
+    <div class="field">
+      <label for="userWeight">Seu peso atual (kg)</label>
+      <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" oninput="calculateSuggestedMetrics()">
     </div>
-  </section>
-
-  <!-- TREINO -->
-  <section id="workout" class="page">
-    <div class="card">
-      <div class="field">
-        <label for="activeWorkoutName">Treino atual</label>
-        <input id="activeWorkoutName" placeholder="Nome do treino" oninput="updateWorkoutTitle(this.value)">
-      </div>
-      <div class="timer-box">
-        <label>Descanso entre séries</label>
-        <div class="timer-display" id="timerDisplay">00:00</div>
-        <div class="timer-controls">
-          <button class="secondary" onclick="startTimer(30)">30s</button>
-          <button class="secondary" onclick="startTimer(60)">60s</button>
-          <button class="secondary" onclick="startTimer(90)">90s</button>
-          <button class="secondary" onclick="startTimer(120)">120s</button>
-          <button class="danger" onclick="stopTimer()">Parar</button>
-        </div>
-      </div>
-      <button class="full green" onclick="finishWorkout()">Finalizar treino</button>
+    <div class="field">
+      <label for="waterTarget">Meta diária de água (ml)</label>
+      <input id="waterTarget" type="number" placeholder="3000">
+      <small style="color:var(--muted); font-size: 11px;" id="waterSuggestionText"></small>
     </div>
-    <div id="exerciseList"></div>
-    <button class="full" onclick="openExerciseModal()">+ Adicionar exercício</button>
+    <div class="field">
+      <label for="creatineTarget">Dose diária de Creatina recomendada</label>
+      <input id="creatineTarget" type="text" readonly style="background: var(--card); border-color: var(--border); font-weight: bold; color: var(--accent);">
+      <small style="color:var(--muted); font-size: 11px;">Calculado automaticamente (0,07g por kg corporal)</small>
+    </div>
+    <button class="full" onclick="saveSettings()">Salvar configurações</button>
+  </div>
+  <div class="card">
+    <h2>Dados</h2>
+    <button class="secondary full" onclick="exportData()">Exportar meus dados</button>
     <br><br>
-    <button class="secondary full" onclick="cancelWorkout()">Cancelar treino</button>
-  </section>
-
-  <!-- HISTÓRICO -->
-  <section id="history" class="page">
-    <div class="card">
-      <h2>Histórico & Evolução</h2>
-      <p style="color:var(--muted)">Acompanhe suas cargas e evolução histórica.</p>
-    </div>
-    <div class="card">
-      <h3>Evolução por Exercício</h3>
-      <div class="field">
-        <select id="chartExerciseSelect" onchange="renderProgressChart()">
-          <option value="">Selecione um exercício...</option>
-        </select>
-      </div>
-      <div style="position: relative; height:220px;">
-        <canvas id="progressChart"></canvas>
-      </div>
-    </div>
-    <div id="historyList"></div>
-  </section>
-
-  <!-- PERFIL -->
-  <section id="profile" class="page">
-    <div class="card">
-      <h2>Configurações & Suplementação</h2>
-      <div class="field">
-        <label for="userWeight">Seu peso atual (kg)</label>
-        <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" oninput="calculateSuggestedMetrics()">
-      </div>
-      <div class="field">
-        <label for="waterTarget">Meta diária de água (ml)</label>
-        <input id="waterTarget" type="number" placeholder="3000">
-        <small style="color:var(--muted); font-size: 11px;" id="waterSuggestionText"></small>
-      </div>
-      <div class="field">
-        <label for="creatineTarget">Dose diária de Creatina recomendada</label>
-        <input id="creatineTarget" type="text" readonly style="background: var(--card); border-color: var(--border); font-weight: bold; color: var(--accent);">
-        <small style="color:var(--muted); font-size: 11px;">Calculado automaticamente (0,07g por kg corporal)</small>
-      </div>
-      <button class="full" onclick="saveSettings()">Salvar configurações</button>
-    </div>
-    <div class="card">
-      <h2>Dados</h2>
-      <button class="secondary full" onclick="exportData()">Exportar meus dados</button>
-      <br><br>
-      <button class="secondary full" onclick="importData()">Importar dados</button>
-      <br><br>
-      <button class="danger full" onclick="clearAllData()">Apagar todos os dados</button>
-    </div>
-    <div class="card">
-      <h3>Diário de Treino</h3>
-      <p style="color:var(--muted); font-size: 13px">Seus dados ficam armazenados localmente no navegador.</p>
-      <p style="color:var(--muted); font-size: 13px">Versão 5.0 Pro (Edição de Treinos & Streaks de Suplementação)</p>
-    </div>
-  </section>
+    <button class="secondary full" onclick="importData()">Importar dados</button>
+    <br><br>
+    <button class="danger full" onclick="clearAllData()">Apagar todos os dados</button>
+  </div> 
+  <div class="card">
+    <h3>Diário de Treino</h3>
+    <p style="color:var(--muted); font-size: 13px">Seus dados ficam armazenados localmente no navegador.</p>
+    <p style="color:var(--muted); font-size: 13px">Versão 5.0 Pro (Edição de Treinos & Streaks de Suplementação)</p>
+  </div>
+</section>
 </main>
 
 <!-- MENU DE NAVEGAÇÃO -->
@@ -643,7 +639,7 @@ label {
         <optgroup label="⭐ Exercícios Personalizados" id="customOptGroup">
           <!-- Preenchido dinamicamente via JS -->
         </optgroup>
-        <optgroup label="💪 Peito">
+        <optgroup label="🏋️ Peito">
           <option value="Supino Reto com Barra|Livre">Supino Reto com Barra</option>
           <option value="Supino Reto com Halteres|Livre">Supino Reto com Halteres</option>
           <option value="Supino Inclinado com Barra|Livre">Supino Inclinado com Barra</option>
@@ -695,7 +691,7 @@ label {
           <option value="Extensão de Lombar em Máquina|Máquina">Extensão de Lombar em Máquina</option>
           <option value="Extensão de Lombar no Banco Romano|Livre">Extensão de Lombar (Banco Romano)</option>
         </optgroup>
-        <optgroup label="🏋️ Ombros & Trapézio">
+        <optgroup label="🎯 Ombros & Trapézio">
           <option value="Desenvolvimento em Máquina Articulada|Máquina">Desenvolvimento em Máquina (Shoulder Press)</option>
           <option value="Elevação Lateral em Máquina|Máquina">Elevação Lateral em Máquina</option>
           <option value="Crucifixo Invertido no Peck Deck|Máquina">Crucifixo Invertido no Peck Deck (Máquina)</option>
@@ -714,7 +710,7 @@ label {
           <option value="Remada Alta com Barra|Livre">Remada Alta com Barra</option>
           <option value="Remada Alta na Polia|Polia">Remada Alta na Polia</option>
         </optgroup>
-        <optgroup label="💥 Bíceps & Antebraço">
+        <optgroup label="💪 Bíceps & Antebraço">
           <option value="Rosca Scott em Máquina|Máquina">Rosca Scott em Máquina</option>
           <option value="Rosca Bíceps Articulada em Máquina|Máquina">Rosca Biceps Articulada (Máquina)</option>
           <option value="Rosca Direta com Barra Reta|Livre">Rosca Direta com Barra Reta</option>
@@ -731,7 +727,7 @@ label {
           <option value="Rosca Punho com Barra|Livre">Rosca Punho com Barra</option>
         </optgroup>
         <optgroup label="⚡ Tríceps">
-          <option value="Tríceps em Máquina Sentado|Máquina">Triceps em Máquina Sentado (Triceps Press)</option>
+          <option value="Triceps em Máquina Sentado|Máquina">Triceps em Máquina Sentado (Triceps Press)</option>
           <option value="Tríceps Extension em Máquina|Máquina">Tríceps Extension em Máquina</option>
           <option value="Tríceps Corda na Polia|Polia">Tríceps Corda na Polia</option>
           <option value="Tríceps Barra Reta na Polia|Polia">Triceps Barra Reta na Polia</option>
@@ -832,14 +828,14 @@ label {
     </div>
     <div class="field">
       <label for="newExerciseType">Tipo de Equipamento</label>
-      <select id="newExerciseType">
+      <select id="newExerciseType" onchange="toggleSetsCountVisibility()">
         <option value="Livre">Livre (Halter / Barra)</option>
         <option value="Máquina">Máquina</option>
         <option value="Polia">Polia / Cabo</option>
         <option value="Cardio">Cardio</option>
       </select>
     </div>
-    <div class="field">
+    <div class="field" id="setsCountField">
       <label for="newExerciseSetsCount">Quantidade Inicial de Séries</label>
       <select id="newExerciseSetsCount">
         <option value="1">1 Série</option>
@@ -853,7 +849,6 @@ label {
     <button class="full" onclick="addExerciseToWorkout()">Adicionar ao Treino</button>
   </div>
 </div>
-
 <div id="toast" class="toast">Mensagem</div>
 
 <script>
@@ -905,10 +900,8 @@ function formatDateKey(dateObj) {
 function showPage(pageId, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  
   const targetPage = document.getElementById(pageId);
   if (targetPage) targetPage.classList.add('active');
-  
   if (btn) {
     btn.classList.add('active');
   } else {
@@ -918,7 +911,6 @@ function showPage(pageId, btn) {
     if (pageId === 'history' && navBtns[2]) navBtns[2].classList.add('active');
     if (pageId === 'profile' && navBtns[3]) navBtns[3].classList.add('active');
   }
-  
   if (pageId === 'home') {
     updateHomeSummary();
     updateWaterUI();
@@ -929,7 +921,7 @@ function showPage(pageId, btn) {
   }
 }
 
-// --- FOTO DE PERFIL (OTIMIZADA PARA ALTA QUALIDADE) ---
+// --- FOTO DE PERFIL (COM CROPPING QUADRADO SEM ESPREMER) ---
 function triggerProfilePicUpload() {
   document.getElementById('picInput').click();
 }
@@ -943,16 +935,22 @@ function handleProfilePicUpload(event) {
       img.onload = function() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        // Resolução melhorada (500x500)
-        canvas.width = 500;
-        canvas.height = 500;
-        ctx.drawImage(img, 0, 0, 500, 500);
-        // Qualidade de compactação elevada de 0.7 para 0.9
-        const compressedSrc = canvas.toDataURL('image/jpeg', 0.9);
+        const targetSize = 600; // alta resolução
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+
+        // Corte centralizado para manter o aspecto sem espremer a foto
+        const minDim = Math.min(img.width, img.height);
+        const sx = (img.width - minDim) / 2;
+        const sy = (img.height - minDim) / 2;
+
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
+
+        const compressedSrc = canvas.toDataURL('image/jpeg', 0.92);
         document.getElementById('headerProfilePic').src = compressedSrc;
         state.profile.profilePic = compressedSrc;
         saveData();
-        showToast("Foto de perfil atualizada com alta qualidade!");
+        showToast("Foto de perfil atualizada!");
       };
       img.src = e.target.result;
     };
@@ -969,7 +967,6 @@ function calculateSuggestedMetrics() {
     document.getElementById('waterTarget').value = suggestedWater;
     state.profile.waterTarget = suggestedWater;
     state.profile.weight = weightVal;
-    
     const suggestedCreatine = (weightVal * 0.07).toFixed(1);
     document.getElementById('creatineTarget').value = `${suggestedCreatine}g`;
     saveData();
@@ -986,7 +983,6 @@ function calculateStreak(type) {
   let streak = 0;
   let d = new Date();
   const targetWater = state.profile.waterTarget || 3000;
-  
   let key = formatDateKey(d);
   let isTodayDone = false;
   if (type === 'water') {
@@ -994,12 +990,10 @@ function calculateStreak(type) {
   } else if (type === 'creatine') {
     isTodayDone = !!state.creatineLogs[key];
   }
-
   if (isTodayDone) {
     streak++;
     d.setDate(d.getDate() - 1);
   } else {
-    // Se hoje ainda não bateu, verifica se ontem bateu para não quebrar a sequência
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     let yKey = formatDateKey(yesterday);
@@ -1007,7 +1001,6 @@ function calculateStreak(type) {
     if (!isYesterdayDone) return 0;
     d.setDate(d.getDate() - 1);
   }
-
   while (true) {
     let k = formatDateKey(d);
     let done = (type === 'water') ? ((state.waterLogs[k] || 0) >= targetWater) : !!state.creatineLogs[k];
@@ -1026,7 +1019,6 @@ function addWater(amount) {
   const today = getTodayKey();
   const current = state.waterLogs[today] || 0;
   const target = state.profile.waterTarget || 3000;
-  
   if (current >= target) {
     showToast("Meta de água já alcançada hoje!");
     return;
@@ -1058,16 +1050,12 @@ function updateWaterUI() {
   const today = getTodayKey();
   const current = state.waterLogs[today] || 0;
   const target = state.profile.waterTarget || 3000;
-  
   document.getElementById('waterCurrent').innerText = current;
   document.getElementById('waterTargetText').innerText = target;
-  
   const pct = Math.min(100, Math.round((current / target) * 100));
   document.getElementById('waterProgress').style.width = pct + '%';
-  
   const actionArea = document.getElementById('waterActionArea');
   const reachedMsg = document.getElementById('waterMetaReachedMessage');
-  
   if (current >= target && target > 0) {
     actionArea.style.display = 'none';
     reachedMsg.style.display = 'block';
@@ -1075,9 +1063,8 @@ function updateWaterUI() {
     actionArea.style.display = 'block';
     reachedMsg.style.display = 'none';
   }
-
   const streak = calculateStreak('water');
-  document.getElementById('waterStreak').innerText = `🔥 ${streak} dia${streak !== 1 ? 's' : ''}`;
+  document.getElementById('waterStreak').innerText = `${streak} dia${streak !== 1 ? 's' : ''}`;
 }
 
 // --- GERENCIAMENTO DE CREATINA ---
@@ -1093,11 +1080,9 @@ function updateCreatineUI() {
   const taken = !!state.creatineLogs[today];
   const weight = state.profile.weight || 70;
   const dose = (weight * 0.07).toFixed(1);
-  
   document.getElementById('homeCreatineTarget').innerText = `${dose}g`;
   const statusText = document.getElementById('creatineStatusText');
   const btn = document.getElementById('homeCreatineBtn');
-  
   if (taken) {
     statusText.innerText = "Status de hoje: Tomada!";
     statusText.style.color = "var(--green)";
@@ -1109,47 +1094,36 @@ function updateCreatineUI() {
     btn.innerText = "Marcar como Tomada";
     btn.className = "full green";
   }
-
   const streak = calculateStreak('creatine');
-  document.getElementById('creatineStreak').innerText = `🔥 ${streak} dia${streak !== 1 ? 's' : ''}`;
+  document.getElementById('creatineStreak').innerText = `${streak} dia${streak !== 1 ? 's' : ''}`;
 }
 
 // --- COMPARATIVO DE EXERCÍCIOS ---
 function getExerciseComparisonHTML(exerciseName, currentSets, isCardio) {
-  if (!state.history || state.history.length === 0 || isCardio) return '';
-  
+  if (!state.history || state.history.length === 0 || isCardio) return "";
   let prevEx = null;
   for (let w of state.history) {
     if (state.editingWorkoutId && w.id === state.editingWorkoutId) continue;
-    
     let found = (w.exercises || []).find(e => e.name.toLowerCase() === exerciseName.toLowerCase() && e.type !== 'Cardio');
     if (found && found.sets && found.sets.length > 0) {
       prevEx = found;
       break;
     }
   }
-  
   if (!prevEx) {
-    return `<div style="font-size:11px; color:var(--muted); margin-top:6px;">Primeiro registro deste exercício.</div>`;
+    return '<div style="font-size:11px; color:var(--muted); margin-top:6px;">Primeiro registro deste exercício.</div>';
   }
-  
   const currMaxW = Math.max(0, ...currentSets.map(s => parseFloat(s.weight) || 0));
   const currSetsCount = currentSets.length;
-  
   const prevMaxW = Math.max(0, ...prevEx.sets.map(s => parseFloat(s.weight) || 0));
   const prevSetsCount = prevEx.sets.length;
-  
   const diffW = currMaxW - prevMaxW;
   const diffS = currSetsCount - prevSetsCount;
-  
   let wText = diffW > 0 ? `+${diffW} kg` : (diffW < 0 ? `${diffW} kg` : 'mesma carga');
   let sText = diffS > 0 ? `+${diffS} série(s)` : (diffS < 0 ? `${diffS} série(s)` : 'mesmas séries');
-  
   let color = (diffW > 0 || diffS > 0) ? 'var(--green)' : 'var(--accent)';
-  
-  return `
-  <div style="font-size:12px; margin-top:8px; padding:6px 10px; background:rgba(124, 92, 255, 0.1); border-radius:8px; border: 1px solid rgba(124,92,255,0.2); color:${color}; font-weight:600;">
-    📊 vs Último Treino (${prevMaxW}kg / ${prevSetsCount} séries): <strong>Carga: ${wText}</strong> | <strong>Séries: ${sText}</strong>
+  return `<div style="font-size: 12px; margin-top:8px; padding:6px 10px; background:rgba(124, 92, 255, 0.1); border-radius:8px; border: 1px solid rgba(124,92,255,0.2); color:${color}; font-weight:600;">
+    vs Último Treino (${prevMaxW}kg / ${prevSetsCount} séries): <strong>Carga: ${wText}</strong> | <strong>Séries: ${sText}</strong>
   </div>`;
 }
 
@@ -1179,10 +1153,19 @@ function updateWorkoutTitle(val) {
 
 function openExerciseModal() {
   document.getElementById('exerciseModal').classList.add('show');
+  toggleSetsCountVisibility();
 }
 
 function closeExerciseModal() {
   document.getElementById('exerciseModal').classList.remove('show');
+}
+
+function toggleSetsCountVisibility() {
+  const type = document.getElementById('newExerciseType').value;
+  const setsField = document.getElementById('setsCountField');
+  if (setsField) {
+    setsField.style.display = (type === 'Cardio') ? 'none' : 'block';
+  }
 }
 
 function selectFromLibrary(val) {
@@ -1191,6 +1174,7 @@ function selectFromLibrary(val) {
   if (parts.length === 2) {
     document.getElementById('newExerciseName').value = parts[0];
     document.getElementById('newExerciseType').value = parts[1];
+    toggleSetsCountVisibility();
   }
 }
 
@@ -1211,12 +1195,10 @@ function addExerciseToWorkout() {
   const name = nameInput.value.trim();
   const type = document.getElementById('newExerciseType').value;
   const setsCount = parseInt(document.getElementById('newExerciseSetsCount').value) || 3;
-  
   if (!name) {
     showToast("Insira o nome do exercício!");
     return;
   }
-  
   if (!state.customExercises) state.customExercises = [];
   const select = document.getElementById('exerciseLibrarySelect');
   let existsInSelect = false;
@@ -1231,12 +1213,10 @@ function addExerciseToWorkout() {
     saveData();
     renderCustomExercisesInSelect();
     showToast(`"${name}" salvo na biblioteca!`);
-  }
-  
+  } 
   if (!state.currentWorkout) {
     startWorkout();
   }
-  
   const sets = [];
   if (type === 'Cardio') {
     sets.push({ time: 20, dist: 0 });
@@ -1245,7 +1225,6 @@ function addExerciseToWorkout() {
       sets.push({ weight: 0, reps: 0 });
     }
   }
-  
   state.currentWorkout.exercises.push({
     id: Date.now(),
     name: name,
@@ -1253,7 +1232,6 @@ function addExerciseToWorkout() {
     collapsed: false,
     sets: sets
   });
-  
   nameInput.value = "";
   document.getElementById('exerciseLibrarySelect').value = "";
   closeExerciseModal();
@@ -1277,8 +1255,7 @@ function removeExercise(exIndex) {
 function addSet(exIndex) {
   if (!state.currentWorkout || !state.currentWorkout.exercises[exIndex]) return;
   const ex = state.currentWorkout.exercises[exIndex];
-  if (ex.type === 'Cardio') return; // Segurança extra para cardio
-  
+  if (ex.type === 'Cardio') return; 
   const lastSet = ex.sets[ex.sets.length - 1] || { weight: 0, reps: 0 };
   ex.sets.push({ ...lastSet });
   renderCurrentWorkout();
@@ -1291,11 +1268,12 @@ function removeSet(exIndex, setIndex) {
   }
 }
 
+// Atualização de estado sem reconstrução de DOM (evita fechar teclado e aceita decimais)
 function updateSetData(exIndex, setIndex, field, value) {
-  if (state.currentWorkout && state.currentWorkout.exercises[exIndex] && state.currentWorkout.exercises[exIndex].sets[setIndex]) {
-    state.currentWorkout.exercises[exIndex].sets[setIndex][field] = parseFloat(value) || 0;
-    // Atualiza comparativo dinamicamente ao digitar carga/série
-    renderCurrentWorkout();
+  if (state.currentWorkout && state.currentWorkout.exercises[exIndex] &&
+      state.currentWorkout.exercises[exIndex].sets[setIndex]) {
+    const val = parseFloat(value.replace(',', '.'));
+    state.currentWorkout.exercises[exIndex].sets[setIndex][field] = isNaN(val) ? 0 : val;
   }
 }
 
@@ -1305,11 +1283,9 @@ function renderCurrentWorkout() {
     container.innerHTML = '<div class="empty">Nenhum exercício adicionado ainda.</div>';
     return;
   }
-  
   container.innerHTML = state.currentWorkout.exercises.map((ex, exIdx) => {
     const isCollapsed = ex.collapsed ? 'collapsed' : '';
     const isCardio = ex.type === 'Cardio';
-    
     let setsHTML = (ex.sets || []).map((s, sIdx) => {
       if (isCardio) {
         return `
@@ -1318,12 +1294,12 @@ function renderCurrentWorkout() {
           <div class="row">
             <div>
               <label>Tempo (min)</label>
-              <input type="number" value="${s.time || ''}" oninput="updateSetData(${exIdx}, ${sIdx}, 'time', this.value)">
+              <input type="number" step="any" value="${s.time !== undefined && s.time !== 0 ? s.time : ''}" placeholder="Ex: 20" oninput="updateSetData(${exIdx}, ${sIdx}, 'time', this.value)">
             </div>
             <div>
               <label>Distância (km)</label>
-              <input type="number" step="0.1" value="${s.dist || ''}" oninput="updateSetData(${exIdx}, ${sIdx}, 'dist', this.value)">
-            </div>
+              <input type="number" step="any" value="${s.dist !== undefined && s.dist !== 0 ? s.dist : ''}" placeholder="Ex: 2.5" oninput="updateSetData(${exIdx}, ${sIdx}, 'dist', this.value)">
+            </div> 
           </div>
         </div>`;
       } else {
@@ -1333,21 +1309,19 @@ function renderCurrentWorkout() {
           <div class="row">
             <div>
               <label>Carga (kg)</label>
-              <input type="number" step="0.5" value="${s.weight || ''}" oninput="updateSetData(${exIdx}, ${sIdx}, 'weight', this.value)">
+              <input type="number" step="any" value="${s.weight !== undefined && s.weight !== 0 ? s.weight : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'weight', this.value)">
             </div>
             <div>
               <label>Repetições</label>
-              <input type="number" value="${s.reps || ''}" oninput="updateSetData(${exIdx}, ${sIdx}, 'reps', this.value)">
+              <input type="number" value="${s.reps !== undefined && s.reps !== 0 ? s.reps : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'reps', this.value)">
             </div>
           </div>
           ${ex.sets.length > 1 ? `<button class="danger" style="padding:4px 8px; font-size:11px; margin-top:8px;" onclick="removeSet(${exIdx}, ${sIdx})">Remover Série</button>` : ''}
         </div>`;
       }
     }).join('');
-    
+
     const comparisonHTML = getExerciseComparisonHTML(ex.name, ex.sets || [], isCardio);
-    
-    // REGRA: Se for Cardio, NÃO renderiza botão de adicionar série
     const addSetButtonHTML = isCardio ? '' : `<button class="secondary full" style="margin-top:10px;" onclick="addSet(${exIdx})">+ Adicionar Série</button>`;
 
     return `
@@ -1365,7 +1339,7 @@ function renderCurrentWorkout() {
       <div class="exercise-body">
         ${comparisonHTML}
         ${setsHTML}
-        ${addSetButtonHTML}
+        ${addSetButtonHTML} 
       </div>
     </div>`;
   }).join('');
@@ -1376,13 +1350,10 @@ function finishWorkout() {
     showToast("Adicione pelo menos um exercício!");
     return;
   }
-  
   state.currentWorkout.endTime = new Date().toISOString();
   if (!Array.isArray(state.history)) {
     state.history = [];
   }
-  
-  // Se estávamos editando um treino existente, atualiza ele na mesma posição
   if (state.editingWorkoutId) {
     const idx = state.history.findIndex(w => w.id === state.editingWorkoutId);
     if (idx !== -1) {
@@ -1394,7 +1365,6 @@ function finishWorkout() {
   } else {
     state.history.unshift(state.currentWorkout);
   }
-  
   state.currentWorkout = null;
   saveData();
   renderCurrentWorkout();
@@ -1415,13 +1385,10 @@ function cancelWorkout() {
 function editHistoryItem(idx) {
   const workoutToEdit = state.history[idx];
   if (!workoutToEdit) return;
-  
   state.editingWorkoutId = workoutToEdit.id || (workoutToEdit.id = Date.now());
   state.currentWorkout = JSON.parse(JSON.stringify(workoutToEdit));
-  
   const activeNameInput = document.getElementById('activeWorkoutName');
   if (activeNameInput) activeNameInput.value = state.currentWorkout.name || "Treino do Dia";
-  
   renderCurrentWorkout();
   showPage('workout');
   showToast("Modo de edição do treino ativado!");
@@ -1438,7 +1405,6 @@ function startTimer(seconds) {
     display.innerText = `${m}:${s}`;
   };
   updateDisplay();
-  
   timerInterval = setInterval(() => {
     left--;
     if (left < 0) {
@@ -1458,7 +1424,7 @@ function stopTimer() {
 }
 
 // --- RESUMO HOME ---
-function updateHomeSummary() {
+function updateHomeSummary() { 
   const todayStr = getTodayKey();
   const todayWorkouts = (state.history || []).filter(w => {
     if (!w) return false;
@@ -1467,11 +1433,11 @@ function updateHomeSummary() {
     const k = formatDateKey(d);
     return k === todayStr;
   });
-  
+
   let exCount = 0;
   let setsCount = 0;
   let volumeTotal = 0;
-  
+
   todayWorkouts.forEach(w => {
     (w.exercises || []).forEach(e => {
       if (!e) return;
@@ -1485,18 +1451,18 @@ function updateHomeSummary() {
       }
     });
   });
-  
+
   document.getElementById('todayExercises').innerText = exCount;
   document.getElementById('todaySets').innerText = setsCount;
   document.getElementById('todayVolume').innerText = Math.round(volumeTotal);
-  
+
   // Cardio 7 Dias
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
   let cTime = 0;
   let cDist = 0;
   let cSessions = 0;
-  
+
   (state.history || []).forEach(w => {
     if (!w) return;
     const wDate = new Date(w.endTime || w.startTime || Date.now());
@@ -1513,7 +1479,7 @@ function updateHomeSummary() {
       });
     }
   });
-  
+
   document.getElementById('weeklyCardioTime').innerText = `${cTime} min`;
   document.getElementById('weeklyCardioDist').innerText = `${cDist.toFixed(1)} km`;
   document.getElementById('weeklyCardioSessions').innerText = cSessions;
@@ -1526,16 +1492,14 @@ function renderHistory() {
     container.innerHTML = '<div class="empty">Nenhum treino no histórico.</div>';
     return;
   }
-  
   container.innerHTML = state.history.map((w, idx) => {
     if (!w) return "";
     const d = new Date(w.endTime || w.startTime || Date.now());
     const dateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     const exSummary = (w.exercises || []).map(e => `<span class="badge">${e.name}</span>`).join(' ');
-    
     return `
     <div class="history-item">
-      <div style="display: flex; justify-between; align-items:flex-start;">
+      <div style="display: flex; justify-content: space-between; align-items:flex-start;">
         <div>
           <strong>${w.name || 'Treino Sem Nome'}</strong>
           <small>${dateStr}</small>
@@ -1550,7 +1514,7 @@ function renderHistory() {
   }).join('');
 }
 
-function deleteHistoryItem(idx) {
+function deleteHistoryItem(idx) { 
   if (confirm("Excluir este treino do histórico?")) {
     state.history.splice(idx, 1);
     saveData();
@@ -1564,13 +1528,11 @@ function populateChartSelect() {
   const select = document.getElementById('chartExerciseSelect');
   if (!select) return;
   const exercisesSet = new Set();
-  
   (state.history || []).forEach(w => {
     (w.exercises || []).forEach(e => {
       if (e && e.type !== 'Cardio') exercisesSet.add(e.name);
     });
   });
-  
   select.innerHTML = '<option value="">Selecione um exercício...</option>' +
     Array.from(exercisesSet).map(e => `<option value="${e}">${e}</option>`).join('');
 }
@@ -1581,13 +1543,10 @@ function renderProgressChart() {
   const selectedEx = select.value;
   const canvas = document.getElementById('progressChart');
   const ctx = canvas.getContext('2d');
-  
   if (chartInstance) chartInstance.destroy();
   if (!selectedEx) return;
-  
   const labels = [];
   const dataMaxWeights = [];
-  
   [...(state.history || [])].reverse().forEach(w => {
     (w.exercises || []).forEach(e => {
       if (e && e.name === selectedEx && e.sets && e.sets.length > 0) {
@@ -1598,9 +1557,8 @@ function renderProgressChart() {
           dataMaxWeights.push(maxWeight);
         }
       }
-    });
+    }); 
   });
-  
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: {
@@ -1632,7 +1590,6 @@ function renderProgressChart() {
 function saveSettings() {
   const weightVal = parseFloat(document.getElementById('userWeight').value) || 70;
   const waterVal = parseInt(document.getElementById('waterTarget').value) || 3000;
-  
   state.profile.weight = weightVal;
   state.profile.waterTarget = waterVal;
   saveData();
@@ -1654,20 +1611,16 @@ function loadData() {
       console.error("Erro ao carregar dados", e);
     }
   }
-  
   if (!state.profile) state.profile = { weight: 70, waterTarget: 2450 };
   if (!state.waterLogs) state.waterLogs = {};
   if (!state.creatineLogs) state.creatineLogs = {};
   if (!state.history) state.history = [];
   if (!state.customExercises) state.customExercises = [];
-  
   document.getElementById('userWeight').value = state.profile.weight || "";
   document.getElementById('waterTarget').value = state.profile.waterTarget || 3000;
-  
   if (state.profile.profilePic) {
     document.getElementById('headerProfilePic').src = state.profile.profilePic;
   }
-  
   calculateSuggestedMetrics();
 }
 
