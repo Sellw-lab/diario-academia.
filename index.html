@@ -1,478 +1,488 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<title>Diário de Treino & Suplementação</title>
-
-<!-- Chart.js para gráficos de evolução -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-:root {
-    --bg: #0b0b0f;
-    --card: #15151c;
-    --card2: #1d1d26;
-    --text: #ffffff;
-    --muted: #9999a8;
-    --accent: #7c5cff;
-    --green: #31d158;
-    --red: #ff453a;
-    --border: #292936;
-}
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
-    padding-bottom: 90px;
-}
-
-header {
-    padding: 20px 18px 15px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: rgba(11,11,15,.94);
-    backdrop-filter: blur(15px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-}
-
-.header-info h1 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.header-info p {
-    margin: 3px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.header-avatar-container {
-    position: relative;
-    cursor: pointer;
-}
-
-.header-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--accent);
-    background: var(--card2);
-}
-
-main {
-    padding: 15px;
-    max-width: 700px;
-    margin: auto;
-}
-
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
-
-.card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 17px;
-    margin-bottom: 14px;
-}
-
-.card h2, .card h3 {
-    margin-top: 0;
-}
-
-button, select, input {
-    font: inherit;
-}
-
-button {
-    border: 0;
-    border-radius: 13px;
-    padding: 13px 15px;
-    color: white;
-    background: var(--accent);
-    font-weight: 600;
-    cursor: pointer;
-}
-
-button:active {
-    transform: scale(.97);
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-button.secondary {
-    background: var(--card2);
-    border: 1px solid var(--border);
-}
-
-button.danger {
-    background: #3a1717;
-    color: #ff6b63;
-}
-
-button.green {
-    background: #17351f;
-    color: var(--green);
-}
-
-.full {
-    width: 100%;
-}
-
-input, select {
-    width: 100%;
-    background: var(--card2);
-    color: white;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 13px;
-    outline: none;
-}
-
-input:focus, select:focus {
-    border-color: var(--accent);
-}
-
-label {
-    display: block;
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 6px;
-}
-
-.field {
-    margin-bottom: 12px;
-}
-
-.row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.file-input {
-    display: none;
-}
-
-.exercise {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 15px;
-    margin-bottom: 12px;
-}
-
-.exercise-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
-.exercise-header-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.exercise-name {
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.exercise-type {
-    display: block;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-}
-
-.exercise-body {
-    display: block;
-}
-
-.exercise.collapsed .exercise-body {
-    display: none;
-}
-
-.toggle-btn {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    padding: 8px 12px;
-    font-size: 12px;
-    border-radius: 10px;
-}
-
-.set {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-}
-
-.set-title {
-    color: var(--muted);
-    font-size: 12px;
-    margin-bottom: 8px;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.stat {
-    background: var(--card2);
-    padding: 13px 8px;
-    border-radius: 13px;
-    text-align: center;
-}
-
-.stat strong {
-    display: block;
-    font-size: 18px;
-}
-
-.stat span {
-    font-size: 11px;
-    color: var(--muted);
-}
-
-.progress {
-    height: 8px;
-    background: #292936;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 8px;
-}
-
-.progress div {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 10px;
-    transition: width 0.3s ease;
-}
-
-.water-number {
-    font-size: 42px;
-    font-weight: 800;
-    text-align: center;
-}
-
-.water-target {
-    text-align: center;
-    color: var(--muted);
-}
-
-.water-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.water-custom {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.water-message {
-    background: rgba(49, 209, 88, 0.15);
-    border: 1px solid var(--green);
-    color: var(--green);
-    padding: 12px;
-    border-radius: 12px;
-    text-align: center;
-    font-weight: 600;
-    margin-top: 15px;
-}
-
-.timer-box {
-    background: var(--card2);
-    padding: 15px;
-    border-radius: 14px;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.timer-display {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--accent);
-    margin: 8px 0;
-}
-
-.timer-controls {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-}
-
-.history-item {
-    background: var(--card2);
-    border-radius: 14px;
-    padding: 13px;
-    margin-bottom: 9px;
-}
-
-.history-item strong {
-    display: block;
-}
-
-.history-item small {
-    color: var(--muted);
-}
-
-.badge {
-    display: inline-block;
-    padding: 5px 8px;
-    border-radius: 8px;
-    font-size: 11px;
-    background: #282638;
-    color: #c5bcff;
-    margin-top: 4px;
-}
-
-.empty {
-    text-align: center;
-    color: var(--muted);
-    padding: 30px 10px;
-}
-
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 76px;
-    background: rgba(21,21,28,.96);
-    backdrop-filter: blur(15px);
-    border-top: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    z-index: 20;
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-.nav-btn {
-    background: transparent;
-    border-radius: 0;
-    color: var(--muted);
-    padding: 8px 2px;
-    font-size: 11px;
-}
-
-.nav-btn span {
-    display: block;
-    font-size: 22px;
-    margin-bottom: 2px;
-}
-
-.nav-btn.active {
-    color: white;
-}
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.75);
-    display: none;
-    align-items: flex-end;
-    z-index: 50;
-}
-
-.modal.show {
-    display: flex;
-}
-
-.modal-content {
-    background: var(--card);
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 25px 25px 0 0;
-    padding: 20px;
-    padding-bottom: 35px;
-}
-
-.modal-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close {
-    background: var(--card2);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-}
-
-.toast {
-    position: fixed;
-    bottom: 90px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: white;
-    color: black;
-    padding: 12px 17px;
-    border-radius: 12px;
-    font-weight: 600;
-    opacity: 0;
-    pointer-events: none;
-    transition: .3s;
-    z-index: 100;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-@media (min-width: 700px) {
-    .bottom-nav {
-        max-width: 700px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 18px 18px 0 0;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0b0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Diário de Treino & Suplementação</title>
+    <!-- Chart.js para gráficos de evolução -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0b0b0f;
+            --card: #15151c;
+            --card2: #1d1d26;
+            --text: #ffffff;
+            --muted: #9999a8;
+            --accent: #7c5cff;
+            --green: #31d158;
+            --red: #ff453a;
+            --border: #292936;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, Arial, sans-serif;
+            padding-bottom: 90px;
+        }
+
+        header {
+            padding: 20px 18px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(11, 11, 15, 0.94);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-info h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .header-info p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            text-transform: capitalize;
+        }
+
+        .header-avatar-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .header-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            background: var(--card2);
+        }
+
+        main {
+            padding: 15px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 17px;
+            margin-bottom: 14px;
+        }
+
+        .card h2, .card h3 {
+            margin-top: 0;
+        }
+
+        button, select, input {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            border-radius: 13px;
+            padding: 13px 15px;
+            color: white;
+            background: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: var(--card2);
+            border: 1px solid var(--border);
+        }
+
+        button.danger {
+            background: #3a1717;
+            color: #ff6b63;
+        }
+
+        button.green {
+            background: #17351f;
+            color: var(--green);
+        }
+
+        .full {
+            width: 100%;
+        }
+
+        input, select {
+            width: 100%;
+            background: var(--card2);
+            color: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 13px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        label {
+            display: block;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .exercise {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exercise-header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .exercise-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .exercise-type {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .exercise-body {
+            display: block;
+        }
+
+        .exercise.collapsed .exercise-body {
+            display: none;
+        }
+
+        .toggle-btn {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 10px;
+        }
+
+        .set {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .set-title {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .stat {
+            background: var(--card2);
+            padding: 13px 8px;
+            border-radius: 13px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 18px;
+        }
+
+        .stat span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .progress {
+            height: 8px;
+            background: #292936;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress div {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .water-number {
+            font-size: 42px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .water-target {
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .water-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .water-custom {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .water-message {
+            background: rgba(49, 209, 88, 0.15);
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .timer-box {
+            background: var(--card2);
+            padding: 15px;
+            border-radius: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .timer-display {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .history-item {
+            background: var(--card2);
+            border-radius: 14px;
+            padding: 13px;
+            margin-bottom: 9px;
+        }
+
+        .history-item strong {
+            display: block;
+        }
+
+        .history-item small {
+            color: var(--muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            background: #282638;
+            color: #c5bcff;
+            margin-top: 4px;
+            margin-right: 4px;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 30px 10px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 76px;
+            background: rgba(21, 21, 28, 0.96);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            z-index: 20;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border-radius: 0;
+            color: var(--muted);
+            padding: 8px 2px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn span {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-btn.active {
+            color: white;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: flex-end;
+            z-index: 50;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 25px 25px 0 0;
+            padding: 20px;
+            padding-bottom: 35px;
+        }
+
+        .modal-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .close {
+            background: var(--card2);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: white;
+            color: black;
+            padding: 12px 17px;
+            border-radius: 12px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (min-width: 700px) {
+            .bottom-nav {
+                max-width: 700px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 18px 18px 0 0;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
 <header>
     <div class="header-info">
-        <h1>🏋️ Diário de Treino</h1>
+        <h1>Diário de Treino</h1>
         <p id="headerDate"></p>
     </div>
     <div class="header-avatar-container" onclick="triggerProfilePicUpload()" title="Alterar Foto">
@@ -482,185 +492,179 @@ label {
 </header>
 
 <main>
-
-<!-- INÍCIO -->
-<section id="home" class="page active">
-    <div class="card">
-        <h2>Resumo de Hoje</h2>
-        <div class="stats">
-            <div class="stat">
-                <strong id="todayExercises">0</strong>
-                <span>Exercícios</span>
-            </div>
-            <div class="stat">
-                <strong id="todaySets">0</strong>
-                <span>Séries</span>
-            </div>
-            <div class="stat">
-                <strong id="todayVolume">0</strong>
-                <span>Volume kg</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-            <div>
-                <h3 style="margin: 0; font-size: 16px;">🧪 Suplementação de Creatina</h3>
-                <span style="color: var(--muted); font-size: 12px;">Dose recomendada (0,07g/kg)</span>
-            </div>
-            <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
-        </div>
-        <p id="creatineStatusText" style="margin-bottom: 12px; font-size: 13px; color: var(--muted);">Status de hoje: Pendente</p>
-        <button id="homeCreatineBtn" class="full secondary" onclick="toggleCreatine()">Marcar como Tomada</button>
-    </div>
-
-    <div class="card">
-        <h2>🏃 Cardio nos Últimos 7 Dias</h2>
-        <div class="stats">
-            <div class="stat">
-                <strong id="weeklyCardioTime">0 min</strong>
-                <span>Tempo Total</span>
-            </div>
-            <div class="stat">
-                <strong id="weeklyCardioDist">0 km</strong>
-                <span>Distância</span>
-            </div>
-            <div class="stat">
-                <strong id="weeklyCardioSessions">0</strong>
-                <span>Sessões</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>💧 Água</h2>
-        <div class="water-number">
-            <span id="waterCurrent">0</span> ml
-        </div>
-        <div class="water-target">
-            Meta: <span id="waterTargetText">3000</span> ml
-        </div>
-        <div class="progress">
-            <div id="waterProgress" style="width:0%"></div>
-        </div>
-        <div id="waterActionArea">
-            <div class="water-buttons">
-                <button id="btnW250" onclick="addWater(250)">+250</button>
-                <button id="btnW500" onclick="addWater(500)">+500</button>
-                <button id="btnW1000" onclick="addWater(1000)">+1000</button>
-            </div>
-            <div class="water-custom">
-                <input id="customWaterInput" type="number" placeholder="Qtd personalizada (ml)">
-                <button id="btnWCustom" onclick="addCustomWater()">Adicionar</button>
-            </div>
-        </div>
-        <div id="waterMetaReachedMessage" class="water-message" style="display:none;">
-            🎉 Parabéns! Você atingiu sua meta de água hoje. Registro bloqueado até amanhã!
-        </div>
-        <br>
-        <button class="secondary full" onclick="resetWater()">Zerar água</button>
-    </div>
-
-    <div class="card">
-        <h2>Treino</h2>
-        <div class="field">
-            <label>Nome do treino</label>
-            <input id="workoutName" placeholder="Ex: Peito e Tríceps">
-        </div>
-        <button class="full" onclick="startWorkout()">+ Começar treino</button>
-    </div>
-</section>
-
-<!-- TREINO -->
-<section id="workout" class="page">
-    <div class="card">
-        <div class="field">
-            <label>Treino atual</label>
-            <input id="activeWorkoutName" placeholder="Nome do treino" oninput="updateWorkoutTitle(this.value)">
-        </div>
-
-        <div class="timer-box">
-            <label>⏱️ Descanso entre séries</label>
-            <div class="timer-display" id="timerDisplay">00:00</div>
-            <div class="timer-controls">
-                <button class="secondary" onclick="startTimer(30)">30s</button>
-                <button class="secondary" onclick="startTimer(60)">60s</button>
-                <button class="secondary" onclick="startTimer(90)">90s</button>
-                <button class="secondary" onclick="startTimer(120)">120s</button>
-                <button class="danger" onclick="stopTimer()">Parar</button>
+    <!-- INÍCIO -->
+    <section id="home" class="page active">
+        <div class="card">
+            <h2>Resumo de Hoje</h2>
+            <div class="stats">
+                <div class="stat">
+                    <strong id="todayExercises">0</strong>
+                    <span>Exercícios</span>
+                </div>
+                <div class="stat">
+                    <strong id="todaySets">0</strong>
+                    <span>Séries</span>
+                </div>
+                <div class="stat">
+                    <strong id="todayVolume">0</strong>
+                    <span>Volume kg</span>
+                </div>
             </div>
         </div>
 
-        <button class="full green" onclick="finishWorkout()">✓ Finalizar treino</button>
-    </div>
-
-    <div id="exerciseList"></div>
-
-    <button class="full" onclick="openExerciseModal()">+ Adicionar exercício</button>
-    <br><br>
-    <button class="secondary full" onclick="cancelWorkout()">Cancelar treino</button>
-</section>
-
-<!-- HISTÓRICO -->
-<section id="history" class="page">
-    <div class="card">
-        <h2>📈 Histórico & Evolução</h2>
-        <p style="color:var(--muted)">Acompanhe suas cargas e evolução histórica.</p>
-    </div>
-
-    <div class="card">
-        <h3>Evolução por Exercício</h3>
-        <div class="field">
-            <select id="chartExerciseSelect" onchange="renderProgressChart()">
-                <option value="">Selecione um exercício...</option>
-            </select>
+        <div class="card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 16px;">Suplementação de Creatina</h3>
+                    <span style="color: var(--muted); font-size: 12px;">Dose recomendada (0,07g/kg)</span>
+                </div>
+                <strong id="homeCreatineTarget" style="font-size: 22px; color: var(--accent);">0g</strong>
+            </div>
+            <p id="creatineStatusText" style="margin-bottom: 12px; font-size: 13px; color: var(--muted);">Status de hoje: Pendente</p>
+            <button id="homeCreatineBtn" class="full secondary" onclick="toggleCreatine()">Marcar como Tomada</button>
         </div>
-        <div style="position: relative; height:220px;">
-            <canvas id="progressChart"></canvas>
-        </div>
-    </div>
 
-    <div id="historyList"></div>
-</section>
+        <div class="card">
+            <h2>Cardio nos Últimos 7 Dias</h2>
+            <div class="stats">
+                <div class="stat">
+                    <strong id="weeklyCardioTime">0 min</strong>
+                    <span>Tempo Total</span>
+                </div>
+                <div class="stat">
+                    <strong id="weeklyCardioDist">0 km</strong>
+                    <span>Distância</span>
+                </div>
+                <div class="stat">
+                    <strong id="weeklyCardioSessions">0</strong>
+                    <span>Sessões</span>
+                </div>
+            </div>
+        </div>
 
-<!-- PERFIL -->
-<section id="profile" class="page">
-    <div class="card">
-        <h2>⚙️ Configurações & Suplementação</h2>
-        <div class="field">
-            <label>Seu peso atual (kg)</label>
-            <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" oninput="calculateSuggestedMetrics()">
+        <div class="card">
+            <h2>Água</h2>
+            <div class="water-number">
+                <span id="waterCurrent">0</span> ml
+            </div>
+            <div class="water-target">
+                Meta: <span id="waterTargetText">3000</span> ml
+            </div>
+            <div class="progress">
+                <div id="waterProgress" style="width:0%"></div>
+            </div>
+            <div id="waterActionArea">
+                <div class="water-buttons">
+                    <button id="btnW250" onclick="addWater(250)">+250</button>
+                    <button id="btnW500" onclick="addWater(500)">+500</button>
+                    <button id="btnW1000" onclick="addWater(1000)">+1000</button>
+                </div>
+                <div class="water-custom">
+                    <input id="customWaterInput" type="number" placeholder="Qtd personalizada (ml)">
+                    <button id="btnWCustom" onclick="addCustomWater()">Adicionar</button>
+                </div>
+            </div>
+            <div id="waterMetaReachedMessage" class="water-message" style="display:none;">
+                Parabéns! Você atingiu sua meta de água hoje. Registro concluído!
+            </div>
+            <br>
+            <button class="secondary full" onclick="resetWater()">Zerar água</button>
         </div>
-        <div class="field">
-            <label>Meta diária de água (ml)</label>
-            <input id="waterTarget" type="number" placeholder="3000">
-            <small style="color:var(--muted); font-size:11px;" id="waterSuggestionText"></small>
-        </div>
-        <div class="field">
-            <label>🧪 Dose diária de Creatina recomendada</label>
-            <input id="creatineTarget" type="text" readonly style="background: var(--card); border-color: var(--border); font-weight: bold; color: var(--accent);">
-            <small style="color:var(--muted); font-size:11px;">Calculado automaticamente (0,07g por kg corporal)</small>
-        </div>
-        <button class="full" onclick="saveSettings()">Salvar configurações</button>
-    </div>
 
-    <div class="card">
-        <h2>💾 Dados</h2>
-        <button class="secondary full" onclick="exportData()">Exportar meus dados</button>
+        <div class="card">
+            <h2>Treino</h2>
+            <div class="field">
+                <label for="workoutName">Nome do treino</label>
+                <input id="workoutName" placeholder="Ex: Peito e Tríceps">
+            </div>
+            <button class="full" onclick="startWorkout()">+ Começar treino</button>
+        </div>
+    </section>
+
+    <!-- TREINO -->
+    <section id="workout" class="page">
+        <div class="card">
+            <div class="field">
+                <label for="activeWorkoutName">Treino atual</label>
+                <input id="activeWorkoutName" placeholder="Nome do treino" oninput="updateWorkoutTitle(this.value)">
+            </div>
+            <div class="timer-box">
+                <label>Descanso entre séries</label>
+                <div class="timer-display" id="timerDisplay">00:00</div>
+                <div class="timer-controls">
+                    <button class="secondary" onclick="startTimer(30)">30s</button>
+                    <button class="secondary" onclick="startTimer(60)">60s</button>
+                    <button class="secondary" onclick="startTimer(90)">90s</button>
+                    <button class="secondary" onclick="startTimer(120)">120s</button>
+                    <button class="danger" onclick="stopTimer()">Parar</button>
+                </div>
+            </div>
+            <button class="full green" onclick="finishWorkout()">Finalizar treino</button>
+        </div>
+
+        <div id="exerciseList"></div>
+
+        <button class="full" onclick="openExerciseModal()">+ Adicionar exercício</button>
         <br><br>
-        <button class="secondary full" onclick="importData()">Importar dados</button>
-        <br><br>
-        <button class="danger full" onclick="clearAllData()">Apagar todos os dados</button>
-    </div>
+        <button class="secondary full" onclick="cancelWorkout()">Cancelar treino</button>
+    </section>
 
-    <div class="card">
-        <h3>Diário de Treino</h3>
-        <p style="color:var(--muted);font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
-        <p style="color:var(--muted);font-size:13px">Versão 3.7 (Biblioteca de máquinas expandida e correções no fluxo de treino)</p>
-    </div>
-</section>
+    <!-- HISTÓRICO -->
+    <section id="history" class="page">
+        <div class="card">
+            <h2>Histórico & Evolução</h2>
+            <p style="color:var(--muted)">Acompanhe suas cargas e evolução histórica.</p>
+        </div>
+        <div class="card">
+            <h3>Evolução por Exercício</h3>
+            <div class="field">
+                <select id="chartExerciseSelect" onchange="renderProgressChart()">
+                    <option value="">Selecione um exercício...</option>
+                </select>
+            </div>
+            <div style="position: relative; height:220px;">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+        <div id="historyList"></div>
+    </section>
 
+    <!-- PERFIL -->
+    <section id="profile" class="page">
+        <div class="card">
+            <h2>Configurações & Suplementação</h2>
+            <div class="field">
+                <label for="userWeight">Seu peso atual (kg)</label>
+                <input id="userWeight" type="number" step="0.1" placeholder="Ex: 70" oninput="calculateSuggestedMetrics()">
+            </div>
+            <div class="field">
+                <label for="waterTarget">Meta diária de água (ml)</label>
+                <input id="waterTarget" type="number" placeholder="3000">
+                <small style="color:var(--muted); font-size: 11px;" id="waterSuggestionText"></small>
+            </div>
+            <div class="field">
+                <label for="creatineTarget">Dose diária de Creatina recomendada</label>
+                <input id="creatineTarget" type="text" readonly style="background: var(--card); border-color: var(--border); font-weight: bold; color: var(--accent);">
+                <small style="color:var(--muted); font-size: 11px;">Calculado automaticamente (0,07g por kg corporal)</small>
+            </div>
+            <button class="full" onclick="saveSettings()">Salvar configurações</button>
+        </div>
+
+        <div class="card">
+            <h2>Dados</h2>
+            <button class="secondary full" onclick="exportData()">Exportar meus dados</button>
+            <br><br>
+            <button class="secondary full" onclick="importData()">Importar dados</button>
+            <br><br>
+            <button class="danger full" onclick="clearAllData()">Apagar todos os dados</button>
+        </div>
+
+        <div class="card">
+            <h3>Diário de Treino</h3>
+            <p style="color:var(--muted); font-size:13px">Seus dados ficam armazenados localmente no navegador.</p>
+            <p style="color:var(--muted); font-size:13px">Versão 4.0 Pro (Persistência de exercícios customizados & Otimização do Sistema)</p>
+        </div>
+    </section>
 </main>
 
 <!-- MENU DE NAVEGAÇÃO -->
@@ -675,7 +679,7 @@ label {
         <span>📊</span> Histórico
     </button>
     <button class="nav-btn" onclick="showPage('profile', this)">
-        <span>⚙️</span> Perfil
+        <span>👤</span> Perfil
     </button>
 </nav>
 
@@ -684,13 +688,17 @@ label {
     <div class="modal-content">
         <div class="modal-title">
             <h3>Adicionar Exercício</h3>
-            <button class="close" onclick="closeExerciseModal()">✕</button>
+            <button class="close" onclick="closeExerciseModal()" aria-label="Fechar">✕</button>
         </div>
 
         <div class="field">
-            <label>Biblioteca de Exercícios</label>
+            <label for="exerciseLibrarySelect">Biblioteca de Exercícios</label>
             <select id="exerciseLibrarySelect" onchange="selectFromLibrary(this.value)">
                 <option value="">Selecione ou digite abaixo...</option>
+                
+                <optgroup label="⭐ Exercícios Personalizados" id="customOptGroup">
+                    <!-- Preenchido dinamicamente via JS -->
+                </optgroup>
 
                 <optgroup label="💥 Peito">
                     <option value="Supino Reto com Barra|Livre">Supino Reto com Barra</option>
@@ -716,7 +724,6 @@ label {
                     <option value="Supino Reto no Cabo|Polia">Supino Reto no Cabo</option>
                     <option value="Flexão de Braços Tradicional|Livre">Flexão de Braços Tradicional</option>
                     <option value="Flexão Inclinada (Mãos Apoiadas)|Livre">Flexão Inclinada</option>
-
                     <option value="Paralelas (Foco em Peito)|Livre">Paralelas (Foco em Peito)</option>
                 </optgroup>
 
@@ -726,57 +733,43 @@ label {
                     <option value="Puxada Frontal com Triângulo|Polia">Puxada Frontal com Triângulo</option>
                     <option value="Puxada Pegada Neutra|Polia">Puxada Pegada Neutra</option>
                     <option value="Puxada Alta Articulada|Máquina">Puxada Alta Articulada (Máquina)</option>
-
                     <option value="Pulldown na Máquina|Máquina">Pulldown em Máquina</option>
                     <option value="Remada Articulada Pegada Neutra|Máquina">Remada Articulada Pegada Neutra</option>
-
                     <option value="Remada Articulada Pegada Pronada|Máquina">Remada Articulada Pegada Pronada</option>
-
                     <option value="Remada Articulada Pegada Supinada|Máquina">Remada Articulada Pegada Supinada</option>
                     <option value="Remada Cavalgando em Máquina|Máquina">Remada Cavalgando em Máquina</option>
                     <option value="Remada Baixa em Máquina|Máquina">Remada Baixa em Máquina</option>
                     <option value="Remada Baixa na Polia com Triângulo|Polia">Remada Baixa com Triângulo</option>
-
                     <option value="Remada Baixa na Polia com Barra Reta|Polia">Remada Baixa com Barra Reta</option>
                     <option value="Remada Baixa Unilateral na Polia|Polia">Remada Baixa Unilateral na Polia</option>
                     <option value="Pulldown no Cabo (Barra Reta)|Polia">Pulldown no Cabo (Barra Reta)</option>
                     <option value="Pulldown no Cabo (Corda)|Polia">Pulldown no Cabo (Corda)</option>
                     <option value="Remada Curvada com Barra (Pronada)|Livre">Remada Curvada com Barra</option>
-
                     <option value="Remada Unilateral com Halter (Serrote)|Livre">Remada Unilateral com Halter (Serrote)</option>
                     <option value="Levantamento Terra|Livre">Levantamento Terra</option>
                     <option value="Remada Cavalgando com Barra T|Livre">Remada Cavalgando (Barra T)</option>
                     <option value="Barra Fixa Pronada|Livre">Barra Fixa Pronada (Pull-up)</option>
-
                     <option value="Barra Fixa / Paralelas Assistida (Graviton)|Máquina">Graviton (Puxada Assistida)</option>
                     <option value="Extensão de Lombar em Máquina|Máquina">Extensão de Lombar em Máquina</option>
                     <option value="Extensão de Lombar no Banco Romano|Livre">Extensão de Lombar (Banco Romano)</option>
-
                 </optgroup>
 
                 <optgroup label="🛡️ Ombros & Trapézio">
                     <option value="Desenvolvimento em Máquina Articulada|Máquina">Desenvolvimento em Máquina (Shoulder Press)</option>
-
                     <option value="Elevação Lateral em Máquina|Máquina">Elevação Lateral em Máquina</option>
                     <option value="Crucifixo Invertido no Peck Deck|Máquina">Crucifixo Invertido no Peck Deck (Máquina)</option>
                     <option value="Desenvolvimento Militar com Barra|Livre">Desenvolvimento Militar com Barra</option>
-
                     <option value="Desenvolvimento com Halteres Sentado|Livre">Desenvolvimento com Halteres Sentado</option>
                     <option value="Desenvolvimento Arnold com Halteres|Livre">Desenvolvimento Arnold com Halteres</option>
-
                     <option value="Elevação Lateral com Halteres|Livre">Elevação Lateral com Halteres</option>
                     <option value="Elevação Lateral na Polia Unilateral|Polia">Elevação Lateral na Polia Unilateral</option>
                     <option value="Elevação Frontal com Halteres|Livre">Elevação Frontal com Halteres</option>
-
                     <option value="Elevação Frontal na Polia com Corda|Polia">Elevação Frontal na Polia com Corda</option>
                     <option value="Crucifixo Invertido com Halteres|Livre">Crucifixo Invertido com Halteres</option>
-
                     <option value="Face Pull na Polia (Com Corda)|Polia">Face Pull na Polia (Com Corda)</option>
-
                     <option value="Encolhimento de Ombros em Máquina/Smith|Máquina">Encolhimento em Máquina / Smith</option>
                     <option value="Encolhimento com Barra|Livre">Encolhimento com Barra</option>
                     <option value="Encolhimento com Halteres|Livre">Encolhimento com Halteres</option>
-
                     <option value="Remada Alta com Barra|Livre">Remada Alta com Barra</option>
                     <option value="Remada Alta na Polia|Polia">Remada Alta na Polia</option>
                 </optgroup>
@@ -787,17 +780,13 @@ label {
                     <option value="Rosca Direta com Barra Reta|Livre">Rosca Direta com Barra Reta</option>
                     <option value="Rosca Direta com Barra W|Livre">Rosca Direta com Barra W</option>
                     <option value="Rosca Direta com Halteres|Livre">Rosca Direta com Halteres</option>
-
                     <option value="Rosca Alternada com Halteres|Livre">Rosca Alternada com Halteres</option>
-
                     <option value="Rosca Martelo com Halteres|Livre">Rosca Martelo com Halteres</option>
                     <option value="Rosca Martelo na Polia com Corda|Polia">Rosca Martelo na Polia (Corda)</option>
                     <option value="Rosca Scott com Barra W|Livre">Rosca Scott com Barra W</option>
-
                     <option value="Rosca Concentrada com Halter|Livre">Rosca Concentrada com Halter</option>
                     <option value="Rosca no Banco Inclinado 45°|Livre">Rosca 45° no Banco Inclinado com Halteres</option>
                     <option value="Rosca na Polia Baixa com Barra Reta|Polia">Rosca na Polia Baixa (Barra Reta)</option>
-
                     <option value="Rosca Inversa com Barra|Livre">Rosca Inversa com Barra</option>
                     <option value="Rosca Punho com Barra|Livre">Rosca Punho com Barra</option>
                 </optgroup>
@@ -812,103 +801,105 @@ label {
                     <option value="Tríceps Testa com Halteres|Livre">Tríceps Testa com Halteres</option>
                     <option value="Tríceps Francês com Halter|Livre">Tríceps Francês com Halter</option>
                     <option value="Tríceps Francês na Polia Alta|Polia">Tríceps Francês na Polia Alta</option>
-
                     <option value="Tríceps Mergulho / Graviton|Máquina">Graviton (Tríceps Assistido)</option>
                     <option value="Tríceps Mergulho no Banco|Livre">Tríceps Mergulho no Banco</option>
-
                     <option value="Paralelas (Foco em Tríceps)|Livre">Paralelas (Foco em Tríceps)</option>
                     <option value="Supino Fechado com Barra|Livre">Supino Fechado com Barra</option>
                 </optgroup>
 
                 <optgroup label="🦵 Quadríceps & Posterior (Pernas)">
+                    <option value="Agachamento Livre com Barra|Livre">Agachamento Livre com Barra</option>
+                    <option value="Agachamento Frontal com Barra|Livre">Agachamento Frontal com Barra</option>
+                    <option value="Agachamento Goblet com Halter|Livre">Agachamento Goblet com Halter</option>
+                    <option value="Agachamento Sumô com Halter|Livre">Agachamento Sumô com Halter</option>
+                    <option value="Agachamento Búlgaro com Halteres|Livre">Agachamento Búlgaro com Halteres</option>
+                    <option value="Afundo / Passada com Halteres|Livre">Afundo / Passada com Halteres</option>
+                    <option value="Afundo Reverso com Halteres|Livre">Afundo Reverso com Halteres</option>
+                    <option value="Subida no Banco / Step-Up com Halteres|Livre">Subida no Banco / Step-Up com Halteres</option>
+                    <option value="Good Morning / Bom Dia com Barra|Livre">Good Morning / Bom Dia com Barra</option>
+                    <option value="Stiff com Barra|Livre">Stiff com Barra</option>
+                    <option value="Stiff com Halteres|Livre">Stiff com Halteres</option>
+                    <option value="RDL (Romanian Deadlift) com Barra|Livre">RDL (Romanian Deadlift)</option>
+                    <option value="Flexão Nórdica (Nordic Curl)|Livre">Flexão Nórdica (Nordic Curl)</option>
                     <option value="Cadeira Extensora|Máquina">Cadeira Extensora (Máquina)</option>
+                    <option value="Cadeira Extensora Unilateral|Máquina">Cadeira Extensora Unilateral (Máquina)</option>
                     <option value="Mesa Flexora|Máquina">Mesa Flexora (Máquina)</option>
-
+                    <option value="Mesa Flexora Unilateral|Máquina">Mesa Flexora Unilateral (Máquina)</option>
                     <option value="Cadeira Flexora|Máquina">Cadeira Flexora (Máquina)</option>
                     <option value="Flexor Vertical / Flexora em Pé|Máquina">Flexora Unilateral em Pé (Máquina)</option>
                     <option value="Leg Press 45°|Máquina">Leg Press 45° (Máquina)</option>
+                    <option value="Leg Press Unilateral|Máquina">Leg Press Unilateral (Máquina)</option>
                     <option value="Leg Press Horizontal|Máquina">Leg Press Horizontal (Máquina)</option>
                     <option value="Leg Press Vertical / 80°|Máquina">Leg Press Vertical / 80° (Máquina)</option>
                     <option value="Hack Squat / Agachamento Hack|Máquina">Hack Squat / Agachamento Hack (Máquina)</option>
-
                     <option value="Agachamento V-Squat Articulado|Máquina">V-Squat Articulado (Máquina)</option>
-
                     <option value="Pendulum Squat (Agachamento Pêndulo)|Máquina">Pendulum Squat (Máquina)</option>
                     <option value="Agachamento no Barra Guiada (Smith)|Máquina">Agachamento no Smith (Barra Guiada)</option>
+                    <option value="Afundo / Passada no Smith|Máquina">Afundo / Passada no Smith</option>
                     <option value="Sissy Squat (Agachamento Sissy)|Máquina">Sissy Squat (Máquina)</option>
                     <option value="Belt Squat Machine|Máquina">Belt Squat Machine</option>
-                    <option value="Agachamento Livre com Barra|Livre">Agachamento Livre com Barra</option>
-
-                    <option value="Agachamento Búlgaro com Halteres|Livre">Agachamento Búlgaro com Halteres</option>
-
-                    <option value="Afundo / Passada com Halteres|Livre">Afundo / Passada com Halteres</option>
-
-                    <option value="Stiff com Barra|Livre">Stiff com Barra</option>
-
-                    <option value="Stiff com Halteres|Livre">Stiff com Halteres</option>
-                    <option value="RDL (Romanian Deadlift) com Barra|Livre">RDL (Romanian Deadlift)</option>
+                    <option value="Flexão de Pernas na Polia|Polia">Flexão de Pernas na Polia (Caneleira)</option>
                 </optgroup>
 
                 <optgroup label="🍑 Glúteos & Adutores/Abdutores">
                     <option value="Cadeira Abdutora|Máquina">Cadeira Abdutora (Máquina)</option>
                     <option value="Cadeira Adutora|Máquina">Cadeira Adutora (Máquina)</option>
-
                     <option value="Elevação Pélvica em Máquina|Máquina">Elevação Pélvica em Máquina (Hip Thrust)</option>
-
+                    <option value="Elevação Pélvica no Smith|Máquina">Elevação Pélvica no Smith</option>
                     <option value="Coice de Glúteo em Máquina|Máquina">Glúteo Máquina (Coice / Kickback)</option>
                     <option value="Glúteo Rotatory em Máquina|Máquina">Glúteo Rotatory / 4 Apoios (Máquina)</option>
                     <option value="Elevação Pélvica com Barra|Livre">Elevação Pélvica com Barra</option>
-
+                    <option value="Elevação Pélvica Unilateral|Livre">Elevação Pélvica Unilateral com Halter</option>
+                    <option value="Frog Pumps (Elevação Sapo)|Livre">Frog Pumps (Elevação Sapo)</option>
+                    <option value="Glúteo 4 Apoios com Caneleira|Livre">Glúteo 4 Apoios com Caneleira</option>
+                    <option value="Caminhada Lateral com Mini Band|Livre">Caminhada Lateral com Mini Band</option>
                     <option value="Glúteo na Polia (Extensão de Quadril)|Polia">Glúteo na Polia (Cabo)</option>
-
+                    <option value="Abdução de Quadril na Polia|Polia">Abdução de Quadril na Polia</option>
+                    <option value="Adução de Quadril na Polia|Polia">Adução de Quadril na Polia</option>
                 </optgroup>
 
                 <optgroup label="🦶 Panturrilhas">
                     <option value="Panturrilha Sentado (Gêmeos)|Máquina">Panturrilha Sentado / Gêmeos (Máquina)</option>
                     <option value="Panturrilha em Pé na Máquina|Máquina">Panturrilha em Pé na Máquina</option>
                     <option value="Panturrilha no Leg Press 45°|Máquina">Panturrilha no Leg Press 45°</option>
-
+                    <option value="Panturrilha no Leg Press Horizontal|Máquina">Panturrilha no Leg Press Horizontal</option>
+                    <option value="Panturrilha no Hack Machine|Máquina">Panturrilha no Hack Machine</option>
                     <option value="Panturrilha em Pé no Smith|Máquina">Panturrilha em Pé no Smith</option>
                     <option value="Panturrilha Unilateral em Pé com Halter|Livre">Panturrilha Unilateral com Halter</option>
+                    <option value="Panturrilha Unilateral no Degrau|Livre">Panturrilha Unilateral no Degrau</option>
+                    <option value="Panturrilha Donkey (Burrinho)|Máquina">Panturrilha Donkey (Burrinho)</option>
                 </optgroup>
 
                 <optgroup label="🍫 Core / Abdominais">
                     <option value="Abdominal em Máquina (Ab Crunch)|Máquina">Abdominal em Máquina (Ab Crunch)</option>
                     <option value="Rotação de Tronco em Máquina|Máquina">Rotação de Tronco em Máquina</option>
                     <option value="Abdominal na Polia com Corda (Crunch Cabo)|Polia">Abdominal na Polia Alta (Crunch)</option>
-
                     <option value="Abdominal Supra Solo|Livre">Abdominal Supra Solo</option>
-
                     <option value="Abdominal Infra no Solo|Livre">Abdominal Infra (Elevação de Pernas)</option>
-
                     <option value="Abdominal Infra nas Paralelas|Livre">Abdominal Infra nas Paralelas</option>
-
                     <option value="Prancha Frontal Estática|Livre">Prancha Frontal Estática</option>
                 </optgroup>
 
                 <optgroup label="🏃 Cardio & Exercícios Aeróbicos">
                     <option value="Corrida / Caminhada na Esteira|Cardio">Corrida / Caminhada na Esteira</option>
-
                     <option value="Bicicleta Ergométrica|Cardio">Bicicleta Ergométrica</option>
                     <option value="Elíptico / Transport|Cardio">Elíptico / Transport</option>
                     <option value="Simulador de Escada|Cardio">Simulador de Escada</option>
-
                     <option value="Remo Seco (Ergômetro)|Cardio">Remo Seco (Ergômetro)</option>
                     <option value="Air Bike / Fan Bike|Cardio">Air Bike / Fan Bike</option>
                     <option value="Corda Naval|Cardio">Corda Naval</option>
                     <option value="Pular Corda|Cardio">Pular Corda</option>
-
                 </optgroup>
             </select>
         </div>
 
         <div class="field">
-            <label>Nome do Exercício</label>
+            <label for="newExerciseName">Nome do Exercício</label>
             <input id="newExerciseName" placeholder="Ex: Supino Reto">
         </div>
 
         <div class="field">
-            <label>Tipo de Equipamento</label>
+            <label for="newExerciseType">Tipo de Equipamento</label>
             <select id="newExerciseType">
                 <option value="Livre">Livre (Halter / Barra)</option>
                 <option value="Máquina">Máquina</option>
@@ -918,7 +909,7 @@ label {
         </div>
 
         <div class="field">
-            <label>Quantidade Inicial de Séries</label>
+            <label for="newExerciseSetsCount">Quantidade Inicial de Séries</label>
             <select id="newExerciseSetsCount">
                 <option value="1">1 Série</option>
                 <option value="2">2 Séries</option>
@@ -943,10 +934,11 @@ let state = {
     profile: {
         weight: 70,
         waterTarget: 2450,
-        profilePic: ''
+        profilePic: ""
     },
     waterLogs: {},
-    creatineLogs: {}
+    creatineLogs: {},
+    customExercises: [] // Guarda os exercícios personalizados cadastrados pelo usuário
 };
 
 let timerInterval = null;
@@ -961,6 +953,7 @@ window.onload = function() {
     updateHomeSummary();
     renderHistory();
     populateChartSelect();
+    renderCustomExercisesInSelect();
 };
 
 function setupDate() {
@@ -978,10 +971,10 @@ function getTodayKey() {
 function showPage(pageId, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    
+
     const targetPage = document.getElementById(pageId);
     if (targetPage) targetPage.classList.add('active');
-    
+
     if (btn) {
         btn.classList.add('active');
     } else {
@@ -992,11 +985,11 @@ function showPage(pageId, btn) {
         if (pageId === 'profile' && navBtns[3]) navBtns[3].classList.add('active');
     }
 
-    if(pageId === 'home') {
+    if (pageId === 'home') {
         updateHomeSummary();
         updateWaterUI();
         updateCreatineUI();
-    } else if(pageId === 'history') {
+    } else if (pageId === 'history') {
         renderHistory();
         populateChartSelect();
     }
@@ -1020,29 +1013,27 @@ function handleProfilePicUpload(event) {
                 canvas.height = 150;
                 ctx.drawImage(img, 0, 0, 150, 150);
                 const compressedSrc = canvas.toDataURL('image/jpeg', 0.7);
-                
                 document.getElementById('headerProfilePic').src = compressedSrc;
                 state.profile.profilePic = compressedSrc;
                 saveData();
                 showToast("Foto de perfil atualizada!");
-            }
+            };
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
 }
 
-// --- SUGESTÕES DE ÁGUA E CREATINA AUTOMÁTICAS ---
+// --- SUGESTÕES AUTOMÁTICAS ---
 function calculateSuggestedMetrics() {
     const weightVal = parseFloat(document.getElementById('userWeight').value);
     if (!isNaN(weightVal) && weightVal > 0) {
         const suggestedWater = Math.round(weightVal * 35);
         document.getElementById('waterSuggestionText').innerText = `Sugestão com base no seu peso (${weightVal}kg): ${suggestedWater}ml/dia`;
-        
         document.getElementById('waterTarget').value = suggestedWater;
         state.profile.waterTarget = suggestedWater;
         state.profile.weight = weightVal;
-        
+
         const suggestedCreatine = (weightVal * 0.07).toFixed(1);
         document.getElementById('creatineTarget').value = `${suggestedCreatine}g`;
 
@@ -1050,8 +1041,8 @@ function calculateSuggestedMetrics() {
         updateWaterUI();
         updateCreatineUI();
     } else {
-        document.getElementById('waterSuggestionText').innerText = '';
-        document.getElementById('creatineTarget').value = '';
+        document.getElementById('waterSuggestionText').innerText = "";
+        document.getElementById('creatineTarget').value = "";
     }
 }
 
@@ -1077,7 +1068,7 @@ function addCustomWater() {
     const val = parseInt(input.value);
     if (val && val > 0) {
         addWater(val);
-        input.value = '';
+        input.value = "";
     }
 }
 
@@ -1127,17 +1118,16 @@ function updateCreatineUI() {
     const dose = (weight * 0.07).toFixed(1);
 
     document.getElementById('homeCreatineTarget').innerText = `${dose}g`;
-    
     const statusText = document.getElementById('creatineStatusText');
     const btn = document.getElementById('homeCreatineBtn');
 
     if (taken) {
-        statusText.innerText = "Status de hoje: ✅ Tomada!";
+        statusText.innerText = "Status de hoje: ✓ Tomada!";
         statusText.style.color = "var(--green)";
         btn.innerText = "Desmarcar Creatina";
         btn.className = "full secondary";
     } else {
-        statusText.innerText = "Status de hoje: ⏳ Pendente";
+        statusText.innerText = "Status de hoje: Pendente";
         statusText.style.color = "var(--muted)";
         btn.innerText = "Marcar como Tomada";
         btn.className = "full green";
@@ -1155,10 +1145,10 @@ function startWorkout() {
         exercises: []
     };
 
-    if (nameInput) nameInput.value = '';
+    if (nameInput) nameInput.value = "";
     const activeNameInput = document.getElementById('activeWorkoutName');
     if (activeNameInput) activeNameInput.value = name;
-    
+
     renderCurrentWorkout();
     showPage('workout');
 }
@@ -1179,13 +1169,30 @@ function closeExerciseModal() {
 
 function selectFromLibrary(val) {
     if (!val) return;
-    const [name, type] = val.split('|');
-    document.getElementById('newExerciseName').value = name;
-    document.getElementById('newExerciseType').value = type;
+    const parts = val.split('|');
+    if (parts.length === 2) {
+        document.getElementById('newExerciseName').value = parts[0];
+        document.getElementById('newExerciseType').value = parts[1];
+    }
+}
+
+function renderCustomExercisesInSelect() {
+    const optGroup = document.getElementById('customOptGroup');
+    if (!optGroup) return;
+
+    if (!state.customExercises || state.customExercises.length === 0) {
+        optGroup.innerHTML = '<option disabled value="">Nenhum personalizado salvo</option>';
+        return;
+    }
+
+    optGroup.innerHTML = state.customExercises.map(item => 
+        `<option value="${item.name}|${item.type}">${item.name} (${item.type})</option>`
+    ).join('');
 }
 
 function addExerciseToWorkout() {
-    const name = document.getElementById('newExerciseName').value.trim();
+    const nameInput = document.getElementById('newExerciseName');
+    const name = nameInput.value.trim();
     const type = document.getElementById('newExerciseType').value;
     const setsCount = parseInt(document.getElementById('newExerciseSetsCount').value) || 3;
 
@@ -1194,11 +1201,30 @@ function addExerciseToWorkout() {
         return;
     }
 
+    // PERSISTÊNCIA DE EXERCÍCIOS PERSONALIZADOS
+    if (!state.customExercises) state.customExercises = [];
+    
+    // Verifica se já existe na lista padrão ou nas customizadas
+    const select = document.getElementById('exerciseLibrarySelect');
+    let existsInSelect = false;
+    for (let option of select.options) {
+        if (option.value.toLowerCase().startsWith(name.toLowerCase() + "|")) {
+            existsInSelect = true;
+            break;
+        }
+    }
+
+    if (!existsInSelect) {
+        state.customExercises.push({ name: name, type: type });
+        saveData();
+        renderCustomExercisesInSelect();
+        showToast(`"${name}" salvo na biblioteca!`);
+    }
+
     if (!state.currentWorkout) {
         startWorkout();
     }
 
-    // Define os blocos de acordo com o tipo (Cardio = 1 bloco por padrão)
     const sets = [];
     if (type === 'Cardio') {
         sets.push({ time: 20, dist: 0 });
@@ -1216,8 +1242,8 @@ function addExerciseToWorkout() {
         sets: sets
     });
 
-    document.getElementById('newExerciseName').value = '';
-    document.getElementById('exerciseLibrarySelect').value = '';
+    nameInput.value = "";
+    document.getElementById('exerciseLibrarySelect').value = "";
     closeExerciseModal();
     renderCurrentWorkout();
 }
@@ -1239,6 +1265,7 @@ function removeExercise(exIndex) {
 function addSet(exIndex) {
     if (!state.currentWorkout || !state.currentWorkout.exercises[exIndex]) return;
     const ex = state.currentWorkout.exercises[exIndex];
+
     if (ex.type === 'Cardio') {
         const lastSet = ex.sets[ex.sets.length - 1] || { time: 15, dist: 0 };
         ex.sets.push({ ...lastSet });
@@ -1338,14 +1365,12 @@ function finishWorkout() {
     }
 
     state.currentWorkout.endTime = new Date().toISOString();
-    
     if (!Array.isArray(state.history)) {
         state.history = [];
     }
-    
+
     state.history.unshift(state.currentWorkout);
     state.currentWorkout = null;
-
     saveData();
     renderCurrentWorkout();
     showToast("Treino finalizado e salvo!");
@@ -1365,7 +1390,7 @@ function startTimer(seconds) {
     stopTimer();
     let left = seconds;
     const display = document.getElementById('timerDisplay');
-    
+
     const updateDisplay = () => {
         const m = String(Math.floor(left / 60)).padStart(2, '0');
         const s = String(left % 60).padStart(2, '0');
@@ -1378,7 +1403,8 @@ function startTimer(seconds) {
         if (left < 0) {
             stopTimer();
             display.innerText = "FIM!";
-            showToast("⏱️ Tempo de descanso terminado!");
+            showToast("Tempo de descanso terminado!");
+            if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
         } else {
             updateDisplay();
         }
@@ -1393,7 +1419,6 @@ function stopTimer() {
 // --- RESUMO HOME ---
 function updateHomeSummary() {
     const todayStr = getTodayKey();
-
     const todayWorkouts = (state.history || []).filter(w => {
         if (!w) return false;
         const d = new Date(w.endTime || w.startTime || Date.now());
@@ -1427,7 +1452,6 @@ function updateHomeSummary() {
     // Cardio 7 Dias
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
-
     let cTime = 0;
     let cDist = 0;
     let cSessions = 0;
@@ -1463,15 +1487,14 @@ function renderHistory() {
     }
 
     container.innerHTML = state.history.map((w, idx) => {
-        if (!w) return '';
+        if (!w) return "";
         const d = new Date(w.endTime || w.startTime || Date.now());
         const dateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
         const exSummary = (w.exercises || []).map(e => `<span class="badge">${e.name}</span>`).join(' ');
 
         return `
         <div class="history-item">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="display: flex; justify-content:space-between; align-items:flex-start;">
                 <div>
                     <strong>${w.name || 'Treino Sem Nome'}</strong>
                     <small>${dateStr}</small>
@@ -1496,8 +1519,8 @@ function deleteHistoryItem(idx) {
 function populateChartSelect() {
     const select = document.getElementById('chartExerciseSelect');
     if (!select) return;
-    const exercisesSet = new Set();
 
+    const exercisesSet = new Set();
     (state.history || []).forEach(w => {
         (w.exercises || []).forEach(e => {
             if (e && e.type !== 'Cardio') exercisesSet.add(e.name);
@@ -1511,8 +1534,10 @@ function populateChartSelect() {
 function renderProgressChart() {
     const select = document.getElementById('chartExerciseSelect');
     if (!select) return;
+
     const selectedEx = select.value;
-    const ctx = document.getElementById('progressChart').getContext('2d');
+    const canvas = document.getElementById('progressChart');
+    const ctx = canvas.getContext('2d');
 
     if (chartInstance) chartInstance.destroy();
     if (!selectedEx) return;
@@ -1526,7 +1551,7 @@ function renderProgressChart() {
                 const maxWeight = Math.max(...e.sets.map(s => s.weight || 0));
                 if (maxWeight > 0) {
                     const d = new Date(w.endTime || w.startTime || Date.now());
-                    labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+                    labels.push(`${d.getDate()}/${d.getMonth() + 1}`);
                     dataMaxWeights.push(maxWeight);
                 }
             }
@@ -1560,7 +1585,7 @@ function renderProgressChart() {
     });
 }
 
-// --- CONFIGURAÇÕES & PERSISTÊNCIA DE DADOS ---
+// --- PERSISTÊNCIA DE DADOS ---
 function saveSettings() {
     const weightVal = parseFloat(document.getElementById('userWeight').value) || 70;
     const waterVal = parseInt(document.getElementById('waterTarget').value) || 3000;
@@ -1592,10 +1617,11 @@ function loadData() {
     if (!state.waterLogs) state.waterLogs = {};
     if (!state.creatineLogs) state.creatineLogs = {};
     if (!state.history) state.history = [];
+    if (!state.customExercises) state.customExercises = [];
 
-    document.getElementById('userWeight').value = state.profile.weight || '';
+    document.getElementById('userWeight').value = state.profile.weight || "";
     document.getElementById('waterTarget').value = state.profile.waterTarget || 3000;
-    
+
     if (state.profile.profilePic) {
         document.getElementById('headerProfilePic').src = state.profile.profilePic;
     }
@@ -1608,13 +1634,11 @@ function exportData() {
         const jsonStr = JSON.stringify(state, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        
         const downloadAnchor = document.createElement('a');
         downloadAnchor.href = url;
         downloadAnchor.download = `diario_treino_backup_${getTodayKey()}.json`;
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
-        
         document.body.removeChild(downloadAnchor);
         URL.revokeObjectURL(url);
         showToast("Backup gerado com sucesso!");
@@ -1626,11 +1650,10 @@ function exportData() {
 function importData() {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,application/json';
+    input.accept = '.json, application/json';
     input.onchange = e => {
         const file = e.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = event => {
             try {
@@ -1639,6 +1662,7 @@ function importData() {
                     state = importedData;
                     saveData();
                     loadData();
+                    renderCustomExercisesInSelect();
                     showToast("Dados importados com sucesso!");
                 } else {
                     throw new Error("Estrutura do arquivo inválida.");
@@ -1669,6 +1693,5 @@ function showToast(msg) {
     }, 2500);
 }
 </script>
-
 </body>
 </html>
