@@ -1,5 +1,3 @@
-# index.html
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -205,17 +203,21 @@ Parabéns! Você atingiu sua meta de água hoje. Registro concluído!
 </main>
 <!-- MENU DE NAVEGAÇÃO -->
 <nav class="bottom-nav" aria-label="Navegação principal">
-<button class="nav-btn active" onclick="showPage('home', this)">
-<span></span> Início
+<button class="nav-btn active" onclick="showPage('home', this)" aria-label="Início">
+<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5.5 9.5V21h13V9.5"></path><path d="M9.5 21v-6h5v6"></path></svg>
+<span class="nav-label">Início</span>
 </button>
-<button class="nav-btn" onclick="showPage('workout', this)">
-<span></span> Treino
+<button class="nav-btn" onclick="showPage('workout', this)" aria-label="Treino">
+<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8v8"></path><path d="M3.5 10.5v3"></path><path d="M18 8v8"></path><path d="M20.5 10.5v3"></path><path d="M6 12h12"></path><path d="M8.5 9.5v5"></path><path d="M15.5 9.5v5"></path></svg>
+<span class="nav-label">Treino</span>
 </button>
-<button class="nav-btn" onclick="showPage('history', this)">
-<span></span> Histórico
+<button class="nav-btn" onclick="showPage('history', this)" aria-label="Histórico">
+<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"></path><path d="M4 19h17"></path><path d="m7 15 3.5-4 3 2 5-6"></path><path d="M16 7h2.5v2.5"></path></svg>
+<span class="nav-label">Histórico</span>
 </button>
-<button class="nav-btn" onclick="showPage('profile', this)">
-<span></span> Perfil
+<button class="nav-btn" onclick="showPage('profile', this)" aria-label="Perfil">
+<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 21c.7-3.5 3.1-5.5 7-5.5s6.3 2 7 5.5"></path></svg>
+<span class="nav-label">Perfil</span>
 </button>
 </nav>
 <!-- MODAL EXERCÍCIO -->

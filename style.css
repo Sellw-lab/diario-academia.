@@ -336,14 +336,32 @@ display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
+gap: 5px;
 }
-.nav-btn span {
+.nav-icon {
+width: 22px;
+height: 22px;
 display: block;
-font-size: 20px;
-margin-bottom: 2px;
+fill: none;
+stroke: currentColor;
+stroke-width: 1.8;
+stroke-linecap: round;
+stroke-linejoin: round;
+transition: transform 0.18s ease, color 0.18s ease, stroke-width 0.18s ease;
+}
+.nav-label {
+display: block;
+font-size: 11px;
+line-height: 1.1;
+font-weight: 600;
 }
 .nav-btn.active {
 color: white;
+}
+.nav-btn.active .nav-icon {
+color: var(--accent);
+stroke-width: 2.2;
+transform: translateY(-1px);
 }
 .modal {
 position: fixed;
@@ -452,7 +470,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   .header-info h1 { font-size: 20px; }
   .water-buttons { grid-template-columns: repeat(2, 1fr); }
   .stats strong { font-size: 16px; }
-  .nav-btn { font-size: 10px; }
+  .nav-label { font-size: 10px; }
+  .nav-icon { width: 21px; height: 21px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
