@@ -423,8 +423,31 @@ function updateSetData(exIndex, setIndex, field, value) {
 if (state.currentWorkout && state.currentWorkout.exercises[exIndex] &&
 state.currentWorkout.exercises[exIndex].sets[setIndex]) {
 const val = parseFloat(value.replace(',', '.'));
-state.currentWorkout.exercises[exIndex].sets[setIndex][field] = isNaN(val) ? 0 : val;
+const set = state.currentWorkout.exercises[exIndex].sets[setIndex];
+set[field] = isNaN(val) ? 0 : val;
+if (set.loadType === 'per_side' && (field === 'leftWeight' || field === 'rightWeight')) {
+set.weight = (Number(set.leftWeight) || 0) + (Number(set.rightWeight) || 0);
+const totalElement = document.getElementById(`load-total-${exIndex}-${setIndex}`);
+if (totalElement) totalElement.textContent = `${set.weight} kg`;
+}
 saveData();
+}
+}
+
+function updateLoadType(exIndex, setIndex, loadType) {
+if (state.currentWorkout && state.currentWorkout.exercises[exIndex] &&
+state.currentWorkout.exercises[exIndex].sets[setIndex]) {
+const set = state.currentWorkout.exercises[exIndex].sets[setIndex];
+set.loadType = loadType;
+if (loadType === 'per_side') {
+set.leftWeight = Number(set.leftWeight) || 0;
+set.rightWeight = Number(set.rightWeight) || 0;
+set.weight = set.leftWeight + set.rightWeight;
+} else {
+set.weight = Number(set.weight) || 0;
+}
+saveData();
+renderCurrentWorkout();
 }
 }
 
@@ -453,18 +476,30 @@ return `
 </div>
 </div>
 </div>`;
-} else {
+	} else {
+	const loadType = s.loadType || 'total';
+	const isPerSide = loadType === 'per_side';
 return `
-<div class="set">
-<div class="set-title">Série ${sIdx + 1}</div>
-<div class="row">
-<div>
-<label>Carga (kg)</label>
-<input type="number" step="any" value="${s.weight !== undefined && s.weight !== 0 ? s.weight : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'weight', this.value)">
-</div>
-<div>
-<label>Repetições</label>
-<input type="number" value="${s.reps !== undefined && s.reps !== 0 ? s.reps : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'reps', this.value)">
+	<div class="set">
+	<div class="set-title">Série ${sIdx + 1}</div>
+	<div class="load-type-field">
+	<label>Tipo de carga</label>
+	<div class="load-type-options">
+	<label><input type="radio" name="loadType-${exIdx}-${sIdx}" value="total" ${!isPerSide ? 'checked' : ''} onchange="updateLoadType(${exIdx}, ${sIdx}, this.value)"> Carga total</label>
+	<label><input type="radio" name="loadType-${exIdx}-${sIdx}" value="per_side" ${isPerSide ? 'checked' : ''} onchange="updateLoadType(${exIdx}, ${sIdx}, this.value)"> Carga por lado</label>
+	</div>
+	</div>
+	${isPerSide ? `<div class="row">
+	<div><label>Esquerdo (kg)</label><input type="number" step="any" value="${s.leftWeight !== undefined && s.leftWeight !== 0 ? s.leftWeight : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'leftWeight', this.value)"></div>
+	<div><label>Direito (kg)</label><input type="number" step="any" value="${s.rightWeight !== undefined && s.rightWeight !== 0 ? s.rightWeight : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'rightWeight', this.value)"></div>
+	</div><div class="load-total"><span>Total</span><strong id="load-total-${exIdx}-${sIdx}">${Number(s.weight) || 0} kg</strong><span aria-label="calculado automaticamente">🔒 automático</span></div>` : `<div>
+	<label>Carga (kg)</label>
+	<input type="number" step="any" value="${s.weight !== undefined && s.weight !== 0 ? s.weight : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'weight', this.value)">
+	</div>`}
+	<div class="row">
+	<div>
+	<label>Repetições</label>
+	<input type="number" value="${s.reps !== undefined && s.reps !== 0 ? s.reps : ''}" placeholder="0" oninput="updateSetData(${exIdx}, ${sIdx}, 'reps', this.value)">
 </div>
 </div>
 ${ex.sets.length > 1 ? `<button class="danger" style="padding:4px 8px; font-size:11px; margin-top:8px;" onclick="removeSet(${exIdx}, ${sIdx})">Remover Série</button>` : ''}
@@ -642,7 +677,10 @@ container.innerHTML = state.history.map((w, idx) => {
 if (!w) return "";
 const d = new Date(w.endTime || w.startTime || Date.now());
 const dateStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-const exSummary = (w.exercises || []).map(e => `<span class="badge">${e.name}</span>`).join(' ');
+const exSummary = (w.exercises || []).map(e => {
+const loadSummary = e.type !== 'Cardio' ? (e.sets || []).map(s => s.loadType === 'per_side' ? `por lado: ${Number(s.leftWeight) || 0} + ${Number(s.rightWeight) || 0} = ${Number(s.weight) || 0} kg` : `${Number(s.weight) || 0} kg`).join(' · ') : '';
+return `<span class="badge">${e.name}${loadSummary ? ` · ${loadSummary}` : ''}</span>`;
+}).join(' ');
 return `
 <div class="history-item">
 <div style="display: flex; justify-content: space-between; align-items:flex-start;">
