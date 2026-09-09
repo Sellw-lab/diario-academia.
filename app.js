@@ -15,29 +15,8 @@ customExercises: []
 let timerInterval = null;
 let chartInstance = null;
 
-// --- ACESSO AO SISTEMA ---
-const SYSTEM_PASSWORD = "sereia";
-
-function login(event) {
-event.preventDefault();
-const passwordInput = document.getElementById('loginPassword');
-const error = document.getElementById('loginError');
-if (passwordInput.value === SYSTEM_PASSWORD) {
-sessionStorage.setItem('gym_diary_authenticated', 'true');
-document.body.classList.add('authenticated');
-error.textContent = '';
-passwordInput.value = '';
-} else {
-error.textContent = 'Senha incorreta. Tente novamente.';
-passwordInput.select();
-}
-}
-
 // --- INICIALIZAÇÃO ---
 window.onload = function() {
-if (sessionStorage.getItem('gym_diary_authenticated') === 'true') {
-document.body.classList.add('authenticated');
-}
 loadData();
 setupDate();
 updateWaterUI();
