@@ -8,6 +8,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Diário de Treino & Suplementação</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+try {
+  const saved = JSON.parse(localStorage.getItem('gym_diary_data') || '{}');
+  if (saved.preferences?.theme === 'light') document.documentElement.classList.add('light-theme-preload');
+} catch (_) {}
+</script>
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
 </head>

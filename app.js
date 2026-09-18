@@ -730,6 +730,10 @@ const canvas = document.getElementById('progressChart');
 const ctx = canvas.getContext('2d');
 if (chartInstance) chartInstance.destroy();
 if (!selectedEx) return;
+const themeStyles = getComputedStyle(document.body);
+const chartMuted = themeStyles.getPropertyValue('--muted').trim() || '#9999a8';
+const chartBorder = themeStyles.getPropertyValue('--border').trim() || '#292936';
+const chartText = themeStyles.getPropertyValue('--text').trim() || '#ffffff';
 const labels = [];
 const dataMaxWeights = [];
 [...(state.history || [])].reverse().forEach(w => {
@@ -761,11 +765,11 @@ options: {
 responsive: true,
 maintainAspectRatio: false,
 scales: {
-y: { grid: { color: '#292936' }, ticks: { color: '#9999a8' } },
-x: { grid: { color: '#292936' }, ticks: { color: '#9999a8' } }
+y: { grid: { color: chartBorder }, ticks: { color: chartMuted } },
+x: { grid: { color: chartBorder }, ticks: { color: chartMuted } }
 },
 plugins: {
-legend: { labels: { color: '#ffffff' } }
+legend: { labels: { color: chartText } }
 }
 }
 });
@@ -890,6 +894,7 @@ function initEnhancements() {
   mergeEnhancementState();
   const date = document.getElementById('healthDate'); if (date) date.value = todayISO();
   const pref = state.preferences || enhancementDefaults.preferences;
+  document.documentElement.classList.remove('light-theme-preload');
   document.body.classList.toggle('light-theme', pref.theme === 'light'); document.body.classList.toggle('large-text', !!pref.largeText);
   const light = document.getElementById('lightThemeToggle'); if (light) light.checked = pref.theme === 'light';
   const large = document.getElementById('largeTextToggle'); if (large) large.checked = !!pref.largeText;
@@ -934,7 +939,7 @@ function saveBodyMetrics(){const item={date:todayISO(),weight:Number(document.ge
 function renderHealth(){const list=document.getElementById('bodyMetricsHistory');if(!list)return;const latest=(state.bodyMetrics||[]).slice(-5).reverse();list.innerHTML=latest.length?latest.map(x=>`<div class="metric-line"><span class="metric-chip">${new Date(x.date+'T12:00:00').toLocaleDateString('pt-BR')}</span>${x.weight?`<span class="metric-chip">${x.weight} kg</span>`:''}${x.waist?`<span class="metric-chip">Cintura ${x.waist} cm</span>`:''}${x.arm?`<span class="metric-chip">Braço ${x.arm} cm</span>`:''}</div>`).join(''):'<p class="muted">Nenhuma medida registrada.</p>';const s=document.getElementById('supplementsList');if(s)s.innerHTML=(state.supplements||[]).length?state.supplements.map((x,i)=>`<div class="supplement-item"><div><strong>${x.name}</strong><small>${x.dose||'Sem dose/horário'}</small></div><button class="secondary compact-button" onclick="toggleSupplement(${i})">${x.taken===todayISO()?'Tomado hoje':'Marcar tomado'}</button></div>`).join(''):'<p class="muted">Cadastre suplementos além da creatina.</p>';}
 function addSupplement(){const name=document.getElementById('supplementName').value.trim();if(!name){showToast('Informe o nome do suplemento.');return;}state.supplements.push({name,dose:document.getElementById('supplementDose').value.trim(),taken:''});saveData();document.getElementById('supplementName').value='';document.getElementById('supplementDose').value='';renderHealth();}
 function toggleSupplement(i){state.supplements[i].taken=state.supplements[i].taken===todayISO()?'':todayISO();saveData();renderHealth();}
-function toggleTheme(light){mergeEnhancementState();state.preferences.theme=light?'light':'dark';document.body.classList.toggle('light-theme',light);saveData();}
+function toggleTheme(light){mergeEnhancementState();state.preferences.theme=light?'light':'dark';document.documentElement.classList.remove('light-theme-preload');document.body.classList.toggle('light-theme',light);saveData();if(typeof renderProgressChart==='function')renderProgressChart();if(typeof renderWeeklyChart==='function')renderWeeklyChart();}
 function toggleLargeText(on){mergeEnhancementState();state.preferences.largeText=on;document.body.classList.toggle('large-text',on);saveData();}
 function saveReminder(value){mergeEnhancementState();state.preferences.reminder=value;saveData();showToast(value?'Lembrete salvo.':'Lembrete removido.');}
 function checkReminder(){const r=state.preferences?.reminder;if(!r)return;const now=new Date(), time=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;if(r===time&&localStorage.getItem('gym_reminder_shown')!==todayISO()){localStorage.setItem('gym_reminder_shown',todayISO());setTimeout(()=>showToast('Lembrete: hora de cuidar do seu treino!'),300);}}
