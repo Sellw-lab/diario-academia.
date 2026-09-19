@@ -973,3 +973,85 @@ body.light-theme .nav-btn.active {
     justify-content: flex-start;
   }
 }
+
+
+/* Ícones e gráficos — linguagem visual da amostra aprovada. */
+.nav-btn {
+  border-radius: 14px;
+  padding: 8px 3px;
+  transition: background-color .18s ease, color .18s ease, transform .18s var(--ease-out);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--soft-accent);
+  box-shadow: none;
+}
+
+.nav-btn.active {
+  color: var(--accent2, var(--accent));
+  background: var(--soft-accent);
+}
+
+.nav-btn.active .nav-icon {
+  color: var(--accent2, var(--accent));
+  stroke-width: 1.9;
+  transform: translateY(-1px);
+}
+
+.nav-icon {
+  width: 21px;
+  height: 21px;
+  stroke-width: 1.8;
+}
+
+.section-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-radius: 13px;
+  background: var(--soft-accent);
+  color: var(--accent2, var(--accent));
+}
+
+.chart-wrap {
+  height: 235px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, .05);
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--soft-accent), transparent 70%), var(--card2);
+}
+
+.chart-wrap canvas {
+  filter: drop-shadow(0 5px 10px color-mix(in srgb, var(--accent) 12%, transparent));
+}
+
+.history-filters input,
+.history-filters select {
+  border-radius: 13px;
+}
+
+@media (max-width: 700px) {
+  .bottom-nav {
+    grid-template-columns: repeat(6, 1fr);
+    height: auto;
+    min-height: 83px;
+    padding: 8px 8px calc(5px + env(safe-area-inset-bottom));
+    border-radius: 22px 22px 0 0;
+  }
+
+  .nav-btn {
+    min-height: 68px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-btn.active .nav-icon {
+    transform: none;
+  }
+}

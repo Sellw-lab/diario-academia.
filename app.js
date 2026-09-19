@@ -755,21 +755,28 @@ labels: labels,
 datasets: [{
 label: 'Carga Máxima (kg)',
 data: dataMaxWeights,
-borderColor: '#7c5cff',
-backgroundColor: 'rgba(124, 92, 255, 0.1)',
+borderColor: themeStyles.getPropertyValue('--accent').trim() || '#8b7cff',
+backgroundColor: themeStyles.getPropertyValue('--soft-accent').trim() || 'rgba(139, 124, 255, 0.14)',
+pointBackgroundColor: themeStyles.getPropertyValue('--accent2').trim() || '#b8afff',
+pointBorderColor: chartText,
+pointBorderWidth: 2,
+pointRadius: 4,
+pointHoverRadius: 6,
 fill: true,
-tension: 0.3
+tension: 0.38
 }]
 },
 options: {
 responsive: true,
 maintainAspectRatio: false,
+interaction: { mode: 'index', intersect: false },
 scales: {
-y: { grid: { color: chartBorder }, ticks: { color: chartMuted } },
-x: { grid: { color: chartBorder }, ticks: { color: chartMuted } }
+y: { beginAtZero: true, grid: { color: chartBorder }, ticks: { color: chartMuted, padding: 8 } },
+x: { grid: { color: chartBorder }, ticks: { color: chartMuted, padding: 8 } }
 },
 plugins: {
-legend: { labels: { color: chartText } }
+legend: { labels: { color: chartText, usePointStyle: true, pointStyle: 'circle', padding: 18 } },
+tooltip: { backgroundColor: chartText, titleColor: themeStyles.getPropertyValue('--bg').trim(), bodyColor: themeStyles.getPropertyValue('--bg').trim(), padding: 10, cornerRadius: 9, displayColors: false }
 }
 }
 });
