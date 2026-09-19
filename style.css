@@ -1059,3 +1059,9 @@ body.light-theme .nav-btn:not(.active) .nav-icon {
     transform: none;
   }
 }
+
+body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
+  color: #636878 !important;
+  stroke: #636878 !important;
+  opacity: 1;
+}
