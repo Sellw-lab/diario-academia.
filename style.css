@@ -877,6 +877,10 @@ body.light-theme .nav-btn.active {
   color: var(--accent);
 }
 
+body.light-theme .nav-btn:not(.active) .nav-icon {
+  color: var(--muted);
+}
+
 @media (max-width: 520px) {
   header {
     padding: 15px 14px 12px;
