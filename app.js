@@ -1085,12 +1085,19 @@ function getCoachRequest(rawText) {
   const focusWords = ['posterior', 'gluteo', 'quadriceps', 'coxa', 'adutor', 'abdutor', 'peito', 'costas', 'ombro', 'biceps', 'triceps'];
   const focuses = focusWords.filter(word => text.includes(word));
   const group = match ? match[0] : 'corpo inteiro';
+  const level = /iniciante|começando|comecando|primeira vez|nunca treinei/.test(text) ? 'iniciante' : /avancad|experiente|alto nivel/.test(text) ? 'avançado' : /intermediari/.test(text) ? 'intermediário' : 'intermediário';
+  const useOwnWorkout = /meu treino|treino proprio|treino próprio|repetir.*treino|ultimo treino|último treino|template|ficha que eu/.test(rawText.toLowerCase());
   const tired = /cansad|pouca energia|leve|sem disposicao|dificil hoje/.test(text);
   const noMachines = /sem maquina|sem maquinas|academia cheia|maquinas ocupadas|sem equipamento/.test(text);
   const catalog = getExerciseCatalogForCoach();
-  const exerciseRequest = getRequestedExercises(rawText, catalog);
+  const exerciseRequest = useOwnWorkout ? { matches: [], unmatched: [] } : getRequestedExercises(rawText, catalog);
   const requested = exerciseRequest.matches;
-  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, focuses, tired, noMachines, requested, unmatched: exerciseRequest.unmatched };
+  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, focuses, level, useOwnWorkout, tired, noMachines, requested, unmatched: exerciseRequest.unmatched };
+}
+
+function getPersonalWorkoutExercises() {
+  const source = state.currentWorkout?.exercises?.length ? state.currentWorkout.exercises : selectedTemplate()?.exercises?.length ? selectedTemplate().exercises : state.history?.[0]?.exercises;
+  return (source || []).map(exercise => ({ name: exercise.name, type: exercise.type || 'Livre', group: exercise.group || 'Meu treino', search: coachNormalize(`${exercise.name} ${exercise.group || ''}`), custom: !!exercise.custom, priority: 3, role: 'treino do usuário', sourceSets: exercise.sets?.length || exercise.sets || 3 }));
 }
 
 function coachExerciseMatches(exercise, request) {
@@ -1117,7 +1124,12 @@ function coachExercisePriority(exercise, request) {
 }
 
 function buildCoachPlan(request) {
-  const catalog = getExerciseCatalogForCoach();
+  const catalog = request.useOwnWorkout ? getPersonalWorkoutExercises() : getExerciseCatalogForCoach();
+  if (request.useOwnWorkout && catalog.length) {
+    const selected = catalog.slice(0, request.count || catalog.length);
+    const sets = selected[0]?.sourceSets || (request.level === 'iniciante' ? 2 : 3);
+    return { ...request, selected, sets, rest: request.level === 'avançado' ? '90–120s' : '60–90s', repRange: request.level === 'iniciante' ? '8–12 repetições' : '6–12 repetições', exerciseMinutes: Math.max(4, Math.round((request.minutes - 4) / Math.max(1, selected.length))), estimated: Math.min(request.minutes, 4 + selected.length * 7), exactRequest: true, personalPlan: true };
+  }
   let candidates = catalog.filter(exercise => coachExerciseMatches(exercise, request));
   if (candidates.length < request.count) {
     const fallback = catalog.filter(exercise => !candidates.some(item => item.name === exercise.name));
@@ -1131,10 +1143,11 @@ function buildCoachPlan(request) {
     .sort((a, b) => coachExercisePriority(b, request) - coachExercisePriority(a, request))
     .slice(0, Math.max(0, request.count - orderedRequested.length));
   const selected = orderedRequested.concat(fill).slice(0, request.count);
-  const sets = request.tired ? 2 : request.minutes <= 30 ? 3 : 3;
-  const rest = request.tired ? '45–60s' : request.minutes <= 30 ? '60–75s' : '75–90s';
+  const sets = request.tired ? 2 : request.level === 'iniciante' ? 2 : request.level === 'avançado' ? 4 : 3;
+  const rest = request.tired ? '45–60s' : request.level === 'avançado' ? '90–120s' : request.level === 'iniciante' ? '60–90s' : request.minutes <= 30 ? '60–75s' : '75–90s';
+  const repRange = request.level === 'iniciante' ? '8–12 repetições' : request.level === 'avançado' ? '6–12 repetições' : '8–12 repetições';
   const exerciseMinutes = Math.max(4, Math.round((request.minutes - 4) / Math.max(1, selected.length)));
-  return { ...request, selected, sets, rest, exerciseMinutes, estimated: Math.min(request.minutes, 4 + selected.length * exerciseMinutes), exactRequest: orderedRequested.length > 0 };
+  return { ...request, selected, sets, rest, repRange, exerciseMinutes, estimated: Math.min(request.minutes, 4 + selected.length * exerciseMinutes), exactRequest: orderedRequested.length > 0 };
 }
 
 let coachWebCache = null;
@@ -1173,10 +1186,10 @@ function mergeWebSuggestionsIntoPlan(plan, suggestions) {
 function renderCoachPlan(plan) {
   const target = document.getElementById('coachPlan');
   if (!target) return;
-  const tone = plan.exactRequest ? 'mantive os exercícios que você pediu, na mesma ordem' : plan.webSuggestions?.length ? 'completei com sugestões encontradas online' : plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
+  const tone = plan.personalPlan ? 'preservei o seu treino e apenas organizei a sessão' : plan.exactRequest ? 'mantive os exercícios que você pediu, na mesma ordem' : plan.webSuggestions?.length ? 'completei com sugestões encontradas online' : plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
   const missingHTML = (plan.unmatched || []).length ? `<div class="coach-missing"><strong>Não encontrei na biblioteca</strong><span>Você pode salvar como exercício personalizado e completar os detalhes depois.</span>${plan.unmatched.map((name, index) => `<div class="coach-missing-row"><span>${name}</span><button class="secondary" onclick="createCoachCustomExercise(${index})">Salvar personalizado</button></div>`).join('')}</div>` : '';
   target.hidden = false;
-  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}${exercise.web ? ' · sugestão online' : exercise.custom ? ' · personalizado' : ''}</small></div>${exercise.custom && !exercise.web ? `<button class="coach-edit-mini" onclick="editCoachCustomExercise(${index})" aria-label="Editar exercício personalizado">Editar</button>` : ''}</div>`).join('')}</div>${missingHTML}<div class="coach-plan-note">A biblioteca local continua sendo a fonte principal. Sugestões online só entram quando ajudam a completar o pedido.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
+  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.level} · ${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${plan.repRange || 'registro livre'} · ${exercise.type}${exercise.web ? ' · sugestão online' : exercise.custom ? ' · personalizado' : ''}</small></div>${exercise.custom && !exercise.web ? `<button class="coach-edit-mini" onclick="editCoachCustomExercise(${index})" aria-label="Editar exercício personalizado">Editar</button>` : ''}</div>`).join('')}</div>${missingHTML}<div class="coach-plan-note">A biblioteca local continua sendo a fonte principal. Sugestões online só entram quando ajudam a completar o pedido.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
   window.lastCoachPlan = plan;
 }
 
@@ -1194,7 +1207,7 @@ async function askCoach(text) {
   const plan = buildCoachPlan(request);
   renderCoachPlan(plan);
   showToast('A assistente está cruzando sua biblioteca com sugestões online.');
-  const webSuggestions = await fetchCoachWebSuggestions(request);
+  const webSuggestions = request.useOwnWorkout ? [] : await fetchCoachWebSuggestions(request);
   mergeWebSuggestionsIntoPlan(plan, webSuggestions);
   renderCoachPlan(plan);
 }
