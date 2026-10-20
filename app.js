@@ -1041,7 +1041,7 @@ function getRequestedExercises(rawText, catalog) {
     .replace(/\b(monte|montar|crie|criar|faca|fazer|um|uma|treino|sessao|com|para|de|hoje|por favor|especificos?|em|ate|so|apenas|consigo fazer)\b/g, ' ')
     .replace(/\d+\s*(min|minuto|minutos|h|hora|horas|exercicios?|movimentos?)/g, ' ');
   const parts = cleaned.split(/,|;|\s+e\s+|\s+\+\s+|\s+\/\s+/).map(part => part.trim()).filter(Boolean);
-  const generic = new Set(['pernas', 'peito', 'costas', 'ombros', 'biceps', 'triceps', 'abdomen', 'cardio', 'academia', 'maquina', 'maquinas', 'halteres', 'barra', 'polia']);
+  const generic = new Set(['pernas', 'perna', 'peito', 'costas', 'ombros', 'biceps', 'triceps', 'abdomen', 'cardio', 'academia', 'maquina', 'maquinas', 'halteres', 'barra', 'polia', 'posterior', 'gluteo', 'quadriceps', 'coxa', 'adutor', 'abdutor', 'pouco', 'tempo']);
   const matches = [];
   const unmatched = [];
   parts.forEach(part => {
@@ -1067,8 +1067,10 @@ function getCoachRequest(rawText) {
   let minutes = timeMatch ? Number(timeMatch[1]) : 45;
   if (timeMatch && /h|hora/.test(timeMatch[2])) minutes *= 60;
   minutes = Math.max(10, Math.min(120, minutes));
-  const countMatch = text.match(/(?:so|apenas|somente|consigo fazer|com)\s*(\d+)\s*(?:exercicios|exerc|movimentos)?/);
-  const count = countMatch ? Math.max(1, Math.min(8, Number(countMatch[1]))) : null;
+  const countMatch = text.match(/(?:so|apenas|somente|consigo fazer|com)?\s*(\d+|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito)\s*(?:exercicios|exerc|movimentos)/);
+  const numberWords = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8 };
+  const countValue = countMatch ? (Number(countMatch[1]) || numberWords[countMatch[1]]) : null;
+  const count = countValue ? Math.max(1, Math.min(8, countValue)) : null;
   const groupRules = [
     ['pernas', ['perna', 'quadriceps', 'posterior', 'gluteo', 'coxa', 'adutor', 'abdutor']],
     ['peito', ['peito', 'peitoral', 'supino', 'crucifixo']],
@@ -1080,13 +1082,15 @@ function getCoachRequest(rawText) {
     ['cardio', ['cardio', 'corrida', 'esteira', 'bike', 'bicicleta']]
   ];
   const match = groupRules.find(([, words]) => words.some(word => text.includes(word)));
+  const focusWords = ['posterior', 'gluteo', 'quadriceps', 'coxa', 'adutor', 'abdutor', 'peito', 'costas', 'ombro', 'biceps', 'triceps'];
+  const focuses = focusWords.filter(word => text.includes(word));
   const group = match ? match[0] : 'corpo inteiro';
   const tired = /cansad|pouca energia|leve|sem disposicao|dificil hoje/.test(text);
   const noMachines = /sem maquina|sem maquinas|academia cheia|maquinas ocupadas|sem equipamento/.test(text);
   const catalog = getExerciseCatalogForCoach();
   const exerciseRequest = getRequestedExercises(rawText, catalog);
   const requested = exerciseRequest.matches;
-  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, tired, noMachines, requested, unmatched: exerciseRequest.unmatched };
+  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, focuses, tired, noMachines, requested, unmatched: exerciseRequest.unmatched };
 }
 
 function coachExerciseMatches(exercise, request) {
@@ -1133,17 +1137,50 @@ function buildCoachPlan(request) {
   return { ...request, selected, sets, rest, exerciseMinutes, estimated: Math.min(request.minutes, 4 + selected.length * exerciseMinutes), exactRequest: orderedRequested.length > 0 };
 }
 
+let coachWebCache = null;
+
+function webExerciseMatches(item, request) {
+  const search = coachNormalize(`${item.name} ${item.group} ${(item.muscles || []).join(' ')}`);
+  const focus = request.focuses?.length ? request.focuses : [request.group];
+  const aliases = { posterior: ['hamstring', 'posterior', 'biceps femoris'], gluteo: ['glute', 'gluteus'], quadriceps: ['quadriceps'], coxa: ['quadriceps', 'leg'], pernas: ['leg', 'quadriceps', 'hamstring', 'glute'], peito: ['chest', 'pectoral'], costas: ['back', 'lat', 'lats', 'middle back'], ombro: ['shoulder', 'deltoid'], biceps: ['biceps'], triceps: ['triceps'], adutor: ['adductor'], abdutor: ['abductor'] };
+  return focus.some(part => (aliases[part] || [part]).some(alias => search.includes(alias)));
+}
+
+async function fetchCoachWebSuggestions(request) {
+  try {
+    if (!coachWebCache) {
+      const response = await fetch('/api/exercise-suggestions?limit=160');
+      if (!response.ok) throw new Error('web-source');
+      const payload = await response.json();
+      coachWebCache = payload.results || [];
+    }
+    const localNames = new Set(getExerciseCatalogForCoach().map(item => coachNormalize(item.name)));
+    return coachWebCache.filter(item => webExerciseMatches(item, request) && !localNames.has(coachNormalize(item.name))).slice(0, 12).map(item => ({ ...item, web: true, custom: true, type: 'Web' }));
+  } catch (_) {
+    return [];
+  }
+}
+
+function mergeWebSuggestionsIntoPlan(plan, suggestions) {
+  if (!suggestions.length) return plan;
+  const needed = Math.max(0, plan.count - plan.selected.length);
+  plan.webSuggestions = suggestions;
+  if (needed > 0) plan.selected = plan.selected.concat(suggestions.slice(0, needed));
+  plan.estimated = Math.min(plan.minutes, 4 + plan.selected.length * plan.exerciseMinutes);
+  return plan;
+}
+
 function renderCoachPlan(plan) {
   const target = document.getElementById('coachPlan');
   if (!target) return;
-  const tone = plan.exactRequest ? 'mantive os exercícios que você pediu, na mesma ordem' : plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
+  const tone = plan.exactRequest ? 'mantive os exercícios que você pediu, na mesma ordem' : plan.webSuggestions?.length ? 'completei com sugestões encontradas online' : plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
   const missingHTML = (plan.unmatched || []).length ? `<div class="coach-missing"><strong>Não encontrei na biblioteca</strong><span>Você pode salvar como exercício personalizado e completar os detalhes depois.</span>${plan.unmatched.map((name, index) => `<div class="coach-missing-row"><span>${name}</span><button class="secondary" onclick="createCoachCustomExercise(${index})">Salvar personalizado</button></div>`).join('')}</div>` : '';
   target.hidden = false;
-  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}${exercise.custom ? ' · personalizado' : ''}</small></div>${exercise.custom ? `<button class="coach-edit-mini" onclick="editCoachCustomExercise(${index})" aria-label="Editar exercício personalizado">Editar</button>` : ''}</div>`).join('')}</div>${missingHTML}<div class="coach-plan-note">Usei a biblioteca atual e seus exercícios pessoais. Você pode ajustar tudo antes de começar.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
+  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}${exercise.web ? ' · sugestão online' : exercise.custom ? ' · personalizado' : ''}</small></div>${exercise.custom && !exercise.web ? `<button class="coach-edit-mini" onclick="editCoachCustomExercise(${index})" aria-label="Editar exercício personalizado">Editar</button>` : ''}</div>`).join('')}</div>${missingHTML}<div class="coach-plan-note">A biblioteca local continua sendo a fonte principal. Sugestões online só entram quando ajudam a completar o pedido.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
   window.lastCoachPlan = plan;
 }
 
-function askCoach(text) {
+async function askCoach(text) {
   const input = document.getElementById('coachInput');
   const requestText = String(text || input?.value || '').trim();
   if (!requestText) {
@@ -1156,12 +1193,22 @@ function askCoach(text) {
   const request = getCoachRequest(requestText);
   const plan = buildCoachPlan(request);
   renderCoachPlan(plan);
-  showToast('A A assistente preparou uma sugestão com sua biblioteca.');
+  showToast('A assistente está cruzando sua biblioteca com sugestões online.');
+  const webSuggestions = await fetchCoachWebSuggestions(request);
+  mergeWebSuggestionsIntoPlan(plan, webSuggestions);
+  renderCoachPlan(plan);
 }
 
 function startWorkoutFromCoach() {
   const plan = window.lastCoachPlan;
   if (!plan || !plan.selected?.length) return;
+  if (!state.customExercises) state.customExercises = [];
+  plan.selected.filter(exercise => exercise.web).forEach(exercise => {
+    if (!state.customExercises.some(item => coachNormalize(item.name) === coachNormalize(exercise.name))) {
+      state.customExercises.push({ id: Date.now() + Math.random(), name: exercise.name, type: 'Web', group: exercise.group || plan.group, notes: exercise.instructions || '', custom: true, source: 'wger', createdAt: new Date().toISOString() });
+    }
+  });
+  renderCustomExercisesInSelect();
   state.editingWorkoutId = null;
   state.currentWorkout = { id: Date.now(), name: `${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min`, startTime: new Date().toISOString(), exercises: plan.selected.map((exercise, index) => ({ id: Date.now() + index + Math.random(), name: exercise.name, type: exercise.type, group: exercise.group, collapsed: false, sets: Array.from({ length: plan.sets }, () => ({ weight: 0, reps: 0 })) })) };
   saveData();
