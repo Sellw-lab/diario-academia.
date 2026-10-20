@@ -26,6 +26,7 @@ renderCurrentWorkout();
 renderHistory();
 populateChartSelect();
 renderCustomExercisesInSelect();
+initCoach();
 };
 
 function setupDate() {
@@ -957,4 +958,134 @@ function renderHistory(){
   const filtered=state.history.map((w,idx)=>({w,idx})).filter(({w})=>{const date=new Date(w.endTime||w.startTime||Date.now()), dateKey=formatDateKey(date), text=`${w.name||''} ${(w.exercises||[]).map(e=>e.name).join(' ')}`.toLowerCase(); return (!query||text.includes(query))&&(!month||dateKey.startsWith(month));});
   if(!filtered.length){container.innerHTML='<div class="empty">Nenhum treino encontrado para estes filtros.</div>';return;}
   container.innerHTML=filtered.map(({w,idx})=>{const d=new Date(w.endTime||w.startTime||Date.now()), dateStr=d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), exSummary=(w.exercises||[]).map(e=>`<span class="badge">${e.name}</span>`).join(' '); return `<div class="history-item"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><strong>${w.name||'Treino Sem Nome'}</strong><small>${dateStr}${w.rpe?' · Esforço '+w.rpe+'/10':''}</small></div><div style="display:flex;gap:6px;"><button class="secondary compact-button" onclick="editHistoryItem(${idx})">Editar</button><button class="danger compact-button" onclick="deleteHistoryItem(${idx})">Excluir</button></div></div><div style="margin-top:8px;">${exSummary}</div>${w.notes?`<small class="muted">${w.notes}</small>`:''}</div>`;}).join('');
+}
+
+
+// --- NINA: assistente adaptativa baseada na biblioteca existente ---
+function initCoach() {
+  const greeting = document.getElementById('coachGreeting');
+  if (!greeting) return;
+  const hour = new Date().getHours();
+  const welcome = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+  const hasHistory = Array.isArray(state.history) && state.history.length > 0;
+  greeting.textContent = `${welcome}! Eu sou a Nina. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
+}
+
+function coachNormalize(value) {
+  return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function getExerciseCatalogForCoach() {
+  const select = document.getElementById('exerciseLibrarySelect');
+  if (!select) return [];
+  return [...select.options].filter(o => o.value && o.value.includes('|')).map(option => {
+    const [name, type] = option.value.split('|');
+    const group = option.parentElement?.label || '';
+    return { name: name.trim(), type: type || 'Livre', group, search: coachNormalize(`${name} ${group}`) };
+  });
+}
+
+function getCoachRequest(rawText) {
+  const text = coachNormalize(rawText);
+  const timeMatch = text.match(/(\d+)\s*(min|minuto|minutos|h|hora|horas)/);
+  let minutes = timeMatch ? Number(timeMatch[1]) : 45;
+  if (timeMatch && /h|hora/.test(timeMatch[2])) minutes *= 60;
+  minutes = Math.max(10, Math.min(120, minutes));
+  const countMatch = text.match(/(?:so|apenas|somente|consigo fazer|com)\s*(\d+)\s*(?:exercicios|exerc|movimentos)?/);
+  const count = countMatch ? Math.max(1, Math.min(8, Number(countMatch[1]))) : null;
+  const groupRules = [
+    ['pernas', ['perna', 'quadriceps', 'posterior', 'gluteo', 'coxa', 'adutor', 'abdutor']],
+    ['peito', ['peito', 'peitoral', 'supino', 'crucifixo']],
+    ['costas', ['costas', 'dorsal', 'remada', 'puxada']],
+    ['ombros', ['ombro', 'deltoide', 'trapezio']],
+    ['biceps', ['biceps', 'braco']],
+    ['triceps', ['triceps']],
+    ['abdômen', ['abdomen', 'abdominal', 'core']],
+    ['cardio', ['cardio', 'corrida', 'esteira', 'bike', 'bicicleta']]
+  ];
+  const match = groupRules.find(([, words]) => words.some(word => text.includes(word)));
+  const group = match ? match[0] : 'corpo inteiro';
+  const tired = /cansad|pouca energia|leve|sem disposicao|dificil hoje/.test(text);
+  const noMachines = /sem maquina|sem maquinas|academia cheia|maquinas ocupadas|sem equipamento/.test(text);
+  return { text, minutes, count: count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, tired, noMachines };
+}
+
+function coachExerciseMatches(exercise, request) {
+  const group = coachNormalize(request.group);
+  if (group === 'corpo inteiro') return true;
+  const aliases = {
+    pernas: ['perna', 'quadriceps', 'posterior', 'gluteo', 'coxa', 'adutor', 'abdutor'],
+    peito: ['peito', 'peitoral'], costas: ['costas', 'dorsal'], ombros: ['ombro', 'trapezio'],
+    biceps: ['biceps'], triceps: ['triceps'], 'abdômen': ['abdomen', 'core'], cardio: ['cardio']
+  };
+  return (aliases[group] || [group]).some(word => exercise.search.includes(word));
+}
+
+function coachExercisePriority(exercise, request) {
+  const n = exercise.search;
+  const compound = ['supino', 'agachamento', 'leg press', 'remada', 'puxada', 'desenvolvimento', 'levantamento', 'stiff', 'hip thrust', 'elevacao pelvica'];
+  const isolation = ['extensora', 'flexora', 'crucifixo', 'elevacao lateral', 'rosca', 'triceps', 'abdutora', 'adutora'];
+  let score = compound.some(word => n.includes(word)) ? 30 : isolation.some(word => n.includes(word)) ? 10 : 20;
+  if (request.noMachines && /maquina|polia/.test(n)) score -= 25;
+  const personalNames = new Set((state.history || []).slice(0, 8).flatMap(w => (w.exercises || []).map(e => coachNormalize(e.name))));
+  if (personalNames.has(coachNormalize(exercise.name))) score += 12;
+  if (request.tired && /maquina|halter/.test(n)) score += 3;
+  return score;
+}
+
+function buildCoachPlan(request) {
+  const catalog = getExerciseCatalogForCoach();
+  let candidates = catalog.filter(exercise => coachExerciseMatches(exercise, request));
+  if (candidates.length < request.count) {
+    const fallback = catalog.filter(exercise => !candidates.some(item => item.name === exercise.name));
+    candidates = candidates.concat(fallback.slice(0, request.count - candidates.length));
+  }
+  const selected = candidates.sort((a, b) => coachExercisePriority(b, request) - coachExercisePriority(a, request)).slice(0, request.count);
+  const sets = request.tired ? 2 : request.minutes <= 30 ? 3 : 3;
+  const rest = request.tired ? '45–60s' : request.minutes <= 30 ? '60–75s' : '75–90s';
+  const exerciseMinutes = Math.max(4, Math.round((request.minutes - 4) / Math.max(1, selected.length)));
+  return { ...request, selected, sets, rest, exerciseMinutes, estimated: Math.min(request.minutes, 4 + selected.length * exerciseMinutes) };
+}
+
+function renderCoachPlan(plan) {
+  const target = document.getElementById('coachPlan');
+  if (!target) return;
+  const tone = plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
+  target.hidden = false;
+  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}</small></div></div>`).join('')}</div><div class="coach-plan-note">Usei apenas exercícios da biblioteca atual. Você pode ajustar tudo antes de começar.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
+  window.lastCoachPlan = plan;
+}
+
+function askCoach(text) {
+  const input = document.getElementById('coachInput');
+  const requestText = String(text || input?.value || '').trim();
+  if (!requestText) {
+    if (input) input.focus();
+    return;
+  }
+  if (input) input.value = '';
+  const greeting = document.getElementById('coachGreeting');
+  if (greeting) greeting.textContent = `Entendi: “${requestText}”. Vou organizar uma sessão realista para você.`;
+  const request = getCoachRequest(requestText);
+  const plan = buildCoachPlan(request);
+  renderCoachPlan(plan);
+  showToast('A Nina preparou uma sugestão com sua biblioteca.');
+}
+
+function startWorkoutFromCoach() {
+  const plan = window.lastCoachPlan;
+  if (!plan || !plan.selected?.length) return;
+  state.editingWorkoutId = null;
+  state.currentWorkout = { id: Date.now(), name: `${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min`, startTime: new Date().toISOString(), exercises: plan.selected.map((exercise, index) => ({ id: Date.now() + index + Math.random(), name: exercise.name, type: exercise.type, group: exercise.group, collapsed: false, sets: Array.from({ length: plan.sets }, () => ({ weight: 0, reps: 0 })) })) };
+  saveData();
+  const activeName = document.getElementById('activeWorkoutName');
+  if (activeName) activeName.value = state.currentWorkout.name;
+  renderCurrentWorkout();
+  showPage('workout');
+  showToast('Treino da Nina iniciado. Bom treino!');
+}
+
+function editCoachRequest() {
+  const input = document.getElementById('coachInput');
+  if (input) { input.value = `${window.lastCoachPlan?.group || 'treino'} em ${window.lastCoachPlan?.minutes || 45} minutos`; input.focus(); }
 }

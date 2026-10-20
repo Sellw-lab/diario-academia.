@@ -1065,3 +1065,42 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
   stroke: #636878 !important;
   opacity: 1;
 }
+
+
+/* Nina — assistente acolhedora e acionável */
+.coach-card { position: relative; overflow: hidden; padding: 18px; margin: 0 0 14px; border: 1px solid rgba(139,124,255,.38); border-radius: 22px; background: radial-gradient(circle at 100% 0, rgba(139,124,255,.22), transparent 42%), linear-gradient(145deg, var(--card), var(--card2)); box-shadow: 0 15px 38px rgba(75,58,180,.16); }
+.coach-card::after { content: ''; position: absolute; width: 120px; height: 120px; right: -50px; bottom: -62px; border-radius: 50%; border: 1px solid rgba(139,124,255,.24); box-shadow: 0 0 0 12px rgba(139,124,255,.05), 0 0 0 25px rgba(139,124,255,.04); pointer-events: none; }
+.coach-topline { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
+.coach-avatar { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 15px; color: white; font-size: 22px; background: linear-gradient(145deg, #a79bff, #6553d6); box-shadow: 0 8px 18px rgba(105,87,220,.3); }
+.coach-kicker { display: block; color: var(--muted); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.coach-topline h2 { margin: 1px 0 0; font-size: 21px; letter-spacing: -.04em; }
+.coach-status { color: var(--green); font-size: 10px; font-weight: 600; letter-spacing: 0; vertical-align: middle; }
+.coach-status i { display: inline-block; width: 6px; height: 6px; margin-right: 3px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(79,226,138,.14); vertical-align: middle; }
+.coach-sparkle { margin-left: auto; padding: 6px 8px; border-radius: 9px; color: #d5d0ff; font-size: 10px; font-weight: 800; letter-spacing: .08em; background: rgba(139,124,255,.16); }
+.coach-message { position: relative; z-index: 1; margin: 15px 0 12px; color: var(--text); font-size: 14px; line-height: 1.5; }
+.coach-suggestions { display: flex; flex-wrap: wrap; gap: 7px; position: relative; z-index: 1; }
+.coach-chip { min-height: 36px; padding: 7px 10px; color: var(--badge-text); border: 1px solid rgba(139,124,255,.3); border-radius: 999px; background: rgba(139,124,255,.1); box-shadow: none; font-size: 11px; }
+.coach-chip:hover { background: rgba(139,124,255,.2); }
+.coach-input-row { display: flex; gap: 8px; margin-top: 13px; position: relative; z-index: 1; }
+.coach-input-row input { min-width: 0; min-height: 46px; background: rgba(9,11,18,.26); }
+.coach-send { flex: 0 0 auto; min-height: 46px; padding-inline: 14px; }
+.coach-source { display: block; margin-top: 10px; color: var(--muted); font-size: 10px; position: relative; z-index: 1; }
+.coach-plan { position: relative; z-index: 1; margin-top: 13px; padding: 13px; border: 1px solid var(--border); border-radius: 15px; background: rgba(9,11,18,.2); }
+.coach-plan-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.coach-plan-head strong { display: block; font-size: 14px; }
+.coach-plan-head span:not(.coach-time) { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+.coach-time { flex: 0 0 auto; padding: 5px 7px; border-radius: 8px; color: var(--green); background: var(--soft-green); font-size: 11px; font-weight: 700; }
+.coach-plan-list { margin: 10px 0; border-top: 1px solid var(--border); }
+.coach-exercise-row { display: flex; gap: 9px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.coach-number { flex: 0 0 auto; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 8px; color: var(--badge-text); background: var(--soft-accent); font-size: 11px; font-weight: 800; }
+.coach-exercise-row strong { display: block; font-size: 12px; }
+.coach-exercise-row small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+.coach-plan-note { color: var(--muted); font-size: 10px; line-height: 1.4; }
+.coach-plan-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 11px; }
+.coach-plan-actions button { min-height: 42px; padding: 9px; font-size: 11px; }
+.coach-inline-cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 13px; padding: 12px; border: 1px solid rgba(139,124,255,.25); border-radius: 15px; background: var(--soft-accent); }
+.coach-inline-cta strong, .coach-inline-cta span { display: block; }
+.coach-inline-cta strong { font-size: 12px; }
+.coach-inline-cta span { margin-top: 3px; color: var(--muted); font-size: 10px; }
+.coach-inline-cta button { min-height: 38px; padding: 7px 10px; font-size: 11px; white-space: nowrap; }
+@media (max-width: 420px) { .coach-plan-actions { grid-template-columns: 1fr; } .coach-inline-cta { align-items: flex-start; } .coach-inline-cta button { flex: 0 0 auto; } }
