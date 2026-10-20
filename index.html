@@ -43,15 +43,15 @@ try {
 </div>
 <section class="coach-card" aria-labelledby="coachTitle">
 <div class="coach-topline">
-<div class="coach-avatar" aria-hidden="true"><span>✦</span></div>
+<div class="coach-avatar" aria-hidden="true"><span>Y·</span></div>
 <div>
 <span class="coach-kicker">Sua companheira de treino</span>
-<h2 id="coachTitle">Yara <span class="coach-status"><i></i> online</span></h2>
+<h2 id="coachTitle">Assistente <span class="coach-status"><i></i> online</span></h2>
 </div>
 <span class="coach-sparkle">AI</span>
 </div>
-<div id="coachGreeting" class="coach-message">Oi! Eu sou a Yara. Me diga quanto tempo você tem hoje e eu preparo um treino que cabe na sua rotina.</div>
-<div class="coach-suggestions" aria-label="Sugestões para a Yara">
+<div id="coachGreeting" class="coach-message">Oi! Eu sou sua assistente. Me diga quanto tempo você tem hoje e eu preparo um treino que cabe na sua rotina.</div>
+<div class="coach-suggestions" aria-label="Sugestões para a assistente">
 <button class="coach-chip" onclick="askCoach('Monte um treino de pernas em 30 minutos')">Pernas em 30 min</button>
 <button class="coach-chip" onclick="askCoach('Só consigo fazer 3 exercícios hoje')">Só 3 exercícios</button>
 <button class="coach-chip" onclick="askCoach('Estou cansado e tenho 40 minutos')">Estou cansado</button>
@@ -59,7 +59,7 @@ try {
 <div id="coachPlan" class="coach-plan" hidden></div>
 <div class="coach-input-row">
 <input id="coachInput" type="text" autocomplete="off" placeholder="Ex.: peito em 45 minutos, sem máquinas" onkeydown="if(event.key==='Enter') askCoach()">
-<button class="coach-send" onclick="askCoach()" aria-label="Enviar para Yara">Enviar</button>
+<button class="coach-send" onclick="askCoach()" aria-label="Enviar para a assistente">Enviar</button>
 </div>
 <small class="coach-source">Baseada na biblioteca atual, no seu histórico e no tempo disponível.</small>
 </section>
@@ -185,7 +185,7 @@ Parabéns! Você atingiu sua meta de água hoje. Registro concluído!
 <button class="full green" onclick="finishWorkout()">Finalizar treino</button>
 </div>
 <div class="coach-inline-cta">
-<div><strong>Travou na escolha?</strong><span>A Yara monta uma sessão com a biblioteca atual.</span></div>
+<div><strong>Travou na escolha?</strong><span>A assistente monta uma sessão com a biblioteca atual.</span></div>
 <button class="secondary" onclick="showPage('home'); document.getElementById('coachInput')?.focus()">Pedir ajuda</button>
 </div>
 <div id="exerciseList"></div>

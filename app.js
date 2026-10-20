@@ -26,6 +26,7 @@ renderCurrentWorkout();
 renderHistory();
 populateChartSelect();
 renderCustomExercisesInSelect();
+expandExerciseLibrary();
 initCoach();
 };
 
@@ -961,14 +962,14 @@ function renderHistory(){
 }
 
 
-// --- YARA: assistente adaptativa baseada na biblioteca existente ---
+// --- Assistente adaptativa baseada na biblioteca existente ---
 function initCoach() {
   const greeting = document.getElementById('coachGreeting');
   if (!greeting) return;
   const hour = new Date().getHours();
   const welcome = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const hasHistory = Array.isArray(state.history) && state.history.length > 0;
-  greeting.textContent = `${welcome}! Eu sou a Yara. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
+  greeting.textContent = `${welcome}! Eu sou sua assistente. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
 }
 
 function coachNormalize(value) {
@@ -984,6 +985,45 @@ function getCoachKnowledge(name) {
   ];
   const match = rules.find(rule => rule.words.some(word => search.includes(word)));
   return match || { role: 'complementar', priority: 1 };
+}
+
+const expandedExerciseLibrary = [
+  ['Supino Inclinado na Máquina Convergente', 'Máquina', 'Peito'],
+  ['Chest Press com Pegada Neutra', 'Máquina', 'Peito'],
+  ['Remada Cavalinho com Apoio no Peito', 'Máquina', 'Costas / Dorsal'],
+  ['Remada Unilateral no Banco Inclinado', 'Livre', 'Costas / Dorsal'],
+  ['Puxada com Pegada Neutra Fechada', 'Polia', 'Costas / Dorsal'],
+  ['Desenvolvimento na Máquina com Pegada Neutra', 'Máquina', 'Ombros & Trapézio'],
+  ['Elevação Lateral na Polia Baixa', 'Polia', 'Ombros & Trapézio'],
+  ['Rosca Bayesian na Polia', 'Polia', 'Biceps & Antebraço'],
+  ['Rosca Zottman com Halteres', 'Livre', 'Biceps & Antebraço'],
+  ['Tríceps Coice na Polia', 'Polia', 'Tríceps'],
+  ['Agachamento Hack com Pés Altos', 'Máquina', 'Quadriceps & Posterior (Pernas)'],
+  ['Agachamento no Belt Squat', 'Máquina', 'Quadriceps & Posterior (Pernas)'],
+  ['Passada Reversa no Smith', 'Máquina', 'Quadriceps & Posterior (Pernas)'],
+  ['Cadeira Extensora com 1 e 1/2 Repetição', 'Máquina', 'Quadriceps & Posterior (Pernas)'],
+  ['Flexora Sentada com 1 e 1/2 Repetição', 'Máquina', 'Quadriceps & Posterior (Pernas)'],
+  ['Elevação Pélvica com Barra', 'Livre', 'Glúteos & Adutores/Abdutores'],
+  ['Coice de Glúteo na Polia', 'Polia', 'Glúteos & Adutores/Abdutores'],
+  ['Abdução de Quadril na Polia', 'Polia', 'Glúteos & Adutores/Abdutores'],
+  ['Panturrilha no Leg Press', 'Máquina', 'Panturrilha'],
+  ['Panturrilha Sentado', 'Máquina', 'Panturrilha'],
+  ['Prancha com Apoio nos Cotovelos', 'Peso Corporal', 'Abdômen'],
+  ['Abdominal na Polia Alta com Corda', 'Polia', 'Abdômen'],
+  ['Pallof Press na Polia', 'Polia', 'Abdômen'],
+  ['Farmer Walk', 'Livre', 'Cardio / Condicionamento']
+];
+
+function expandExerciseLibrary() {
+  const select = document.getElementById('exerciseLibrarySelect');
+  if (!select) return;
+  expandedExerciseLibrary.forEach(([name, type, group]) => {
+    const exists = [...select.options].some(option => coachNormalize(option.value.split('|')[0]) === coachNormalize(name));
+    if (exists) return;
+    let optGroup = [...select.querySelectorAll('optgroup')].find(item => coachNormalize(item.label) === coachNormalize(group));
+    if (!optGroup) { optGroup = document.createElement('optgroup'); optGroup.label = group; select.appendChild(optGroup); }
+    const option = document.createElement('option'); option.value = `${name}|${type}`; option.textContent = name; optGroup.appendChild(option);
+  });
 }
 
 function getExerciseCatalogForCoach() {
@@ -1003,6 +1043,7 @@ function getRequestedExercises(rawText, catalog) {
   const parts = cleaned.split(/,|;|\s+e\s+|\s+\+\s+|\s+\/\s+/).map(part => part.trim()).filter(Boolean);
   const generic = new Set(['pernas', 'peito', 'costas', 'ombros', 'biceps', 'triceps', 'abdomen', 'cardio', 'academia', 'maquina', 'maquinas', 'halteres', 'barra', 'polia']);
   const matches = [];
+  const unmatched = [];
   parts.forEach(part => {
     const words = part.split(/\s+/).filter(word => word.length > 2 && !generic.has(word));
     if (!words.length) return;
@@ -1015,8 +1056,9 @@ function getRequestedExercises(rawText, catalog) {
       if (score >= 1 && (!best || score > best.score)) best = { exercise, score };
     });
     if (best && !matches.some(item => item.name === best.exercise.name)) matches.push(best.exercise);
+    else if (!best) unmatched.push(part.replace(/[:]/g, '').trim());
   });
-  return matches;
+  return { matches, unmatched };
 }
 
 function getCoachRequest(rawText) {
@@ -1042,8 +1084,9 @@ function getCoachRequest(rawText) {
   const tired = /cansad|pouca energia|leve|sem disposicao|dificil hoje/.test(text);
   const noMachines = /sem maquina|sem maquinas|academia cheia|maquinas ocupadas|sem equipamento/.test(text);
   const catalog = getExerciseCatalogForCoach();
-  const requested = getRequestedExercises(rawText, catalog);
-  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, tired, noMachines, requested };
+  const exerciseRequest = getRequestedExercises(rawText, catalog);
+  const requested = exerciseRequest.matches;
+  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, tired, noMachines, requested, unmatched: exerciseRequest.unmatched };
 }
 
 function coachExerciseMatches(exercise, request) {
@@ -1094,8 +1137,9 @@ function renderCoachPlan(plan) {
   const target = document.getElementById('coachPlan');
   if (!target) return;
   const tone = plan.exactRequest ? 'mantive os exercícios que você pediu, na mesma ordem' : plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
+  const missingHTML = (plan.unmatched || []).length ? `<div class="coach-missing"><strong>Não encontrei na biblioteca</strong><span>Você pode salvar como exercício personalizado e completar os detalhes depois.</span>${plan.unmatched.map((name, index) => `<div class="coach-missing-row"><span>${name}</span><button class="secondary" onclick="createCoachCustomExercise(${index})">Salvar personalizado</button></div>`).join('')}</div>` : '';
   target.hidden = false;
-  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}</small></div></div>`).join('')}</div><div class="coach-plan-note">Usei apenas exercícios da biblioteca atual. Você pode ajustar tudo antes de começar.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
+  target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}${exercise.custom ? ' · personalizado' : ''}</small></div>${exercise.custom ? `<button class="coach-edit-mini" onclick="editCoachCustomExercise(${index})" aria-label="Editar exercício personalizado">Editar</button>` : ''}</div>`).join('')}</div>${missingHTML}<div class="coach-plan-note">Usei a biblioteca atual e seus exercícios pessoais. Você pode ajustar tudo antes de começar.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
   window.lastCoachPlan = plan;
 }
 
@@ -1112,7 +1156,7 @@ function askCoach(text) {
   const request = getCoachRequest(requestText);
   const plan = buildCoachPlan(request);
   renderCoachPlan(plan);
-  showToast('A Yara preparou uma sugestão com sua biblioteca.');
+  showToast('A A assistente preparou uma sugestão com sua biblioteca.');
 }
 
 function startWorkoutFromCoach() {
@@ -1125,10 +1169,50 @@ function startWorkoutFromCoach() {
   if (activeName) activeName.value = state.currentWorkout.name;
   renderCurrentWorkout();
   showPage('workout');
-  showToast('Treino da Yara iniciado. Bom treino!');
+  showToast('Treino iniciado pela assistente. Bom treino!');
 }
 
 function editCoachRequest() {
   const input = document.getElementById('coachInput');
   if (input) { input.value = `${window.lastCoachPlan?.group || 'treino'} em ${window.lastCoachPlan?.minutes || 45} minutos`; input.focus(); }
+}
+
+
+function createCoachCustomExercise(index) {
+  const plan = window.lastCoachPlan;
+  const name = plan?.unmatched?.[index]?.trim();
+  if (!name) return;
+  if (!state.customExercises) state.customExercises = [];
+  let custom = state.customExercises.find(item => coachNormalize(item.name) === coachNormalize(name));
+  if (!custom) {
+    custom = { id: Date.now(), name, type: 'Livre', group: plan.group || '', notes: '', custom: true, createdAt: new Date().toISOString() };
+    state.customExercises.push(custom);
+  }
+  const exercise = { name: custom.name, type: custom.type, group: custom.group || plan.group || 'Personalizado', search: coachNormalize(`${custom.name} ${custom.group || ''}`), custom: true, priority: 1, role: 'personalizado' };
+  if (!plan.selected.some(item => coachNormalize(item.name) === coachNormalize(exercise.name))) plan.selected.push(exercise);
+  plan.unmatched.splice(index, 1);
+  plan.count = plan.selected.length;
+  saveData();
+  renderCustomExercisesInSelect();
+  renderCoachPlan(plan);
+  showToast(`"${custom.name}" salvo nos seus exercícios pessoais.`);
+}
+
+function editCoachCustomExercise(index) {
+  const plan = window.lastCoachPlan;
+  const exercise = plan?.selected?.[index];
+  if (!exercise?.custom) return;
+  const custom = (state.customExercises || []).find(item => coachNormalize(item.name) === coachNormalize(exercise.name));
+  if (!custom) return;
+  const newName = prompt('Nome do exercício personalizado:', custom.name);
+  if (!newName?.trim()) return;
+  custom.name = newName.trim();
+  custom.type = prompt('Tipo (Livre, Máquina, Polia, Cardio ou Peso Corporal):', custom.type) || custom.type;
+  exercise.name = custom.name;
+  exercise.type = custom.type;
+  exercise.search = coachNormalize(`${custom.name} ${custom.group || ''}`);
+  saveData();
+  renderCustomExercisesInSelect();
+  renderCoachPlan(plan);
+  showToast('Exercício personalizado atualizado.');
 }

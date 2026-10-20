@@ -1067,7 +1067,7 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
 }
 
 
-/* Yara — assistente acolhedora e acionável */
+/* Assistente — assistente acolhedora e acionável */
 .coach-card { position: relative; overflow: hidden; padding: 18px; margin: 0 0 14px; border: 1px solid rgba(139,124,255,.38); border-radius: 22px; background: radial-gradient(circle at 100% 0, rgba(139,124,255,.22), transparent 42%), linear-gradient(145deg, var(--card), var(--card2)); box-shadow: 0 15px 38px rgba(75,58,180,.16); }
 .coach-card::after { content: ''; position: absolute; width: 120px; height: 120px; right: -50px; bottom: -62px; border-radius: 50%; border: 1px solid rgba(139,124,255,.24); box-shadow: 0 0 0 12px rgba(139,124,255,.05), 0 0 0 25px rgba(139,124,255,.04); pointer-events: none; }
 .coach-topline { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
@@ -1106,10 +1106,10 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
 @media (max-width: 420px) { .coach-plan-actions { grid-template-columns: 1fr; } .coach-inline-cta { align-items: flex-start; } .coach-inline-cta button { flex: 0 0 auto; } }
 
 
-/* Yara — assinatura visual da assistente */
+/* Assistente — assinatura visual da assistente */
 .coach-card { border-color: color-mix(in srgb, var(--accent) 52%, var(--border)); background: radial-gradient(circle at 90% -15%, rgba(187,174,255,.28), transparent 35%), radial-gradient(circle at 0 115%, rgba(79,226,138,.08), transparent 32%), linear-gradient(145deg, var(--card), var(--card2)); }
 .coach-avatar { position: relative; isolation: isolate; border: 2px solid rgba(255,255,255,.48); border-radius: 17px; background: linear-gradient(145deg, #c2b9ff 0%, #8b7cff 45%, #5647bd 100%); }
-.coach-avatar::before { content: ''; position: absolute; inset: -6px; z-index: -1; border: 1px solid rgba(139,124,255,.45); border-radius: 21px; animation: yara-pulse 3.2s ease-in-out infinite; }
+.coach-avatar::before { content: ''; position: absolute; inset: -6px; z-index: -1; border: 1px solid rgba(139,124,255,.45); border-radius: 21px; animation: coach-pulse 3.2s ease-in-out infinite; }
 .coach-avatar span { text-shadow: 0 0 14px rgba(255,255,255,.9); }
 .coach-kicker { color: #bcb5f7; font-weight: 700; }
 .coach-message { max-width: 94%; padding: 12px 14px; border: 1px solid rgba(255,255,255,.07); border-radius: 5px 15px 15px 15px; background: rgba(255,255,255,.045); }
@@ -1117,5 +1117,19 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
 .coach-plan { background: linear-gradient(150deg, rgba(139,124,255,.11), rgba(255,255,255,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
 .coach-plan-head strong::before { content: '✦ '; color: var(--accent); }
 .coach-plan-note::before { content: '✓'; margin-right: 5px; color: var(--green); font-weight: 800; }
-@keyframes yara-pulse { 0%, 100% { opacity: .42; transform: scale(.98); } 50% { opacity: .9; transform: scale(1.04); } }
+@keyframes coach-pulse { 0%, 100% { opacity: .42; transform: scale(.98); } 50% { opacity: .9; transform: scale(1.04); } }
 @media (prefers-reduced-motion: reduce) { .coach-avatar::before { animation: none; } }
+
+
+/* Biblioteca viva e exercícios pessoais */
+.coach-missing { margin: 12px 0; padding: 11px; border: 1px dashed color-mix(in srgb, var(--warning) 55%, var(--border)); border-radius: 13px; background: var(--soft-warning); }
+.coach-missing strong, .coach-missing span { display: block; }
+.coach-missing strong { color: var(--warning); font-size: 11px; }
+.coach-missing span { margin: 4px 0 8px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+.coach-missing-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 0; border-top: 1px solid color-mix(in srgb, var(--warning) 18%, transparent); color: var(--text); font-size: 11px; }
+.coach-missing-row button, .coach-edit-mini { min-height: 32px; padding: 6px 8px; border-radius: 9px; font-size: 10px; white-space: nowrap; }
+.coach-edit-mini { margin-left: auto; color: var(--badge-text); border: 1px solid rgba(139,124,255,.28); background: var(--soft-accent); box-shadow: none; }
+.coach-edit-mini:hover { background: rgba(139,124,255,.22); }
+.coach-plan .coach-exercise-row > div { min-width: 0; }
+.coach-plan .coach-exercise-row strong { overflow-wrap: anywhere; }
+.coach-sparkle { box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), 0 5px 14px rgba(105,87,220,.14); }
