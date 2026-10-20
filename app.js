@@ -961,18 +961,29 @@ function renderHistory(){
 }
 
 
-// --- NINA: assistente adaptativa baseada na biblioteca existente ---
+// --- YARA: assistente adaptativa baseada na biblioteca existente ---
 function initCoach() {
   const greeting = document.getElementById('coachGreeting');
   if (!greeting) return;
   const hour = new Date().getHours();
   const welcome = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const hasHistory = Array.isArray(state.history) && state.history.length > 0;
-  greeting.textContent = `${welcome}! Eu sou a Nina. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
+  greeting.textContent = `${welcome}! Eu sou a Yara. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
 }
 
 function coachNormalize(value) {
   return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function getCoachKnowledge(name) {
+  const search = coachNormalize(name);
+  const rules = [
+    { words: ['supino', 'agachamento', 'leg press', 'remada', 'puxada', 'levantamento', 'stiff', 'desenvolvimento'], role: 'movimento principal', priority: 3 },
+    { words: ['crucifixo', 'elevacao lateral', 'rosca', 'triceps', 'extensora', 'flexora', 'abdutora', 'adutora'], role: 'complementar', priority: 1 },
+    { words: ['hip thrust', 'elevacao pelvica', 'passada', 'afundo', 'step up'], role: 'unilateral / glúteos', priority: 2 }
+  ];
+  const match = rules.find(rule => rule.words.some(word => search.includes(word)));
+  return match || { role: 'complementar', priority: 1 };
 }
 
 function getExerciseCatalogForCoach() {
@@ -981,8 +992,31 @@ function getExerciseCatalogForCoach() {
   return [...select.options].filter(o => o.value && o.value.includes('|')).map(option => {
     const [name, type] = option.value.split('|');
     const group = option.parentElement?.label || '';
-    return { name: name.trim(), type: type || 'Livre', group, search: coachNormalize(`${name} ${group}`) };
+    return { name: name.trim(), type: type || 'Livre', group, search: coachNormalize(`${name} ${group}`), ...getCoachKnowledge(name) };
   });
+}
+
+function getRequestedExercises(rawText, catalog) {
+  const cleaned = coachNormalize(rawText)
+    .replace(/\b(monte|montar|crie|criar|faca|fazer|um|uma|treino|sessao|com|para|de|hoje|por favor|especificos?|em|ate|so|apenas|consigo fazer)\b/g, ' ')
+    .replace(/\d+\s*(min|minuto|minutos|h|hora|horas|exercicios?|movimentos?)/g, ' ');
+  const parts = cleaned.split(/,|;|\s+e\s+|\s+\+\s+|\s+\/\s+/).map(part => part.trim()).filter(Boolean);
+  const generic = new Set(['pernas', 'peito', 'costas', 'ombros', 'biceps', 'triceps', 'abdomen', 'cardio', 'academia', 'maquina', 'maquinas', 'halteres', 'barra', 'polia']);
+  const matches = [];
+  parts.forEach(part => {
+    const words = part.split(/\s+/).filter(word => word.length > 2 && !generic.has(word));
+    if (!words.length) return;
+    let best = null;
+    catalog.forEach(exercise => {
+      const exWords = exercise.search.split(/\s+/);
+      const overlap = words.filter(word => exWords.some(exWord => exWord === word || (word.length > 4 && exWord.includes(word))));
+      const exactName = exercise.search.includes(part);
+      const score = overlap.length + (exactName ? 4 : 0);
+      if (score >= 1 && (!best || score > best.score)) best = { exercise, score };
+    });
+    if (best && !matches.some(item => item.name === best.exercise.name)) matches.push(best.exercise);
+  });
+  return matches;
 }
 
 function getCoachRequest(rawText) {
@@ -1007,7 +1041,9 @@ function getCoachRequest(rawText) {
   const group = match ? match[0] : 'corpo inteiro';
   const tired = /cansad|pouca energia|leve|sem disposicao|dificil hoje/.test(text);
   const noMachines = /sem maquina|sem maquinas|academia cheia|maquinas ocupadas|sem equipamento/.test(text);
-  return { text, minutes, count: count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, tired, noMachines };
+  const catalog = getExerciseCatalogForCoach();
+  const requested = getRequestedExercises(rawText, catalog);
+  return { text, minutes, count: requested.length || count || (minutes <= 20 ? 2 : minutes <= 35 ? 3 : minutes <= 55 ? 4 : 5), group, tired, noMachines, requested };
 }
 
 function coachExerciseMatches(exercise, request) {
@@ -1025,7 +1061,7 @@ function coachExercisePriority(exercise, request) {
   const n = exercise.search;
   const compound = ['supino', 'agachamento', 'leg press', 'remada', 'puxada', 'desenvolvimento', 'levantamento', 'stiff', 'hip thrust', 'elevacao pelvica'];
   const isolation = ['extensora', 'flexora', 'crucifixo', 'elevacao lateral', 'rosca', 'triceps', 'abdutora', 'adutora'];
-  let score = compound.some(word => n.includes(word)) ? 30 : isolation.some(word => n.includes(word)) ? 10 : 20;
+  let score = exercise.priority * 7 + (compound.some(word => n.includes(word)) ? 30 : isolation.some(word => n.includes(word)) ? 10 : 20);
   if (request.noMachines && /maquina|polia/.test(n)) score -= 25;
   const personalNames = new Set((state.history || []).slice(0, 8).flatMap(w => (w.exercises || []).map(e => coachNormalize(e.name))));
   if (personalNames.has(coachNormalize(exercise.name))) score += 12;
@@ -1040,17 +1076,24 @@ function buildCoachPlan(request) {
     const fallback = catalog.filter(exercise => !candidates.some(item => item.name === exercise.name));
     candidates = candidates.concat(fallback.slice(0, request.count - candidates.length));
   }
-  const selected = candidates.sort((a, b) => coachExercisePriority(b, request) - coachExercisePriority(a, request)).slice(0, request.count);
+  const requested = request.requested || [];
+  const requestedNames = new Set(requested.map(exercise => exercise.name));
+  const orderedRequested = requested.slice(0, request.count);
+  const fill = candidates
+    .filter(exercise => !requestedNames.has(exercise.name))
+    .sort((a, b) => coachExercisePriority(b, request) - coachExercisePriority(a, request))
+    .slice(0, Math.max(0, request.count - orderedRequested.length));
+  const selected = orderedRequested.concat(fill).slice(0, request.count);
   const sets = request.tired ? 2 : request.minutes <= 30 ? 3 : 3;
   const rest = request.tired ? '45–60s' : request.minutes <= 30 ? '60–75s' : '75–90s';
   const exerciseMinutes = Math.max(4, Math.round((request.minutes - 4) / Math.max(1, selected.length)));
-  return { ...request, selected, sets, rest, exerciseMinutes, estimated: Math.min(request.minutes, 4 + selected.length * exerciseMinutes) };
+  return { ...request, selected, sets, rest, exerciseMinutes, estimated: Math.min(request.minutes, 4 + selected.length * exerciseMinutes), exactRequest: orderedRequested.length > 0 };
 }
 
 function renderCoachPlan(plan) {
   const target = document.getElementById('coachPlan');
   if (!target) return;
-  const tone = plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
+  const tone = plan.exactRequest ? 'mantive os exercícios que você pediu, na mesma ordem' : plan.tired ? 'reduzi o volume para respeitar sua energia' : 'priorizei os movimentos mais completos primeiro';
   target.hidden = false;
   target.innerHTML = `<div class="coach-plan-head"><div><strong>${plan.group[0].toUpperCase() + plan.group.slice(1)} · ${plan.minutes} min</strong><span>${plan.selected.length} exercícios · ${tone}</span></div><span class="coach-time">~${plan.estimated} min</span></div><div class="coach-plan-list">${plan.selected.map((exercise, index) => `<div class="coach-exercise-row"><span class="coach-number">${index + 1}</span><div><strong>${exercise.name}</strong><small>${plan.sets} séries · ${plan.rest} descanso · ${exercise.type}</small></div></div>`).join('')}</div><div class="coach-plan-note">Usei apenas exercícios da biblioteca atual. Você pode ajustar tudo antes de começar.</div><div class="coach-plan-actions"><button onclick="startWorkoutFromCoach()">Começar este treino</button><button class="secondary" onclick="editCoachRequest()">Ajustar pedido</button></div>`;
   window.lastCoachPlan = plan;
@@ -1069,7 +1112,7 @@ function askCoach(text) {
   const request = getCoachRequest(requestText);
   const plan = buildCoachPlan(request);
   renderCoachPlan(plan);
-  showToast('A Nina preparou uma sugestão com sua biblioteca.');
+  showToast('A Yara preparou uma sugestão com sua biblioteca.');
 }
 
 function startWorkoutFromCoach() {
@@ -1082,7 +1125,7 @@ function startWorkoutFromCoach() {
   if (activeName) activeName.value = state.currentWorkout.name;
   renderCurrentWorkout();
   showPage('workout');
-  showToast('Treino da Nina iniciado. Bom treino!');
+  showToast('Treino da Yara iniciado. Bom treino!');
 }
 
 function editCoachRequest() {
