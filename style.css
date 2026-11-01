@@ -20,6 +20,39 @@ color: var(--text);
 font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, Arial,
 sans-serif;
 padding-bottom: 90px;
+isolation: isolate;
+}
+body::before,
+body::after {
+content: "";
+position: fixed;
+inset: -12vh -8vw;
+pointer-events: none;
+z-index: -1;
+background-repeat: repeat;
+will-change: transform;
+}
+body::before {
+background-image:
+radial-gradient(circle at 18px 24px, rgba(255,255,255,.7) 0 1.3px, transparent 1.8px),
+radial-gradient(circle at 74px 92px, rgba(255,255,255,.45) 0 1px, transparent 1.5px),
+radial-gradient(circle at 132px 48px, rgba(255,255,255,.55) 0 1.6px, transparent 2px);
+background-size: 168px 150px, 214px 190px, 286px 230px;
+opacity: .34;
+animation: snowfall-drift 18s linear infinite;
+}
+body::after {
+background-image:
+radial-gradient(circle at 42px 16px, rgba(255,255,255,.55) 0 1px, transparent 1.5px),
+radial-gradient(circle at 118px 76px, rgba(255,255,255,.35) 0 1.2px, transparent 1.7px);
+background-size: 242px 205px, 320px 270px;
+opacity: .2;
+animation: snowfall-drift 26s linear infinite reverse;
+}
+@keyframes snowfall-drift {
+0% { transform: translate3d(0, -4%, 0); }
+50% { transform: translate3d(2%, 48%, 0); }
+100% { transform: translate3d(-1%, 104%, 0); }
 }
 .christmas-garland {
 height: 25px;
