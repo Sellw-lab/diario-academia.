@@ -1363,3 +1363,91 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
 @media (prefers-reduced-motion: reduce) {
   .coach-avatar-portrait, .coach-avatar-image, .coach-blink, .coach-thought-glow { animation: none !important; }
 }
+
+
+/* Assistente viva — camada procedural sobre o mesmo retrato */
+.coach-avatar {
+  width: 94px;
+  height: 94px;
+  flex-basis: 94px;
+  border-radius: 27px;
+  box-shadow: 0 14px 30px rgba(105,87,220,.42), 0 0 0 1px rgba(255,209,102,.24), inset 0 0 0 1px rgba(255,255,255,.22);
+}
+.coach-avatar-portrait {
+  border-radius: 23px;
+  transform-origin: 50% 76%;
+  will-change: transform;
+}
+.coach-avatar-image {
+  transform: translate3d(0, var(--head-y, 0px), 0) rotate(var(--head-x, 0deg)) scale(calc(1.055 * var(--breath, 1)));
+  transform-origin: 50% 72%;
+  will-change: transform, filter;
+}
+.coach-avatar[data-state="thinking"] .coach-avatar-image {
+  filter: saturate(1.02) contrast(1.05) brightness(.97);
+}
+.coach-avatar[data-state="speaking"] .coach-avatar-image {
+  filter: saturate(1.08) contrast(1.03) brightness(1.015);
+}
+.coach-avatar[data-state="celebrate"] .coach-avatar-image {
+  filter: saturate(1.15) contrast(1.04) brightness(1.04);
+}
+.coach-gaze {
+  position: absolute;
+  z-index: 3;
+  top: 40.5%;
+  width: 4px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(43, 27, 40, .9);
+  box-shadow: 0 0 2px rgba(255,255,255,.55);
+  transform: translate3d(var(--gaze-x, 0px), var(--gaze-y, 0px), 0);
+  transition: transform .14s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+}
+.coach-gaze-left { left: 37.5%; }
+.coach-gaze-right { left: 59%; }
+.coach-avatar.is-blinking .coach-gaze {
+  opacity: 0;
+}
+.coach-avatar.is-blinking .coach-blink {
+  opacity: .95;
+  transform: scaleY(1);
+}
+.coach-blink {
+  top: 40%;
+  width: 18%;
+  border-top-width: 2.4px;
+  border-top-color: rgba(82, 43, 45, .9);
+  transition: opacity .04s ease, transform .06s ease;
+}
+.coach-blink-left { left: 31%; }
+.coach-blink-right { left: 53%; }
+.coach-avatar::before {
+  inset: -8px;
+  border-radius: 32px;
+  box-shadow: 0 0 0 8px rgba(139,124,255,.06), 0 0 28px rgba(139,124,255,.2);
+}
+.coach-avatar[data-state="thinking"]::before {
+  border-color: rgba(190,178,255,.85);
+  box-shadow: 0 0 0 8px rgba(139,124,255,.1), 0 0 34px rgba(139,124,255,.4);
+}
+.coach-avatar[data-state="greeting"] .coach-avatar-portrait {
+  animation: coach-greeting-portrait 1.8s cubic-bezier(.2,.8,.2,1) both;
+}
+.coach-avatar[data-state="thinking"] .coach-avatar-portrait {
+  animation: coach-thinking-portrait 1.15s ease-in-out infinite;
+}
+.coach-avatar[data-state="speaking"] .coach-avatar-portrait {
+  animation: coach-speaking-portrait .8s ease-in-out infinite;
+}
+.coach-avatar[data-state="celebrate"] .coach-avatar-portrait {
+  animation: coach-celebrate-portrait .65s cubic-bezier(.2,.8,.2,1) 3;
+}
+@media (max-width: 420px) {
+  .coach-avatar { width: 84px; height: 84px; flex-basis: 84px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .coach-gaze { transition: none; }
+  .coach-avatar-image { transform: none; }
+}

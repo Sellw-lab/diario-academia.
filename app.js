@@ -26,9 +26,10 @@ renderCurrentWorkout();
 renderHistory();
 populateChartSelect();
 renderCustomExercisesInSelect();
-expandExerciseLibrary();
-initCoach();
-setupChristmasAudio();
+	expandExerciseLibrary();
+	initCoach();
+	initCoachMotion();
+	setupChristmasAudio();
 };
 
 function setupChristmasAudio() {
@@ -1021,6 +1022,56 @@ function setCoachAvatarState(nextState = 'idle', duration = 0) {
       avatar.dataset.state = 'idle';
     }, duration);
   }
+}
+
+// Movimento 2D procedural: mantém o retrato da homenagem, mas dá vida ao rosto
+// com respiração, inclinação de cabeça, olhar, piscadas e resposta ao toque/ponteiro.
+function initCoachMotion() {
+  const avatar = document.querySelector('.coach-avatar');
+  if (!avatar || avatar.dataset.motionReady === 'true') return;
+  avatar.dataset.motionReady = 'true';
+  const gaze = { x: 0, y: 0, targetX: 0, targetY: 0 };
+  let pointerActive = false;
+  let nextBlink = performance.now() + 2600;
+  let blinkUntil = 0;
+  const portrait = avatar.querySelector('.coach-avatar-portrait');
+
+  const setTarget = (event) => {
+    const rect = avatar.getBoundingClientRect();
+    gaze.targetX = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - .5) * 2));
+    gaze.targetY = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - .5) * 2));
+    pointerActive = true;
+  };
+  avatar.addEventListener('pointermove', setTarget, { passive: true });
+  avatar.addEventListener('pointerleave', () => { pointerActive = false; }, { passive: true });
+  avatar.addEventListener('touchstart', setTarget, { passive: true });
+
+  const loop = (now) => {
+    const stateName = avatar.dataset.state || 'idle';
+    const thinking = stateName === 'thinking';
+    const t = now / 1000;
+    const autoX = Math.sin(t * (thinking ? .85 : .55)) * (thinking ? .42 : .2) + Math.sin(t * .23) * .08;
+    const autoY = Math.cos(t * .47) * .16;
+    const targetX = pointerActive ? gaze.targetX : autoX;
+    const targetY = pointerActive ? gaze.targetY : autoY;
+    gaze.x += (targetX - gaze.x) * .075;
+    gaze.y += (targetY - gaze.y) * .075;
+    const headX = Math.sin(t * .62) * (thinking ? 2.8 : 1.2) + gaze.x * .9;
+    const headY = Math.cos(t * .48) * (thinking ? 1.8 : .7);
+    avatar.style.setProperty('--head-x', `${headX.toFixed(2)}deg`);
+    avatar.style.setProperty('--head-y', `${headY.toFixed(2)}px`);
+    avatar.style.setProperty('--gaze-x', `${(gaze.x * 1.65).toFixed(2)}px`);
+    avatar.style.setProperty('--gaze-y', `${(gaze.y * 1.1).toFixed(2)}px`);
+
+    if (now >= nextBlink) {
+      blinkUntil = now + 135;
+      nextBlink = now + 2800 + Math.random() * 3300;
+    }
+    avatar.classList.toggle('is-blinking', now < blinkUntil);
+    if (portrait) portrait.style.setProperty('--breath', `${(1 + Math.sin(t * 1.35) * .012).toFixed(3)}`);
+    window.requestAnimationFrame(loop);
+  };
+  window.requestAnimationFrame(loop);
 }
 
 function coachNormalize(value) {
