@@ -14,8 +14,8 @@ try {
   if (saved.preferences?.theme === 'light') document.documentElement.classList.add('light-theme-preload');
 } catch (_) {}
 </script>
-<link rel="stylesheet" href="style.css?v=20261101-avatar-svg">
-<script src="app.js?v=20261101-avatar-svg" defer></script>
+<link rel="stylesheet" href="style.css?v=20261101-yara-portrait">
+<script src="app.js?v=20261101-yara-portrait" defer></script>
 </head>
 <body>
 
@@ -64,23 +64,13 @@ try {
 </div>
 <section class="coach-card" aria-labelledby="coachTitle">
 <div class="coach-topline">
-<div class="coach-avatar" aria-hidden="true">
-<svg class="coach-avatar-svg" viewBox="0 0 96 96" focusable="false">
-<defs><linearGradient id="avatarTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#29233f"/><stop offset="1" stop-color="#11121d"/></linearGradient><linearGradient id="avatarHair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a2d32"/><stop offset="1" stop-color="#16151d"/></linearGradient></defs>
-<path class="avatar-body" fill="url(#avatarTop)" d="M17 98c1-22 12-33 31-33s30 11 31 33Z"/>
-<path class="avatar-neck" fill="#e8b89e" d="M40 58h16v12H40z"/>
-<path class="avatar-hair" fill="url(#avatarHair)" d="M22 45C13 18 28 5 48 6c22-1 36 16 27 42l-7 19H27Z"/>
-<path class="avatar-face" fill="#f1c7ad" d="M29 30c0-12 8-19 19-19s19 7 19 19v17c0 11-8 19-19 19S29 58 29 47Z"/>
-<path class="avatar-bangs" fill="#282027" d="M27 30c1-16 10-24 24-23 10 1 17 7 20 17-8-4-13-8-17-14-5 8-14 12-27 20Z"/>
-<path class="avatar-brow avatar-brow-left" d="M35 36q5-4 10 0"/><path class="avatar-brow avatar-brow-right" d="M52 36q5-4 10 0"/>
-<g class="avatar-eye avatar-eye-left"><ellipse cx="41" cy="42" rx="3.5" ry="2.8" fill="#fff"/><circle cx="42" cy="42" r="1.6" fill="#28233d"/></g>
-<g class="avatar-eye avatar-eye-right"><ellipse cx="55" cy="42" rx="3.5" ry="2.8" fill="#fff"/><circle cx="54" cy="42" r="1.6" fill="#28233d"/></g>
-<path class="avatar-glasses" d="M33 38h15l-1 9H36Zm17 0h15l-2 9H51ZM48 41h3"/>
-<path class="avatar-nose" d="M48 42q-2 8 2 8"/>
-<g class="avatar-mouth"><path class="avatar-mouth-line" d="M41 54q7 7 14 0"/><ellipse class="avatar-mouth-open" cx="48" cy="56" rx="5" ry="1.5"/></g>
-<path class="avatar-wave-arm" d="M69 68q12-3 14-14"/><g class="avatar-wave"><path d="M82 57q-2-7 2-10m0 10q2-8 6-9m-6 11q6-4 8-1"/><circle cx="84" cy="58" r="4"/></g>
-<circle class="avatar-cheek avatar-cheek-left" cx="35" cy="50" r="2"/><circle class="avatar-cheek avatar-cheek-right" cx="61" cy="50" r="2"/>
-</svg>
+<div class="coach-avatar" aria-hidden="true" data-state="idle">
+  <div class="coach-avatar-portrait">
+    <img class="coach-avatar-image" src="assets/yara-assistant.png" alt="" draggable="false">
+    <span class="coach-blink coach-blink-left" aria-hidden="true"></span>
+    <span class="coach-blink coach-blink-right" aria-hidden="true"></span>
+    <span class="coach-thought-glow" aria-hidden="true"></span>
+  </div>
 </div>
 <div>
 <span class="coach-kicker">Sua companheira de treino</span>

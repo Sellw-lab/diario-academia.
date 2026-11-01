@@ -1258,3 +1258,108 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
 .coach-plan .coach-exercise-row > div { min-width: 0; }
 .coach-plan .coach-exercise-row strong { overflow-wrap: anywhere; }
 .coach-sparkle { box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), 0 5px 14px rgba(105,87,220,.14); }
+
+/* Assistente — retrato da homenagem e microinterações naturais */
+.coach-avatar {
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  border: 2px solid rgba(255,255,255,.6);
+  border-radius: 23px;
+  overflow: visible;
+  background: #17131b;
+  box-shadow: 0 12px 24px rgba(105,87,220,.35), 0 0 0 1px rgba(255,209,102,.2), inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.coach-avatar-portrait {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #171717;
+  transform-origin: 50% 72%;
+  animation: coach-avatar-breathe 4.8s ease-in-out infinite;
+}
+.coach-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 54%;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: saturate(1.04) contrast(1.02);
+  transform: scale(1.08);
+  transform-origin: 50% 58%;
+  animation: coach-portrait-float 5.5s ease-in-out infinite;
+}
+.coach-avatar::before {
+  inset: -7px;
+  border-radius: 28px;
+  border-color: rgba(157,133,255,.52);
+  animation: coach-pulse 3.2s ease-in-out infinite;
+}
+.coach-avatar::after {
+  right: -9px;
+  top: -9px;
+  width: 21px;
+  height: 21px;
+  content: '✦';
+  animation: coach-sparkle-float 2.4s ease-in-out infinite;
+}
+.coach-blink {
+  position: absolute;
+  z-index: 2;
+  top: 42%;
+  width: 17%;
+  height: 0;
+  border-top: 2px solid rgba(71,40,38,.85);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scaleY(.2);
+  transform-origin: center;
+  pointer-events: none;
+}
+.coach-blink-left { left: 31%; }
+.coach-blink-right { left: 53%; }
+.coach-avatar[data-state="idle"] .coach-blink,
+.coach-avatar[data-state="greeting"] .coach-blink,
+.coach-avatar[data-state="speaking"] .coach-blink {
+  animation: portrait-blink 5.8s ease-in-out infinite;
+}
+.coach-blink-right { animation-delay: .07s !important; }
+.coach-avatar[data-state="thinking"] .coach-avatar-portrait {
+  animation: coach-thinking-portrait 1.15s ease-in-out infinite;
+}
+.coach-avatar[data-state="thinking"] .coach-avatar-image {
+  filter: saturate(1.02) contrast(1.04) brightness(.98);
+  transform: scale(1.1) translateX(-1px);
+}
+.coach-avatar[data-state="thinking"]::after { content: '•••'; width: 28px; color: #fff; letter-spacing: 1px; font-size: 9px; }
+.coach-avatar[data-state="thinking"] .coach-thought-glow {
+  opacity: .9;
+  animation: thought-glow 1.2s ease-in-out infinite;
+}
+.coach-avatar[data-state="greeting"] .coach-avatar-portrait { animation: coach-greeting-portrait 1.8s ease-in-out both; }
+.coach-avatar[data-state="speaking"] .coach-avatar-portrait { animation: coach-speaking-portrait .8s ease-in-out infinite; }
+.coach-avatar[data-state="celebrate"] .coach-avatar-portrait { animation: coach-celebrate-portrait .65s ease-in-out 3; }
+.coach-thought-glow {
+  position: absolute;
+  inset: 8px;
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(190,178,255,.22), transparent 67%);
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes coach-avatar-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.018); } }
+@keyframes coach-portrait-float { 0%,100% { transform: scale(1.08) translateY(0); } 50% { transform: scale(1.095) translateY(-1px); } }
+@keyframes portrait-blink { 0%, 42%, 47%, 100% { opacity: 0; transform: scaleY(.2); } 44.5%, 45.5% { opacity: .95; transform: scaleY(1); } }
+@keyframes coach-thinking-portrait { 0%,100% { transform: rotate(0) translateY(0); } 50% { transform: rotate(-3deg) translateY(-2px); } }
+@keyframes coach-greeting-portrait { 0% { transform: rotate(0) translateY(2px); } 35% { transform: rotate(-5deg) translateY(-2px); } 65% { transform: rotate(4deg) translateY(-1px); } 100% { transform: rotate(0) translateY(0); } }
+@keyframes coach-speaking-portrait { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2px) scale(1.025); } }
+@keyframes coach-celebrate-portrait { 0%,100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-5px) rotate(-4deg); } 70% { transform: translateY(-2px) rotate(4deg); } }
+@keyframes thought-glow { 0%,100% { opacity: .35; transform: scale(.92); } 50% { opacity: .9; transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) {
+  .coach-avatar-portrait, .coach-avatar-image, .coach-blink, .coach-thought-glow { animation: none !important; }
+}
