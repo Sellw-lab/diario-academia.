@@ -1035,6 +1035,7 @@ function initCoachMotion() {
   let nextBlink = performance.now() + 2600;
   let blinkUntil = 0;
   const portrait = avatar.querySelector('.coach-avatar-portrait');
+  const physics = { x: 0, y: 0, rotation: 0, vx: 0, vy: 0, vr: 0 };
 
   const setTarget = (event) => {
     const rect = avatar.getBoundingClientRect();
@@ -1049,6 +1050,8 @@ function initCoachMotion() {
   const loop = (now) => {
     const stateName = avatar.dataset.state || 'idle';
     const thinking = stateName === 'thinking';
+    const speaking = stateName === 'speaking';
+    const celebrating = stateName === 'celebrate';
     const t = now / 1000;
     const autoX = Math.sin(t * (thinking ? .85 : .55)) * (thinking ? .42 : .2) + Math.sin(t * .23) * .08;
     const autoY = Math.cos(t * .47) * .16;
@@ -1058,6 +1061,17 @@ function initCoachMotion() {
     gaze.y += (targetY - gaze.y) * .075;
     const headX = Math.sin(t * .62) * (thinking ? 2.8 : 1.2) + gaze.x * .9;
     const headY = Math.cos(t * .48) * (thinking ? 1.8 : .7);
+    const bodyTargetX = (headX * .72) + (celebrating ? Math.sin(t * 10) * 3.5 : 0);
+    const bodyTargetY = (headY * .55) + (speaking ? Math.abs(Math.sin(t * 7)) * -2 : 0);
+    const bodyTargetRotation = (headX * .65) + (celebrating ? Math.sin(t * 9) * 4 : 0);
+    physics.vx += (bodyTargetX - physics.x) * .055;
+    physics.vy += (bodyTargetY - physics.y) * .055;
+    physics.vr += (bodyTargetRotation - physics.rotation) * .055;
+    physics.vx *= .82; physics.vy *= .82; physics.vr *= .82;
+    physics.x += physics.vx; physics.y += physics.vy; physics.rotation += physics.vr;
+    avatar.style.setProperty('--body-x', `${physics.x.toFixed(2)}px`);
+    avatar.style.setProperty('--body-y', `${physics.y.toFixed(2)}px`);
+    avatar.style.setProperty('--body-rotation', `${physics.rotation.toFixed(2)}deg`);
     avatar.style.setProperty('--head-x', `${headX.toFixed(2)}deg`);
     avatar.style.setProperty('--head-y', `${headY.toFixed(2)}px`);
     avatar.style.setProperty('--gaze-x', `${(gaze.x * 1.65).toFixed(2)}px`);
