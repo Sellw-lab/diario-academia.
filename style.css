@@ -1207,6 +1207,22 @@ body.light-theme .bottom-nav .nav-btn:not(.active) .nav-icon {
 .coach-avatar::before, .coach-avatar::after { display: none; }
 .coach-topline > div:nth-child(2) { align-self: center; }
 .coach-sparkle { align-self: center; }
+.coach-name-y {
+  display: inline-grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  margin-right: 3px;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(145deg, #a79bff, #6553d6);
+  box-shadow: 0 4px 12px rgba(105,87,220,.3);
+  font-size: 15px;
+  font-weight: 800;
+  vertical-align: 2px;
+}
+.coach-title-word { font-weight: 800; }
 @media (max-width: 420px) { .coach-topline { grid-template-columns: 56px minmax(0, 1fr) auto; min-height: 84px; gap: 9px; } .coach-avatar { width: 56px; height: 84px; } .coach-avatar-portrait { inset: 0 -2px -1px; } .coach-topline h2 { font-size: 18px; } }
 
 /* Biblioteca viva e exercícios pessoais */

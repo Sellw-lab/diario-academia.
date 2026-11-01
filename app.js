@@ -1007,7 +1007,7 @@ function initCoach() {
   const hour = new Date().getHours();
   const welcome = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const hasHistory = Array.isArray(state.history) && state.history.length > 0;
-  greeting.textContent = `${welcome}! Eu sou sua assistente. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
+  greeting.textContent = `${welcome}! Eu sou a Y, sua assistente. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
   setCoachAvatarState('greeting', 1800);
 }
 
