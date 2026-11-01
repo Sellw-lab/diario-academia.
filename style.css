@@ -117,6 +117,26 @@ text-transform: capitalize;
 position: relative;
 cursor: pointer;
 }
+.header-actions { display: flex; align-items: center; gap: 9px; }
+.christmas-sound-toggle {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+min-height: 40px;
+padding: 8px 10px;
+border: 1px solid var(--border);
+border-radius: 12px;
+background: var(--card2);
+color: var(--muted);
+font-size: 11px;
+font-weight: 600;
+white-space: nowrap;
+}
+.christmas-sound-toggle .sound-icon { font-size: 16px; line-height: 1; color: #ffd166; }
+.christmas-sound-toggle.is-playing { border-color: rgba(255, 209, 102, .7); color: var(--text); background: rgba(255, 209, 102, .12); }
+.christmas-sound-toggle.is-playing .sound-icon { animation: sound-pulse 1.5s ease-in-out infinite; }
+@keyframes sound-pulse { 0%, 100% { transform: scale(1); opacity: .72; } 50% { transform: scale(1.16); opacity: 1; } }
+.header-actions + .file-input { display: none; }
 .header-avatar {
 width: 40px;
 height: 40px;
@@ -532,6 +552,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 @media (max-width: 520px) {
   main { padding: 12px; }
   header { padding: 15px 14px 12px; }
+  .christmas-sound-toggle { width: 40px; padding: 8px; justify-content: center; }
+  .christmas-sound-toggle #christmasSoundLabel { display: none; }
   .row { grid-template-columns: 1fr; gap: 8px; }
   .stats { gap: 6px; }
   .stat { padding: 12px 5px; }

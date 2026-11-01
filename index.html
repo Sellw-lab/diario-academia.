@@ -25,8 +25,13 @@ try {
 <h1>Diário de Treino</h1>
 <p id="headerDate"></p>
 </div>
+<div class="header-actions">
+<button id="christmasSoundToggle" class="christmas-sound-toggle" type="button" onclick="toggleChristmasSound()" aria-pressed="false" aria-label="Ativar som ambiente de Natal" title="Ativar som ambiente de Natal">
+<span class="sound-icon" aria-hidden="true">♫</span><span id="christmasSoundLabel">Som de Natal</span>
+</button>
 <div class="header-avatar-container" onclick="triggerProfilePicUpload( )" title="Alterar Foto">
-<img id="headerProfilePic" class="header-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%2394a3b8' stroke-width='1.5' viewBox='0 0 24 24'><circle cx='12' cy='8' r='3.5'/><path d='M5 20.5c.7-3.2 3.1-5 7-5s6.3 1.8 7 5'/></svg>" alt="Perfil">
+<img id="headerProfilePic" class="header-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%2394a3b8' stroke-width='1.5' viewBox='0 0 24 24'><circle cx='12' cy='8' r='3.5'/><path d='M5 20.5c.7-3.2 3.1-5 7-5s6.3 1.8 7 5'/></svg>' alt="Perfil">
+</div>
 </div>
 <input type="file" id="picInput" class="file-input" accept="image/*" onchange="handleProfilePicUpload(event )">
 </header>
@@ -45,6 +50,7 @@ try {
 <span class="garland-light light-gold"></span>
 <span class="garland-light light-green"></span>
 </div>
+<audio id="christmasAmbientAudio" src="assets/christmas-ambient.mp3" loop preload="metadata"></audio>
 <main id="appMain">
 <!-- INÍCIO -->
 <section id="home" class="page active">

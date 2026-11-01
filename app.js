@@ -28,7 +28,45 @@ populateChartSelect();
 renderCustomExercisesInSelect();
 expandExerciseLibrary();
 initCoach();
+setupChristmasAudio();
 };
+
+function setupChristmasAudio() {
+const audio = document.getElementById('christmasAmbientAudio');
+const button = document.getElementById('christmasSoundToggle');
+if (!audio || !button) return;
+audio.volume = 0.22;
+const syncAudioButton = () => {
+const playing = !audio.paused;
+button.classList.toggle('is-playing', playing);
+button.setAttribute('aria-pressed', String(playing));
+button.setAttribute('aria-label', playing ? 'Desligar som ambiente de Natal' : 'Ativar som ambiente de Natal');
+button.title = playing ? 'Desligar som ambiente de Natal' : 'Ativar som ambiente de Natal';
+const label = document.getElementById('christmasSoundLabel');
+if (label) label.textContent = playing ? 'Som ligado' : 'Som de Natal';
+};
+audio.addEventListener('play', syncAudioButton);
+audio.addEventListener('pause', syncAudioButton);
+audio.addEventListener('ended', syncAudioButton);
+syncAudioButton();
+}
+
+function toggleChristmasSound() {
+const audio = document.getElementById('christmasAmbientAudio');
+if (!audio) return;
+if (audio.paused) {
+audio.play().then(() => {
+mergeEnhancementState();
+state.preferences.christmasSound = true;
+saveData();
+}).catch(() => showToast('Toque novamente para ativar o som.'));
+} else {
+audio.pause();
+mergeEnhancementState();
+state.preferences.christmasSound = false;
+saveData();
+}
+}
 
 function setupDate() {
 const now = new Date();
