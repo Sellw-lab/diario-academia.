@@ -21,6 +21,43 @@ font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, Arial,
 sans-serif;
 padding-bottom: 90px;
 }
+.christmas-garland {
+height: 25px;
+position: relative;
+display: flex;
+justify-content: space-around;
+align-items: flex-start;
+padding: 0 12px;
+pointer-events: none;
+overflow: hidden;
+background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+}
+.garland-wire {
+position: absolute;
+top: 1px;
+left: 5%;
+right: 5%;
+height: 12px;
+border-top: 1px solid rgba(214, 222, 218, .38);
+border-radius: 50%;
+}
+.garland-light {
+width: 7px;
+height: 11px;
+margin-top: 3px;
+border-radius: 50% 50% 45% 45%;
+box-shadow: 0 0 7px 2px currentColor;
+z-index: 1;
+animation: christmas-twinkle 2.8s ease-in-out infinite;
+}
+.light-red { background: #ff5c67; color: #ff5c67; }
+.light-gold { background: #ffd166; color: #ffd166; animation-delay: .9s; }
+.light-green { background: #5be58a; color: #5be58a; animation-delay: 1.8s; }
+@keyframes christmas-twinkle {
+0%, 100% { opacity: .52; transform: translateY(0); }
+50% { opacity: 1; transform: translateY(2px); }
+}
+body.light-theme .christmas-garland { background: linear-gradient(180deg, rgba(30, 40, 50, .04), transparent); }
 header {
 padding: 20px 18px 15px;
 position: sticky;
