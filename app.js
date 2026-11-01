@@ -1064,7 +1064,7 @@ function initCoachMotion() {
     avatar.style.setProperty('--gaze-y', `${(gaze.y * 1.1).toFixed(2)}px`);
 
     if (now >= nextBlink) {
-      blinkUntil = now + 135;
+      blinkUntil = now + 240;
       nextBlink = now + 2800 + Math.random() * 3300;
     }
     avatar.classList.toggle('is-blinking', now < blinkUntil);
