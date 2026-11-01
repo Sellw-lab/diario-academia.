@@ -1008,6 +1008,19 @@ function initCoach() {
   const welcome = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const hasHistory = Array.isArray(state.history) && state.history.length > 0;
   greeting.textContent = `${welcome}! Eu sou sua assistente. ${hasHistory ? 'Já conheço um pouco do seu ritmo. ' : ''}Quanto tempo você tem hoje? Eu preparo uma sessão que cabe na sua rotina.`;
+  setCoachAvatarState('greeting', 1800);
+}
+
+function setCoachAvatarState(nextState = 'idle', duration = 0) {
+  const avatar = document.querySelector('.coach-avatar');
+  if (!avatar) return;
+  clearTimeout(window.coachAvatarTimer);
+  avatar.dataset.state = nextState;
+  if (duration > 0) {
+    window.coachAvatarTimer = setTimeout(() => {
+      avatar.dataset.state = 'idle';
+    }, duration);
+  }
 }
 
 function coachNormalize(value) {
@@ -1239,15 +1252,18 @@ async function askCoach(text) {
     return;
   }
   if (input) input.value = '';
+  setCoachAvatarState('thinking');
   const greeting = document.getElementById('coachGreeting');
   if (greeting) greeting.textContent = `Entendi: “${requestText}”. Vou organizar uma sessão realista para você.`;
   const request = getCoachRequest(requestText);
   const plan = buildCoachPlan(request);
   renderCoachPlan(plan);
+  setCoachAvatarState('speaking', 1700);
   showToast('A assistente está cruzando sua biblioteca com sugestões online.');
   const webSuggestions = request.useOwnWorkout ? [] : await fetchCoachWebSuggestions(request);
   mergeWebSuggestionsIntoPlan(plan, webSuggestions);
   renderCoachPlan(plan);
+  setCoachAvatarState('speaking', 2200);
 }
 
 function startWorkoutFromCoach() {
@@ -1267,6 +1283,7 @@ function startWorkoutFromCoach() {
   if (activeName) activeName.value = state.currentWorkout.name;
   renderCurrentWorkout();
   showPage('workout');
+  setCoachAvatarState('celebrate', 2200);
   showToast('Treino iniciado pela assistente. Bom treino!');
 }
 
